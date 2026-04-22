@@ -1,57 +1,57 @@
 ---
-description: Phân tích automation tests không ổn định (flaky), xác định root cause và tự động khắc phục. Hỗ trợ 2 mode — ANALYZE (chỉ báo cáo) và FIX (báo cáo + tự sửa code).
+description: Analyze unstable automation tests (flaky tests), identify root causes, and automatically fix them. Supports 2 modes — ANALYZE (report only) and FIX (report + automatic code fix).
 skills:
   - flaky_test_analyzer
   - smart_locator_agent
   - locator_healer_agent
 ---
 
-# Workflow: Phân Tích & Khắc Phục Flaky Tests
+# Workflow: Analyze & Fix Flaky Tests
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`flaky_test_analyzer`** (tại `.agent/skills/flaky_test_analyzer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`smart_locator_agent`** và **`locator_healer_agent`** khi cần sửa/thay locator.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`flaky_test_analyzer`** skill (at `.agent/skills/flaky_test_analyzer/SKILL.md`) before starting. Additionally, refer to the **`smart_locator_agent`** and **`locator_healer_agent`** skills when needed to fix/replace locators.
 
-Workflow này giúp agent tự động phân tích các automation test không ổn định (lúc pass lúc fail), xác định root cause chính xác, và (tùy mode) tự động sửa code để stabilize test.
+This workflow helps the agent automatically analyze unstable automation tests (intermittent pass/fail), accurately identify the root cause, and (depending on the mode) automatically fix the code to stabilize the test.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Tất cả output bằng Tiếng Việt**
-- **KHÔNG đoán** nguyên nhân — phải phân tích log, code, và DOM thực tế
-- **Phải chờ user xác nhận** danh sách fix tại Bước 3 trước khi sửa code (Mode FIX)
-- Nếu user chưa cung cấp test file/error log → hỏi trước khi bắt đầu
-- ⚠️ Sau khi user xác nhận fix → agent tự sửa + verify, KHÔNG hỏi lại trong quá trình fix
+- **All output in English**
+- **DO NOT guess** the cause — analyze logs, code, and actual DOM.
+- **Must wait for user confirmation** of the fix list at Step 3 before modifying code (FIX Mode).
+- If the user has not provided a test file/error log → ask before starting.
+- ⚠️ Once the user confirms the fix → the agent automatically fixes + verifies, DO NOT ask again during the fix process.
 
-## 2 Chế độ (Mode)
+## 2 Modes
 
-| Mode | Khi nào sử dụng | Output |
+| Mode | When to Use | Output |
 |---|---|---|
-| **ANALYZE** (mặc định) | User cần hiểu nguyên nhân flaky, chưa muốn sửa code | Báo cáo phân tích + Đề xuất fix |
-| **FIX** | User muốn agent tự sửa code luôn | Như ANALYZE + Code đã sửa + Kết quả verify |
+| **ANALYZE** (default) | User needs to understand flaky causes, doesn't want to fix code yet | Analysis report + Proposed fix |
+| **FIX** | User wants the agent to fix the code immediately | Same as ANALYZE + Fixed code + Verification results |
 
-> Nếu user nói "sửa luôn", "fix giùm", "khắc phục test này", hoặc yêu cầu agent sửa code → tự động chuyển sang **Mode FIX**.
+> If the user says "fix it now", "please fix", "remedy this test", or requests the agent to fix code → automatically switch to **FIX Mode**.
 
-## Input cần thu thập
+## Inputs to Collect
 
-Agent cần ít nhất **1 trong các input** sau từ user:
+The agent needs at least **one of the following inputs** from the user:
 
-| Input | Cách lấy | Độ ưu tiên |
+| Input | How to Get | Priority |
 |---|---|---|
-| **Test file path** | User cung cấp hoặc agent tìm trong project | ⭐ Bắt buộc |
-| **Error log / stack trace** | User paste hoặc agent chạy test để thu thập | ⭐ Bắt buộc |
-| **CI/CD log** | User cung cấp URL hoặc file log | Tùy chọn |
-| **Test report** (HTML/JSON) | Playwright report, Allure, TestNG report | Tùy chọn |
-| **Lịch sử fail** | Số lần fail / tổng số lần chạy | Tùy chọn |
+| **Test file path** | User provides or agent finds in the project | ⭐ Mandatory |
+| **Error log / stack trace** | User pastes or agent runs test to collect | ⭐ Mandatory |
+| **CI/CD log** | User provides URL or log file | Optional |
+| **Test report** (HTML/JSON) | Playwright report, Allure, TestNG report | Optional |
+| **Failure history** | Number of failures / total runs | Optional |
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Thu thập thông tin & Tái hiện lỗi (Detect & Reproduce)
+### Step 1: Information Gathering & Error Reproduction (Detect & Reproduce)
 
-1. **Đọc test file** bằng `view_file`:
-   - Xác định framework (Playwright / Selenium / Appium / Pytest / TestNG)
-   - Ghi nhận cấu trúc: Page Objects, fixtures, helper functions
-   - Đánh dấu các vùng code nghi ngờ (waits, locators, assertions, setup/teardown)
+1. **Read test file** using `view_file`:
+   - Identify the framework (Playwright / Selenium / Appium / Pytest / TestNG).
+   - Note the structure: Page Objects, fixtures, helper functions.
+   - Flag suspicious code areas (waits, locators, assertions, setup/teardown).
 
-2. **Chạy test** để tái hiện lỗi (nếu chưa có error log):
-   - Chạy test **3 lần liên tiếp** bằng `run_command`:
+2. **Run test** to reproduce the error (if no error log exists):
+   - Run the test **3 consecutive times** using `run_command`:
      ```bash
      # Playwright
      npx playwright test <test_file> --retries=0 --reporter=list
@@ -62,101 +62,101 @@ Agent cần ít nhất **1 trong các input** sau từ user:
      # Maven/TestNG
      mvn test -Dtest=<TestClass> -Dsurefire.rerunFailingTestsCount=0
      ```
-   - Ghi nhận pattern: Fail lần nào? Fail ở step nào? Error message giống hay khác nhau?
+   - Note patterns: Which runs failed? At which step? Are error messages the same or different?
 
-3. **Thu thập evidence:**
-   - Error log / stack trace từ mỗi lần chạy
-   - Screenshots (nếu test có capture on failure)
-   - Console log / Network log (nếu liên quan đến API calls)
+3. **Collect evidence:**
+   - Error log / stack trace from each run.
+   - Screenshots (if the test captures on failure).
+   - Console log / Network log (if related to API calls).
 
-### Bước 2: Phân tích Root Cause (Inspect & Classify)
+### Step 2: Root Cause Analysis (Inspect & Classify)
 
-1. **Đọc error log** và phân loại theo bảng root cause:
+1. **Read error log** and classify according to the root cause table:
 
-| Category | Dấu hiệu nhận biết | Ví dụ Error |
+| Category | Identification Signs | Error Example |
 |---|---|---|
-| 🎯 **Locator không ổn định** | `ElementNotFound`, `No matching element`, selector chứa dynamic class/index | `Locator('.css-1a2b3c')` fail vì class thay đổi mỗi build |
-| ⏱️ **Timing / Race condition** | `Timeout`, `Element not visible`, test pass khi chạy chậm (debug mode) | `expect(element).toBeVisible()` timeout vì animation chưa xong |
-| 📊 **Test data conflict** | `Duplicate key`, `Already exists`, fail khi chạy parallel | 2 test cùng tạo user `test@email.com` |
-| 🔄 **State dependency** | Pass khi chạy độc lập, fail khi chạy cùng suite | Test B phụ thuộc data mà Test A tạo ra |
-| 🌐 **Environment / Network** | `ECONNREFUSED`, `503`, `CORS error`, fail trên CI nhưng pass local | API server chậm, CDN timeout |
-| 🖼️ **UI Animation / Transition** | `Element is not clickable`, `intercept`, fail ngẫu nhiên khi click | Modal animation chưa hoàn thành, overlay che button |
-| 📱 **Viewport / Responsive** | Element bị ẩn, scroll không tới, fail ở resolution khác | Button nằm ngoài viewport trên CI (headless 800x600) |
-| 🧹 **Cleanup / Teardown** | Fail ở lần chạy thứ 2+, pass lần đầu | Test không cleanup data → lần sau bị conflict |
+| 🎯 **Unstable Locator** | `ElementNotFound`, `No matching element`, selector contains dynamic class/index | `Locator('.css-1a2b3c')` fails because class changes every build |
+| ⏱️ **Timing / Race condition** | `Timeout`, `Element not visible`, test passes when running slowly (debug mode) | `expect(element).toBeVisible()` timeout because animation isn't finished |
+| 📊 **Test data conflict** | `Duplicate key`, `Already exists`, fails when running in parallel | 2 tests both creating user `test@email.com` |
+| 🔄 **State dependency** | Passes when running independently, fails when running in suite | Test B depends on data created by Test A |
+| 🌐 **Environment / Network** | `ECONNREFUSED`, `503`, `CORS error`, fails on CI but passes locally | API server slow, CDN timeout |
+| 🖼️ **UI Animation / Transition** | `Element is not clickable`, `intercept`, fails randomly when clicking | Modal animation not finished, overlay obscuring button |
+| 📱 **Viewport / Responsive** | Element hidden, scroll doesn't reach, fails at different resolution | Button outside viewport on CI (headless 800x600) |
+| 🧹 **Cleanup / Teardown** | Fails on 2nd+ run, passes first time | Test doesn't cleanup data → subsequent conflict |
 
-2. **Inspect code** chi tiết, kiểm tra từng anti-pattern:
+2. **Inspect code** in detail, checking for each anti-pattern:
 
    **Locator check:**
-   - [ ] Có dùng dynamic class (`css-xxx`, `sc-xxx`, `MuiXxx-root`)? → ❌
-   - [ ] Có dùng positional xpath (`//div[3]/button[2]`)? → ❌
-   - [ ] Locator có unique không? (kiểm tra trên DOM thực tế nếu cần)
+   - [ ] Using dynamic classes (`css-xxx`, `sc-xxx`, `MuiXxx-root`)? → ❌
+   - [ ] Using positional xpath (`//div[3]/button[2]`)? → ❌
+   - [ ] Is the locator unique? (check on actual DOM if needed)
 
    **Wait strategy check:**
-   - [ ] Có `waitForTimeout()` / `Thread.sleep()` / `time.sleep()`? → ❌
-   - [ ] Có `waitForSelector()` khi `expect()` đã đủ? → ⚠️
-   - [ ] Assertion có timeout phù hợp không?
+   - [ ] Using `waitForTimeout()` / `Thread.sleep()` / `time.sleep()`? → ❌
+   - [ ] Using `waitForSelector()` when `expect()` is sufficient? → ⚠️
+   - [ ] Does the assertion have an appropriate timeout?
 
    **Test data check:**
-   - [ ] Data có hardcoded không? (`test@email.com`, `user123`)
-   - [ ] Data có unique per run không? (timestamp / random)
-   - [ ] Có cleanup data sau test không?
+   - [ ] Is data hardcoded? (`test@email.com`, `user123`)
+   - [ ] Is data unique per run? (timestamp / random)
+   - [ ] Is data cleaned up after the test?
 
    **Test independence check:**
-   - [ ] Test có phụ thuộc thứ tự chạy không?
-   - [ ] Test có share state qua global variable không?
-   - [ ] Setup/Teardown có đầy đủ không?
+   - [ ] Does the test depend on execution order?
+   - [ ] Does the test share state via global variables?
+   - [ ] Are Setup/Teardown complete?
 
-3. **Nếu cần inspect DOM thực tế** (locator issue):
-   - Mở browser bằng MCP: `browser_navigate` → `browser_resize(1920, 1080)` → `browser_snapshot`
-   - So sánh locator trong code vs DOM thực tế
-   - Xác định locator thay thế ổn định hơn (dùng skill `smart_locator_agent`)
+3. **If actual DOM inspection is needed** (locator issue):
+   - Open browser via MCP: `browser_navigate` → `browser_resize(1920, 1080)` → `browser_snapshot`
+   - Compare locator in code vs. actual DOM.
+   - Identify a more stable replacement locator (using the `smart_locator_agent` skill).
 
-### Bước 3: Lập báo cáo & Đề xuất fix (Report — CHECKPOINT)
+### Step 3: Reporting & Fix Proposal (Report — CHECKPOINT)
 
-1. **Tạo artifact** `flaky_analysis.md` với cấu trúc:
+1. **Create artifact** `flaky_analysis.md` with the following structure:
 
    ```markdown
-   # Báo Cáo Phân Tích Flaky Test
+   # Flaky Test Analysis Report
 
-   ## Tổng quan
+   ## Overview
    - **Test file:** <path>
    - **Framework:** Playwright / Selenium / ...
-   - **Tần suất fail:** X/Y lần chạy
-   - **Mức độ nghiêm trọng:** 🔴 Critical / 🟡 Medium / 🟢 Low
+   - **Failure frequency:** X/Y runs
+   - **Severity:** 🔴 Critical / 🟡 Medium / 🟢 Low
 
    ## Root Cause Analysis
 
-   | # | Vị trí (Line) | Category | Mô tả vấn đề | Mức độ |
+   | # | Vị trí (Line) | Category | Problem description | Severity |
    |---|---|---|---|---|
-   | 1 | test.ts:45 | ⏱️ Timing | waitForTimeout(3000) thay vì smart wait | 🔴 |
+   | 1 | test.ts:45 | ⏱️ Timing | waitForTimeout(3000) instead of smart wait | 🔴 |
    | 2 | page.ts:12 | 🎯 Locator | .css-1abc dynamic class | 🟡 |
 
-   ## Đề xuất Fix
+   ## Fix Proposal
 
-   | # | Vấn đề | Code hiện tại | Code đề xuất | Lý do |
+   | # | Issue | Current Code | Proposed Code | Reason |
    |---|---|---|---|---|
-   | 1 | Hard sleep | `waitForTimeout(3000)` | `expect(el).toBeVisible()` | Smart wait tự retry |
-   | 2 | Dynamic class | `.css-1abc` | `getByRole('button', {name: 'Submit'})` | Semantic, không phụ thuộc CSS |
+   | 1 | Hard sleep | `waitForTimeout(3000)` | `expect(el).toBeVisible()` | Smart wait with auto-retry |
+   | 2 | Dynamic class | `.css-1abc` | `getByRole('button', {name: 'Submit'})` | Semantic, no CSS dependency |
    ```
 
-2. **⏸️ DỪNG LẠI — Trình bày cho user review:**
-   - Danh sách root causes đã xác định
-   - Bảng đề xuất fix (code cũ → code mới)
-   - Hỏi: "Bạn đồng ý với phân tích này không? Tôi tiến hành sửa code luôn hay chỉ cần báo cáo?"
+2. **⏸️ STOP — Present for user review:**
+   - List of identified root causes.
+   - Fix proposal table (old code → new code).
+   - Ask: "Do you agree with this analysis? Should I proceed with fixing the code or just provide the report?"
 
-3. Nếu user chọn **Mode ANALYZE** → **KẾT THÚC** tại đây
-4. Nếu user đồng ý fix → chuyển sang Bước 4
+3. If user chooses **ANALYZE Mode** → **END** here.
+4. If user agrees to fix → proceed to Step 4.
 
-### Bước 4: Tự động sửa code (Auto-Fix — Mode FIX)
+### Step 4: Automatic Code Fixing (Auto-Fix — FIX Mode)
 
-> Chỉ thực hiện khi ở **Mode FIX** và user đã xác nhận
+> Only perform in **FIX Mode** once the user has confirmed.
 
-1. **Sửa code** theo thứ tự ưu tiên (fix nghiêm trọng nhất trước):
+1. **Modify code** in priority order (fix most critical first):
 
    **Fix Locator:**
-   - Dùng skill `locator_healer_agent` để thay thế locator hỏng
-   - Tuân thủ locator priority trong `.agent/rules/locator_strategy.md`
-   - Verify locator mới trên DOM thực tế trước khi commit vào code
+   - Use the `locator_healer_agent` skill to replace broken locators.
+   - Comply with locator priority in `.agent/rules/locator_strategy.md`.
+   - Verify new locators on actual DOM before committing to code.
 
    **Fix Timing:**
    ```
@@ -174,18 +174,18 @@ Agent cần ít nhất **1 trong các input** sau từ user:
    ```
 
    **Fix Test Independence:**
-   - Thêm setup/teardown để tạo và cleanup data riêng
-   - Loại bỏ dependency giữa các test cases
-   - Đảm bảo mỗi test tự tạo precondition riêng
+   - Add setup/teardown to create and cleanup separate data.
+   - Remove dependencies between test cases.
+   - Ensure each test creates its own preconditions.
 
-2. **Sử dụng** `replace_file_content` hoặc `multi_replace_file_content` để áp dụng thay đổi
-3. **Ghi chú** mỗi thay đổi vào artifact `flaky_analysis.md`
+2. **Use** `replace_file_content` or `multi_replace_file_content` to apply changes.
+3. **Note** each change in the `flaky_analysis.md` artifact.
 
-### Bước 5: Verify & Đảm bảo ổn định (Verify Stability)
+### Step 5: Verify & Ensure Stability (Verify Stability)
 
-> Chỉ thực hiện khi ở **Mode FIX**
+> Only perform in **FIX Mode**
 
-1. **Chạy test 3 lần liên tiếp** sau khi fix:
+1. **Run the test 3 consecutive times** after the fix:
    ```bash
    # Playwright
    npx playwright test <test_file> --retries=0 --repeat-each=3
@@ -194,51 +194,51 @@ Agent cần ít nhất **1 trong các input** sau từ user:
    python -m pytest <test_file> -v --count=3
 
    # Maven
-   mvn test -Dtest=<TestClass> (chạy 3 lần thủ công)
+   mvn test -Dtest=<TestClass> (run 3 times manually)
    ```
 
-2. **Đánh giá kết quả:**
+2. **Evaluate Results:**
 
-   | Kết quả | Hành động |
+   | Result | Action |
    |---|---|
-   | ✅ **3/3 PASS** | Test đã ổn định → cập nhật artifact, báo cáo thành công |
-   | ⚠️ **2/3 PASS** | Vẫn còn flaky → quay lại Bước 2 phân tích lần fail, fix tiếp (tối đa 3 vòng) |
-   | ❌ **0-1/3 PASS** | Fix sai hướng → rollback, phân tích lại root cause |
+   | ✅ **3/3 PASS** | Test stabilized → update artifact, report success. |
+   | ⚠️ **2/3 PASS** | Still flaky → return to Step 2 to analyze failures, fix again (max 3 cycles). |
+   | ❌ **0-1/3 PASS** | Fix moved in wrong direction → rollback, re-analyze root cause. |
 
-3. **Stability Checklist** (phải đạt toàn bộ trước khi kết thúc):
-   - [ ] Locator unique và ổn định qua nhiều lần reload
-   - [ ] Không có hard sleep / fixed delay
-   - [ ] Test data unique + traceable mỗi lần chạy
-   - [ ] Test độc lập — không phụ thuộc thứ tự chạy
-   - [ ] Test pass **3+ lần liên tiếp**
-   - [ ] Không còn debug log / commented code
+3. **Stability Checklist** (must meet all criteria before ending):
+   - [ ] Locator is unique and stable across multiple reloads.
+   - [ ] No hard sleep / fixed delays.
+   - [ ] Test data is unique + traceable each run.
+   - [ ] Test is independent — no dependency on execution order.
+   - [ ] Test passes 3+ consecutive times.
+   - [ ] No remaining debug logs / commented code.
 
-4. **Cập nhật artifact** `flaky_analysis.md`:
-   - Thêm section "Kết quả sau fix" với bảng kết quả chạy
-   - Đánh dấu trạng thái: ✅ STABILIZED / ⚠️ PARTIALLY FIXED / ❌ STILL FLAKY
+4. **Update artifact** `flaky_analysis.md`:
+   - Add "Results after Fix" section with run results table.
+   - Mark status: ✅ STABILIZED / ⚠️ PARTIALLY FIXED / ❌ STILL FLAKY.
 
-## Xử lý các tình huống đặc biệt
+## Special Situation Handling
 
-| Tình huống | Cách xử lý |
+| Situation | How to Handle |
 |---|---|
-| **Test chỉ fail trên CI** | So sánh env CI vs local (viewport, timezone, headless, resources). Kiểm tra viewport `1920x1080` có được set trên CI không |
-| **Test fail khi chạy parallel** | Kiểm tra test data isolation, shared state, database locks. Đề xuất unique data per worker |
-| **Test fail sau deploy mới** | Kiểm tra DOM changes, API response changes. Dùng `locator_healer_agent` để update locators |
-| **Test fail ngẫu nhiên không pattern** | Thu thập thêm data (chạy 10+ lần), kiểm tra memory leak, resource exhaustion |
-| **Multiple tests cùng flaky** | Tìm common factor (shared fixture, shared page object, shared config) |
-| **Test fail do external API** | Đề xuất mock/stub external dependencies, retry logic cho API calls |
+| **Test only fails on CI** | Compare CI vs. local env (viewport, timezone, headless, resources). Check if 1920x1080 viewport is set on CI. |
+| **Test fails during parallel execution** | Check test data isolation, shared state, database locks. Propose unique data per worker. |
+| **Test fails after new deployment** | Check DOM changes, API response changes. Use `locator_healer_agent` to update locators. |
+| **Test fails randomly with no pattern** | Collect more data (10+ runs), check for memory leaks, resource exhaustion. |
+| **Multiple tests are flaky** | Find common factors (shared fixture, shared page object, shared config). |
+| **Test fails due to external API** | Propose mocking/stubbing external dependencies, retry logic for API calls. |
 
 ## Output
 
-### Mode ANALYZE
+### ANALYZE Mode
 - Artifact `flaky_analysis.md`:
-  - Tổng quan test (file, framework, tần suất fail)
-  - Root Cause Analysis (bảng phân loại)
-  - Đề xuất fix chi tiết (code cũ → code mới)
-  - Stability checklist
+  - Test overview (file, framework, failure frequency).
+  - Root Cause Analysis (classification table).
+  - Detailed fix proposal (old code → new code).
+  - Stability checklist.
 
-### Mode FIX
-- Tất cả output của Mode ANALYZE, cộng thêm:
-  - Code đã được sửa (các file đã thay đổi)
-  - Kết quả verify (3 lần chạy PASS/FAIL)
-  - Trạng thái cuối: STABILIZED / PARTIALLY FIXED / STILL FLAKY
+### FIX Mode
+- All output from ANALYZE Mode, plus:
+  - Modified code (files changed).
+  - Verification results (3 runs PASS/FAIL).
+  - Final status: STABILIZED / PARTIALLY FIXED / STILL FLAKY.

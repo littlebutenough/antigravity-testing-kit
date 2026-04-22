@@ -1,90 +1,90 @@
 ---
-description: Sinh test data có cấu trúc, unique, traceable cho test cases. Hỗ trợ UI forms, API payloads, data-driven tests.
+description: Generate structured, unique, and traceable test data for test cases. Supports UI forms, API payloads, and data-driven tests.
 skills:
   - test_data_generator
   - qa_automation_engineer
 ---
 
-# /generate_test_data — Sinh Test Data Có Cấu Trúc
+# /generate_test_data — Generate Structured Test Data
 
-> User cung cấp feature/module hoặc test cases cần sinh data.
-> AI phân tích fields, constraints, sinh bộ data đầy đủ (positive, negative, boundary, edge cases) với format sẵn sàng sử dụng.
+> The user provides the feature/module or test cases needing data generation.
+> The AI analyzes fields and constraints, generating a complete data set (positive, negative, boundary, edge cases) in a ready-to-use format.
 
-> **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Quy tắc sinh data
-> - **Rule:** `.agent/rules/automation_rules.md` — Section Test Data
+> **MANDATORY:** Before starting, you MUST load and carefully read:
+> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Data generation rules.
+> - **Rule:** `.agent/rules/automation_rules.md` — Test Data section.
 
 ---
 
-## Input cần từ User
+## Required User Input
 
-| Input | Bắt buộc | Mô tả |
+| Input | Mandatory | Description |
 |-------|----------|-------|
-| Feature / Module | ✅ | VD: "Form đăng ký", "API Create User", "Trang Login" |
-| Fields cần data | ⚠️ Nên có | Danh sách fields + constraints. Nếu không có → AI tự phân tích từ DOM/Spec |
-| URL trang / Swagger spec | ❌ | Nếu có → AI inspect DOM/Spec để lấy validation rules chính xác |
-| Test cases | ❌ | Nếu đã có test cases → AI sinh data match từng TC |
-| Output format | ❌ | `json` (mặc định), `csv`, `markdown table`, `code` (TypeScript/Java/Python) |
-| Ngôn ngữ data | ❌ | Tiếng Việt / Tiếng Anh (mặc định: theo context) |
+| Feature / Module | ✅ | e.g., "Registration Form", "API Create User", "Login Page". |
+| Fields requiring data | ⚠️ Recommended | List of fields + constraints. If absent, AI analyzes from DOM/Spec. |
+| Page URL / Swagger spec | ❌ | If provided, AI inspects DOM/Spec for accurate validation rules. |
+| Test cases | ❌ | If existing, AI generates data matching each TC. |
+| Output format | ❌ | `json` (default), `csv`, `markdown table`, `code` (TypeScript/Java/Python). |
+| Data Language | ❌ | English (default), or as per context. |
 
 ---
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Phân tích Fields & Constraints
+### Step 1: Analyze Fields & Constraints
 
-1. **Xác định nguồn thông tin:**
+1. **Identify Information Sources:**
 
-   | Nguồn | Cách lấy | Ưu tiên |
+   | Source | How to Obtain | Priority |
    |-------|----------|---------|
-   | User cung cấp trực tiếp | Đọc từ input | ⭐ Cao nhất |
-   | DOM thực tế (UI form) | `browser_navigate` → `browser_snapshot` → phân tích input fields | ⭐ Cao |
-   | Swagger/OpenAPI spec | `read_url_content` → parse schema + constraints | ⭐ Cao |
-   | Test cases đã có | Đọc test steps → trích xuất fields | Trung bình |
-   | Đoán từ tên module | Dựa trên kinh nghiệm domain | ⭐ Thấp nhất |
+   | User-provided | Read from input | ⭐ Highest |
+   | Actual DOM (UI form) | `browser_navigate` → `browser_snapshot` → analyze input fields | ⭐ High |
+   | Swagger/OpenAPI spec | `read_url_content` → parse schema + constraints | ⭐ High |
+   | Existing Test cases | Read test steps → extract fields | Medium |
+   | Domain-based guess | Based on domain experience | ⭐ Lowest |
 
-2. **Với mỗi field, xác định:**
+2. **For each field, define:**
 
-   | Attribute | Ví dụ |
+   | Attribute | Example |
    |-----------|-------|
-   | **Tên field** | email, password, name, phone |
-   | **Kiểu dữ liệu** | string, number, boolean, date, file, enum |
-   | **Required?** | Bắt buộc hay tùy chọn |
+   | **Field Name** | email, password, name, phone |
+   | **Data Type** | string, number, boolean, date, file, enum |
+   | **Required?** | Mandatory or optional |
    | **Validation rules** | min/maxLength, pattern/regex, format (email, phone), unique |
-   | **Giá trị mặc định** | Nếu có |
-   | **Enum values** | VD: status = ["AVAILABLE", "UNAVAILABLE"] |
-   | **Quan hệ phụ thuộc** | VD: `password_confirm` phải khớp `password` |
+   | **Default Value** | If any |
+   | **Enum values** | e.g., status = ["AVAILABLE", "UNAVAILABLE"] |
+   | **Dependencies** | e.g., `password_confirm` must match `password` |
 
-3. **Trình bày bảng Fields cho User xác nhận (CHECKPOINT ⏸️):**
+3. **Present Fields table for User confirmation (CHECKPOINT ⏸️):**
 
    ```markdown
    | # | Field | Type | Required | Constraints | Notes |
    |---|-------|------|----------|-------------|-------|
-   | 1 | email | string | ✅ | format: email, unique | Dùng để login |
+   | 1 | email | string | ✅ | format: email, unique | Used for login |
    | 2 | password | string | ✅ | minLength: 6 | |
    | 3 | name | string | ✅ | maxLength: 100 | |
-   | 4 | phone | string | ❌ | pattern: /^0[0-9]{9}$/ | 10 chữ số, bắt đầu bằng 0 |
+   | 4 | phone | string | ❌ | pattern: /^0[0-9]{9}$/ | 10 digits, starts with 0 |
    ```
 
-   > Chờ User xác nhận hoặc bổ sung constraints trước khi sang Bước 2.
+   > Wait for User confirmation or additional constraints before proceeding to Step 2.
 
 ---
 
-### Bước 2: Sinh Test Data theo 4 Categories
+### Step 2: Generate Test Data across 4 Categories
 
-Với mỗi field đã xác định, sinh data theo bảng sau:
+For each identified field, generate data according to the following:
 
 #### 2A. Positive Data (Happy Path)
 
-- Giá trị hợp lệ, đúng format, trong constraints
-- Tất cả required fields được điền
-- Dữ liệu phải **unique + traceable**
+- Valid values, correct format, within constraints.
+- All required fields are filled.
+- Data must be **unique + traceable**.
 
 **Format unique data:**
 ```
 <prefix>_<testName>_<timestamp>
 ```
-Ví dụ:
+Example:
 ```
 email:    auto_register_1712049200@test.com
 username: user_login_1712049200
@@ -93,47 +93,47 @@ code:     TC_BOOK_1712049200
 
 #### 2B. Negative Data
 
-| Loại | Mô tả | Ví dụ |
+| Type | Description | Example |
 |------|--------|-------|
-| **Missing required** | Bỏ trống field bắt buộc | `email: ""` |
-| **Invalid format** | Sai format | `email: "not-an-email"` |
-| **Invalid type** | Sai kiểu dữ liệu | `price: "abc"` (expect number) |
-| **Duplicate** | Giá trị đã tồn tại | `email: "existing@test.com"` |
-| **Invalid characters** | Ký tự không được phép | `name: "<script>alert(1)</script>"` |
-| **Wrong relationship** | Vi phạm quan hệ fields | `password_confirm ≠ password` |
+| **Missing required** | Empty mandatory field | `email: ""` |
+| **Invalid format** | Incorrect format | `email: "not-an-email"` |
+| **Invalid type** | Incorrect data type | `price: "abc"` (expect number) |
+| **Duplicate** | Existing value | `email: "existing@test.com"` |
+| **Invalid characters** | Forbidden characters | `name: "<script>alert(1)</script>"` |
+| **Wrong relationship** | Breaks field relationship | `password_confirm ≠ password` |
 
 #### 2C. Boundary Values
 
-| Loại | Mô tả | Ví dụ (field có minLength=6, maxLength=20) |
+| Type | Description | Example (minLength=6, maxLength=20) |
 |------|--------|-------|
-| **Min** | Đúng bằng min | `"abcdef"` (6 chars) |
-| **Min - 1** | Dưới min | `"abcde"` (5 chars) |
-| **Max** | Đúng bằng max | `"a" * 20` (20 chars) |
-| **Max + 1** | Vượt max | `"a" * 21` (21 chars) |
-| **Empty** | Chuỗi rỗng | `""` |
-| **Zero** | Số 0 (cho number fields) | `0` |
-| **Negative** | Số âm (cho number fields) | `-1` |
+| **Min** | Exactly min | `"abcdef"` (6 chars) |
+| **Min - 1** | Below min | `"abcde"` (5 chars) |
+| **Max** | Exactly max | `"a" * 20` (20 chars) |
+| **Max + 1** | Above max | `"a" * 21` (21 chars) |
+| **Empty** | Empty string | `""` |
+| **Zero** | Zero (for numeric fields) | `0` |
+| **Negative** | Negative (for numeric fields) | `-1` |
 
 #### 2D. Edge Cases
 
-| Loại | Mô tả | Ví dụ |
+| Type | Description | Example |
 |------|--------|-------|
-| **Unicode** | Ký tự đặc biệt Unicode | `"Nguyễn Văn 🎉"` |
-| **Very long** | Chuỗi cực dài | `"a" * 10000` |
-| **Whitespace** | Khoảng trắng đầu/cuối | `"  email@test.com  "` |
-| **SQL injection** | Pattern SQL injection | `"'; DROP TABLE users; --"` |
-| **HTML tags** | HTML trong text field | `"<b>bold</b><img src=x onerror=alert(1)>"` |
-| **Null/undefined** | Giá trị null | `null` |
-| **Special numbers** | Số đặc biệt | `0.1 + 0.2`, `Number.MAX_SAFE_INTEGER`, `NaN` |
-| **Date edge** | Ngày đặc biệt | `"2024-02-29"` (năm nhuận), `"2024-12-31"`, `"1970-01-01"` |
+| **Unicode** | Special Unicode characters | `"Nguyễn Văn 🎉"` |
+| **Very long** | Extremely long string | `"a" * 10000` |
+| **Whitespace** | Leading/trailing whitespace | `"  email@test.com  "` |
+| **SQL injection** | SQL injection patterns | `"'; DROP TABLE users; --"` |
+| **HTML tags** | HTML in text fields | `"<b>bold</b><img src=x onerror=alert(1)>"` |
+| **Null/undefined** | Null values | `null` |
+| **Special numbers** | Special numbers | `0.1 + 0.2`, `Number.MAX_SAFE_INTEGER`, `NaN` |
+| **Date edge** | Special dates | `"2024-02-29"` (leap year), `"2024-12-31"`, `"1970-01-01"` |
 
 ---
 
-### Bước 3: Đóng gói Output
+### Step 3: Packaging Output
 
-Trả kết quả theo format User yêu cầu (mặc định: JSON):
+Return results in the user's requested format (default: JSON):
 
-#### Format JSON (mặc định)
+#### JSON Format (default)
 
 ```json
 {
@@ -143,30 +143,30 @@ Trả kết quả theo format User yêu cầu (mặc định: JSON):
   "positive": [
     {
       "id": "POS_01",
-      "description": "Đăng ký thành công với tất cả fields hợp lệ",
+      "description": "Successful registration with all valid fields",
       "data": {
         "email": "auto_register_1712049200@test.com",
         "password": "Test@12345",
         "name": "Auto User Register",
         "phone": "0912345001"
       },
-      "expectedResult": "Tạo tài khoản thành công, status 201"
+      "expectedResult": "Account created successfully, status 201"
     }
   ],
   "negative": [
     {
       "id": "NEG_01",
-      "description": "Email trống",
+      "description": "Empty email",
       "data": { "email": "", "password": "Test@12345", "name": "Test User" },
-      "expectedResult": "Lỗi validation: Email is required",
+      "expectedResult": "Validation error: Email is required",
       "targetField": "email",
       "negativeType": "missing_required"
     },
     {
       "id": "NEG_02",
-      "description": "Email sai format",
+      "description": "Incorrect email format",
       "data": { "email": "not-email", "password": "Test@12345", "name": "Test User" },
-      "expectedResult": "Lỗi validation: Invalid email format",
+      "expectedResult": "Validation error: Invalid email format",
       "targetField": "email",
       "negativeType": "invalid_format"
     }
@@ -174,9 +174,9 @@ Trả kết quả theo format User yêu cầu (mặc định: JSON):
   "boundary": [
     {
       "id": "BND_01",
-      "description": "Password đúng min length (6 chars)",
+      "description": "Password at min length (6 chars)",
       "data": { "email": "auto_bnd01_1712049200@test.com", "password": "Abc@12", "name": "Test User" },
-      "expectedResult": "Thành công",
+      "expectedResult": "Success",
       "targetField": "password",
       "boundaryType": "min"
     }
@@ -184,9 +184,9 @@ Trả kết quả theo format User yêu cầu (mặc định: JSON):
   "edgeCases": [
     {
       "id": "EDGE_01",
-      "description": "Name chứa Unicode tiếng Việt + emoji",
+      "description": "Name contains Vietnamese Unicode + emoji",
       "data": { "email": "auto_edge01_1712049200@test.com", "password": "Test@12345", "name": "Nguyễn Văn 🎉" },
-      "expectedResult": "Thành công — hệ thống chấp nhận Unicode",
+      "expectedResult": "Success — system accepts Unicode",
       "targetField": "name",
       "edgeType": "unicode"
     }
@@ -194,17 +194,17 @@ Trả kết quả theo format User yêu cầu (mặc định: JSON):
 }
 ```
 
-#### Format Markdown Table
+#### Markdown Table Format
 
 ```markdown
 | ID | Category | Description | email | password | name | Expected Result |
 |----|----------|-------------|-------|----------|------|-----------------|
-| POS_01 | Positive | Đăng ký thành công | auto_reg@test.com | Test@12345 | Auto User | 201 Created |
-| NEG_01 | Negative | Email trống | (empty) | Test@12345 | Test User | 422: Email is required |
+| POS_01 | Positive | Successful registration | auto_reg@test.com | Test@12345 | Auto User | 201 Created |
+| NEG_01 | Negative | Empty email | (empty) | Test@12345 | Test User | 422: Email is required |
 | BND_01 | Boundary | Password min length | auto_bnd@test.com | Abc@12 | Test User | 201 Created |
 ```
 
-#### Format Code (TypeScript example)
+#### Code Format (TypeScript example)
 
 ```typescript
 // test-data/registration.data.ts
@@ -229,40 +229,40 @@ export const registrationData = {
 
 ---
 
-## Data Rules (BẮT BUỘC)
+## Data Rules (MANDATORY)
 
-| # | Rule | Mô tả |
+| # | Rule | Description |
 |---|------|-------|
-| 1 | **Unique** | Không trùng lặp trong test suite — dùng timestamp/random |
-| 2 | **Traceable** | Có thể truy ngược test nào sinh ra data — dùng prefix + test name |
-| 3 | **No real PII** | KHÔNG dùng dữ liệu cá nhân thật (số CCCD, email thật, SĐT thật) |
-| 4 | **Respect constraints** | Data phải tuân theo validation rules đã phân tích |
-| 5 | **Include expectedResult** | Mỗi data set PHẢI có expected result để dùng cho assertion |
-| 6 | **Deterministic khi cần** | Cùng seed → cùng data (cho reproducible tests) |
+| 1 | **Unique** | No duplication in the test suite — use timestamp/random. |
+| 2 | **Traceable** | Able to trace back to the test that generated the data — use prefix + test name. |
+| 3 | **No real PII** | DO NOT use real personal identifiable information (SSN, real email, real phone). |
+| 4 | **Respect constraints** | Data must adhere to the analyzed validation rules. |
+| 5 | **Include expectedResult** | Each data set MUST include an expected result for assertions. |
+| 6 | **Deterministic when needed** | Same seed → same data (for reproducible tests). |
 
 ---
 
-## NGHIÊM CẤM
+## FORBIDDEN
 
-| ❌ Không được làm | ✅ Thay thế đúng |
+| ❌ Forbidden Action | ✅ Correct Alternative |
 |-------------------|-----------------| 
-| Dùng placeholder (`email hợp lệ`, `mã số hợp lệ`) | Giá trị cụ thể: `auto_tc01@test.com`, `KH-2026-0012` |
-| Hardcode data trùng lặp giữa các test | Random data với prefix + timestamp |
-| Dùng dữ liệu cá nhân thật | Data giả lập: `auto_*@test.com` |
-| Chỉ sinh positive data | Bắt buộc cả 4 categories: Positive + Negative + Boundary + Edge |
-| Sinh data không có expected result | Mỗi data set PHẢI nêu rõ expected result |
-| Đoán validation rules không kiểm tra | Inspect DOM/Spec hoặc hỏi User |
-| Đọc `.env` để lấy credentials | Hỏi User hoặc dùng placeholder `[FROM_ENV]` |
+| Using placeholders (valid email, valid code) | Specific values: `auto_tc01@test.com`, `KH-2026-0012`. |
+| Hardcoding duplicate data across tests | Random data with prefix + timestamp. |
+| Using real PII | Synthetic data: `auto_*@test.com`. |
+| Generating only positive data | Mandatory inclusion of all 4 categories: Positive + Negative + Boundary + Edge. |
+| Generating data without an expected result | Each data set MUST specify an expected result. |
+| Guessing validation rules without verification | Inspect DOM/Spec or ask the User. |
+| Reading .env for credentials | Ask the User or use a placeholder `[FROM_ENV]`. |
 
 ---
 
-## Checklist cuối
+## Final Checklist
 
-- [ ] Đã phân tích đầy đủ fields + constraints
-- [ ] User đã xác nhận bảng fields trước khi sinh data
-- [ ] Data có đủ 4 categories (Positive, Negative, Boundary, Edge Cases)
-- [ ] Mỗi data set có expected result rõ ràng
-- [ ] Data unique + traceable (prefix + timestamp/random)
-- [ ] Không chứa real PII
-- [ ] Format output đúng yêu cầu User (JSON/CSV/Markdown/Code)
-- [ ] Boundary values đúng theo constraints (min, min-1, max, max+1)
+- [ ] Analyzed all fields + constraints fully.
+- [ ] User confirmed the fields table before data generation.
+- [ ] Data covers all 4 categories (Positive, Negative, Boundary, Edge Cases).
+- [ ] Each data set has a clear expected result.
+- [ ] Data is unique + traceable (prefix + timestamp/random).
+- [ ] Contains no real PII.
+- [ ] Output format matches User's requirements (JSON/CSV/Markdown/Code).
+- [ ] Boundary values align with constraints (min, min-1, max, max+1).

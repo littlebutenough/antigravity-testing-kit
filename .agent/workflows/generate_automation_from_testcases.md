@@ -7,102 +7,102 @@ skills:
   - test_data_generator
 ---
 
-# Workflow: Sinh Automation Scripts từ Manual Test Cases
+# Workflow: Generate Automation Scripts from Manual Test Cases
 
-> **BẮT BUỘC (MANDATORY SKILLS):** Bạn PHẢI nạp và đọc kỹ nội dung các skills sau trước khi bắt đầu:
-> - **`qa_automation_engineer`** (`.agent/skills/qa_automation_engineer/SKILL.md`) — Quy tắc automation chung + workflow routing
-> - **`ui_debug_agent`** (`.agent/skills/ui_debug_agent/SKILL.md`) — Inspect DOM, thu thập locators
-> - **`smart_locator_agent`** (`.agent/skills/smart_locator_agent/SKILL.md`) — Sinh locator ổn định
-> - **`test_data_generator`** (`.agent/skills/test_data_generator/SKILL.md`) — Sinh test data unique, traceable
+> **MANDATORY SKILLS:** You MUST load and carefully read the following skills before starting:
+> - **`qa_automation_engineer`** (`.agent/skills/qa_automation_engineer/SKILL.md`) — General automation rules + workflow routing.
+> - **`ui_debug_agent`** (`.agent/skills/ui_debug_agent/SKILL.md`) — Inspect DOM, collect locators.
+> - **`smart_locator_agent`** (`.agent/skills/smart_locator_agent/SKILL.md`) — Generate stable locators.
+> - **`test_data_generator`** (`.agent/skills/test_data_generator/SKILL.md`) — Generate unique, traceable test data.
 
-Workflow này giúp agent đọc file manual test cases do user cung cấp, tự mở browser inspect UI, thu thập locators thực tế, sinh automation scripts hoàn chỉnh (POM + Test), chạy test và tự sửa lỗi cho đến khi PASS.
+This workflow helps the agent read manual test case files provided by the user, automatically open a browser to inspect the UI, collect actual locators, generate complete automation scripts (POM + Test), run tests, and auto-fix errors until they PASS.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Vai trò:** Agent đóng vai Senior Automation Engineer — tuân thủ Clean Code + POM
-- **Tất cả output bằng Tiếng Việt**
-- **TUYỆT ĐỐI KHÔNG ĐOÁN locator** — phải inspect DOM thực tế bằng MCP browser tools
-- **Desktop viewport 1920×1080** cho tất cả UI debugging
-- ⚠️ **Rule E3 (CRITICAL):** Khi test FAIL → tự đọc log → phân tích → sửa code → chạy lại. **CẤM hỏi user trong quá trình fix lỗi.** Chỉ hỏi khi gặp business rule mâu thuẫn hoặc hết 5 vòng auto-heal
-- **Artifact `task.md`** — PHẢI tạo để theo dõi tiến độ 6 bước
+- **Role:** Agent acts as a Senior Automation Engineer — complies with Clean Code + POM.
+- **All output in English**
+- **ABSOLUTELY NO guessing of locators** — must inspect actual DOM using MCP browser tools.
+- **Desktop viewport 1920×1080** for all UI debugging.
+- ⚠️ **Rule E3 (CRITICAL):** When a test FAILS → read logs → analyze → fix code → re-run. **DO NOT ask the user during the fix process.** Only ask if there is a business rule contradiction or after 5 auto-heal cycles.
+- **`task.md` artifact** — MUST be created to track progress across the 6 steps.
 
-## Workflow này khác gì `generate_automation_from_ui_flow`?
+## How is this workflow different from `generate_automation_from_ui_flow`?
 
-| | `from_testcases` (workflow này) | `from_ui_flow` |
+| | `from_testcases` (this workflow) | `from_ui_flow` |
 |---|---|---|
-| **Input** | File manual test cases có cấu trúc (MD/Excel/JSON) | Mô tả UI steps bằng lời hoặc chỉ URL |
-| **Đã có TC** | ✅ Có sẵn — đọc và convert | ❌ Chưa có — agent tự khám phá |
-| **Approach** | Đọc TC → inspect UI verify → sinh code | Chạy thật trên browser → thu thập → sinh code |
+| **Input** | Structured manual test case file (MD/Excel/JSON) | Verbal UI step descriptions or just a URL |
+| **Existing TC** | ✅ Available — read and convert | ❌ Not available — agent explores autonomously |
+| **Approach** | Read TC → inspect UI to verify → generate code | Live browser execution → collect → generate code |
 
-## Input cần thu thập
+## Required Input
 
-| Input | Cách lấy | Độ ưu tiên |
+| Input | How to Obtain | Priority |
 |---|---|---|
-| **File test cases** (MD/Excel/JSON/URL) | User cung cấp path hoặc URL | ⭐ Bắt buộc |
-| **URL ứng dụng** | User cung cấp hoặc trong TC | ⭐ Bắt buộc |
-| **Credentials** (nếu cần login) | User cung cấp hoặc dùng fixture sẵn | Tùy chọn |
-| **Tech stack** | User chỉ định hoặc detect từ project | Tùy chọn |
+| **Test case file** (MD/Excel/JSON/URL) | Provided path or URL | ⭐ Mandatory |
+| **Application URL** | Provided by user or in TC | ⭐ Mandatory |
+| **Credentials** (if login required) | Provided by user or use existing fixture | Optional |
+| **Tech stack** | Specified by user or detected from project | Optional |
 
-Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
+If insufficient input is provided → ask before starting.
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Khởi tạo, Phân tích & Lên Kế Hoạch (Context & Analysis)
+### Step 1: Initialization, Analysis & Planning (Context & Analysis)
 
-1. **Đọc file test cases** do user cung cấp:
-   - File local → `view_file`
-   - URL (Google Sheets, Confluence, etc.) → `read_url_content`
-   - Xác định format: Markdown table, Excel, JSON, hoặc free-form text
+1. **Read the test case file** provided by the user:
+   - Local file → `view_file`.
+   - URL (Google Sheets, Confluence, etc.) → `read_url_content`.
+   - Identify format: Markdown table, Excel, JSON, or free-form text.
 
-2. **Parse test cases** và trích xuất:
-   - Danh sách TC (ID, Title, Steps, Expected Results, Test Data, Priority)
-   - Các pages/screens mà TC đi qua
-   - Pre-conditions (login, setup data, navigate...)
-   - Dependencies giữa các TC (nếu có)
+2. **Parse test cases** and extract:
+   - TC List (ID, Title, Steps, Expected Results, Test Data, Priority).
+   - Pages/screens visited by the TC.
+   - Pre-conditions (login, data setup, navigation...).
+   - Dependencies between TCs (if any).
 
-3. **Xác định tech stack** (nếu chưa rõ):
+3. **Identify tech stack** (if unclear):
 
-   | Framework | Ngôn ngữ | Runner | Khi nào chọn |
+   | Framework | Language | Runner | When to Choose |
    |---|---|---|---|
-   | Playwright | TypeScript | Playwright Test | Mặc định cho web |
-   | Playwright | Python | Pytest | Khi project dùng Python |
-   | Selenium | Java | TestNG | Khi user yêu cầu Java |
-   | Appium | Java | TestNG | Mobile app |
+   | Playwright | TypeScript | Playwright Test | Default for web. |
+   | Playwright | Python | Pytest | When project uses Python. |
+   | Selenium | Java | TestNG | When user requests Java. |
+   | Appium | Java | TestNG | Mobile app. |
 
-4. **Tạo artifact `task.md`** để theo dõi tiến độ:
+4. **Create task.md artifact** to track progress:
    ```markdown
    # Automation Generation Progress
-   - [x] Bước 1: Phân tích test cases
-   - [ ] Bước 2: Khảo sát UI (MCP Recon)
-   - [ ] Bước 3: Thiết kế POM
-   - [ ] Bước 4: Chuẩn bị test data
-   - [ ] Bước 5: Sinh automation scripts
-   - [ ] Bước 6: Chạy test + Auto-heal
+   - [x] Step 1: Analyze test cases
+   - [ ] Step 2: UI Recon (MCP Recon)
+   - [ ] Step 3: POM Design
+   - [ ] Step 4: Prepare test data
+   - [ ] Step 5: Generate automation scripts
+   - [ ] Step 6: Run test + Auto-heal
 
    ## Test Cases to Automate
    | TC ID | Title | Pages | Priority | Status |
    |---|---|---|---|---|
-   | TC01 | Login thành công | LoginPage, DashboardPage | P1 | ⏳ |
-   | TC02 | Login sai password | LoginPage | P1 | ⏳ |
+   | TC01 | Successful Login | LoginPage, DashboardPage | P1 | ⏳ |
+   | TC02 | Login with wrong password | LoginPage | P1 | ⏳ |
    ```
 
-### Bước 2: Khảo sát UI tự động bằng MCP (Autonomous UI Recon)
+### Step 2: Autonomous UI Recon (MCP Recon)
 
-1. **Mở browser** bằng MCP và navigate theo test case steps:
+1. **Open browser** via MCP and navigate according to test case steps:
    ```
-   browser_navigate → URL ứng dụng
+   browser_navigate → App URL
    browser_resize → 1920 × 1080
-   browser_wait_for → page load hoàn tất
-   browser_snapshot → thu thập DOM
+   browser_wait_for → page load complete
+   browser_snapshot → collect DOM
    ```
 
-2. **Với mỗi page trong test cases**, thực hiện:
-   - `browser_snapshot` → đọc accessibility tree
-   - Xác định tất cả elements cần tương tác (inputs, buttons, links, dropdowns...)
-   - Thu thập locator tốt nhất cho mỗi element (theo priority trong skill `smart_locator_agent`)
-   - Verify locator bằng cách thử tương tác (`browser_click`, `browser_type`)
+2. **For each page in the test cases**, perform:
+   - `browser_snapshot` → read accessibility tree.
+   - Identify all interaction elements (inputs, buttons, links, dropdowns...).
+   - Collect best locator for each element (according to priority in `smart_locator_agent`).
+   - Verify locator by trying interactions (`browser_click`, `browser_type`).
 
-3. **Ghi nhận vào bảng Locator Collection:**
+3. **Record in the Locator Collection table:**
 
    | Page | Element | Action | Primary Locator | Fallback Locator | Verified |
    |---|---|---|---|---|---|
@@ -111,103 +111,103 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
    | LoginPage | Login button | Click | `getByRole('button', {name: 'Login'})` | `button[type=submit]` | ✅ |
    | DashboardPage | Welcome text | Assert | `getByRole('heading', {name: /Welcome/})` | `.welcome-header` | ✅ |
 
-4. **Xử lý tình huống:**
+4. **Situation Handling:**
 
-   | Tình huống | Cách xử lý |
+   | Situation | How to Handle |
    |---|---|
-   | URL bị chặn / cần VPN | Thông báo user |
-   | Cần đăng nhập | Dùng fixture sẵn có hoặc hỏi user credentials |
-   | Element không tìm thấy | Snapshot lại → thử locator khác → báo user nếu DOM thay đổi |
-   | CAPTCHA / 2FA | Thông báo user — không thể automate |
-   | Dynamic content / SPA | `browser_wait_for` text cụ thể trước khi snapshot |
+   | URL blocked / needs VPN | Notify the user. |
+   | Login required | Use existing fixture or ask user for credentials. |
+   | Element not found | Re-snapshot → try other locators → notify user if DOM changed. |
+   | CAPTCHA / 2FA | Notify the user — cannot automate. |
+   | Dynamic content / SPA | `browser_wait_for` specific text before snapshotting. |
 
-5. **TUYỆT ĐỐI KHÔNG SUY ĐOÁN selector** — mọi locator phải verified trên DOM thực tế.
+5. **ABSOLUTELY NO guessing of selectors** — every locator must be verified on the actual DOM.
 
-### Bước 3: Thiết kế POM (Page Object Model Architecture)
+### Step 3: POM Design (Page Object Model Architecture)
 
-1. **Xác định danh sách Page classes** cần tạo:
-   - Mỗi page/screen trong test flow → 1 Page class
-   - Xem xét tạo `BasePage` nếu chưa có trong project
+1. **Identify the list of Page classes** to create:
+   - Each page/screen in the test flow → 1 Page class.
+   - Consider creating `BasePage` if not already in the project.
 
-2. **Sinh Page Object classes** bằng `write_to_file`:
+2. **Generate Page Object classes** using `write_to_file`:
 
-   **Cấu trúc mỗi Page class:**
+   **Structure of each Page class:**
    ```
-   - Locators (khai báo ở đầu class — từ Bước 2)
-   - Constructor (nhận page/driver instance)
-   - Action methods (mô tả hành vi user, không mô tả DOM)
-   - Verification methods (kiểm tra state/text sau action)
+   - Locators (declared at the top of the class — from Step 2)
+   - Constructor (accepts page/driver instance)
+   - Action methods (describe user behavior, not DOM)
+   - Verification methods (check state/text after action)
    ```
 
-   **Nguyên tắc:**
-   - Method name mô tả hành vi: `login()`, `fillRegistrationForm()`, không phải `clickButton()`
-   - Không hardcode waits — chỉ smart waits
-   - Locator lấy từ Bước 2 (đã verify) — KHÔNG ĐOÁN
-   - Return `this` hoặc next page object cho method chaining (nếu phù hợp)
+   **Principles:**
+   - Method names describe behavior: `login()`, `fillRegistrationForm()`, not `clickButton()`.
+   - No hardcoded waits — only smart waits.
+   - Locators from Step 2 (verified) — DO NOT GUESS.
+   - Return `this` or the next page object for method chaining (if applicable).
 
-3. **Kiểm tra project structure hiện tại:**
-   - Nếu project đã có pages/ → sinh file vào đúng thư mục
-   - Nếu project mới → tạo structure theo skill `framework_architect`
-   - Không tạo duplicate — kiểm tra page đã tồn tại chưa trước khi tạo mới
+3. **Check current project structure:**
+   - If the project already has `pages/` → generate files in the correct directory.
+   - If it's a new project → create structure according to the `framework_architect` skill.
+   - Do not create duplicates — check if the page exists before creating a new one.
 
-### Bước 4: Chuẩn bị Dữ liệu (Test Data Strategy)
+### Step 4: Prepare Data (Test Data Strategy)
 
-1. **Phân tích test data** từ test cases:
-   - Data nào cần **unique per run** (email, username, ID) → sinh random + traceable
-   - Data nào **cố định** (URL, config values) → đọc từ env/config
-   - Data nào cần **nhiều bộ** (data-driven) → tạo file external (JSON/YAML)
+1. **Analyze test data** from test cases:
+   - Data needing to be **unique per run** (email, username, ID) → generate random + traceable.
+   - **Fixed** data (URL, config values) → read from env/config.
+   - Data needing **multiple sets** (data-driven) → create external files (JSON/YAML).
 
-2. **Sinh test data utilities** (dùng skill `test_data_generator`):
+2. **Generate test data utilities** (using `test_data_generator` skill):
    ```
    Format: <prefix>_<testName>_<timestamp>
-   Ví dụ:
+   Example:
    - Email:    auto_login_1712049200@test.com
    - Username: auto_user_1712049200
    - Code:     TC_REG_1712049200
    ```
 
 3. **Sensitive data** (credentials):
-   - Đọc từ env variables hoặc config file
-   - **KHÔNG hardcode** trong test code
-   - **KHÔNG đọc .env trực tiếp** (quy tắc bảo mật)
+   - Read from env variables or config files.
+   - **DO NOT hardcode** in test code.
+   - **DO NOT read .env directly** (security rule).
 
-### Bước 5: Sinh Automation Scripts (Test Classes)
+### Step 5: Generate Automation Scripts (Test Classes)
 
-1. **Tạo test classes** — mỗi test case hoặc nhóm TC liên quan → 1 test file:
+1. **Create test classes** — each test case or group of related TCs → 1 test file:
 
-   **Cấu trúc mỗi test:**
+   **Structure of each test:**
    ```
    Setup (Arrange):
-   - Khởi tạo page objects
-   - Chuẩn bị test data
-   - Navigate đến trang cần test
-   - Login (nếu cần, qua fixture)
+   - Initialize page objects.
+   - Prepare test data.
+   - Navigate to the page under test.
+   - Login (if needed, via fixture).
 
    Execution (Act):
-   - Thực hiện các bước theo test case
-   - Gọi methods từ Page Objects
+   - Perform steps according to the test case.
+   - Call methods from Page Objects.
 
    Verification (Assert):
-   - Assert kết quả với expected results từ TC
-   - Assertion message rõ ràng, dễ debug khi fail
+   - Assert results against expected results from the TC.
+   - Clear assertion message, easy to debug on failure.
    ```
 
-2. **Assertions bắt buộc:**
-   - Mỗi TC PHẢI có ít nhất 1 assertion
-   - Assert message mô tả rõ: `"Expected dashboard to show after login"`
-   - Dùng soft assertions khi cần check nhiều điểm
-   - Timeout phù hợp (không để default quá ngắn)
+2. **Mandatory Assertions:**
+   - Each TC MUST have at least one assertion.
+   - Assertion message clearly describes: `"Expected dashboard to show after login"`.
+   - Use soft assertions when checking multiple points.
+   - Appropriate timeouts (do not use defaults that are too short).
 
-3. **Nguyên tắc code:**
-   - Không `waitForTimeout()` / `Thread.sleep()` — chỉ smart waits
-   - Không inline locator trong test — locator trong Page class
-   - Import gọn gàng — không unused imports
-   - Test independent — không phụ thuộc thứ tự chạy
-   - Cleanup/teardown nếu test tạo data
+3. **Coding Principles:**
+   - No `waitForTimeout()` / `Thread.sleep()` — only smart waits.
+   - No inline locators in tests — locators belong in the Page class.
+   - Clean imports — no unused imports.
+   - Independent tests — no execution order dependency.
+   - Cleanup/teardown if tests create data.
 
-### Bước 6: Chạy Thử Nghiệm & Tự Sửa Lỗi (Execution & Auto-Heal — RULE E3)
+### Step 6: Execution & Auto-Heal (Execution & Auto-Heal — RULE E3)
 
-1. **Chạy test** bằng `run_command`:
+1. **Run tests** using `run_command`:
    ```bash
    # Playwright TS
    npx playwright test <test_file> --headed
@@ -219,64 +219,64 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
    mvn test -Dtest=<TestClass>
    ```
 
-2. **Theo dõi kết quả** qua `command_status`:
+2. **Monitor results** via `command_status`:
 
-   **Nếu PASS:**
-   - Chạy lại **1 lần nữa** để confirm stability
-   - Cập nhật `task.md`: TC status → ✅ PASS
-   - Cleanup debug logs, commented code
+   **If PASS:**
+   - Run **one more time** to confirm stability.
+   - Update `task.md`: TC status → ✅ PASS.
+   - Cleanup debug logs, commented code.
 
-   **Nếu FAIL → Vào vòng lặp Auto-Heal:**
+   **If FAIL → Enter Auto-Heal loop:**
 
    ```
-   WHILE test FAIL (tối đa 5 vòng):
-     1. Đọc error log / stack trace → xác định step fail
-     2. Phân loại lỗi:
+   WHILE test FAIL (max 5 cycles):
+     1. Read error log / stack trace → identify the failing step.
+     2. Classify the error:
 
-        | Lỗi | Hành động |
+        | Error | Action |
         |---|---|
-        | Element not found | Mở MCP → snapshot → verify/thay locator |
-        | Click intercepted | Chờ overlay biến mất → retry click |
-        | Timeout | Tăng timeout hoặc thêm wait condition |
-        | Assertion fail | Kiểm tra expected value vs actual → cập nhật assertion |
-        | Navigation error | Kiểm tra URL, redirect, page load |
-        | Test data conflict | Sinh data unique mới |
-        | Import/compile error | Sửa import, check class name |
+        | Element not found | Open MCP → snapshot → verify/change locator. |
+        | Click intercepted | Wait for overlay to disappear → retry click. |
+        | Timeout | Increase timeout or add wait condition. |
+        | Assertion fail | Check expected vs actual value → update assertion. |
+        | Navigation error | Check URL, redirect, page load. |
+        | Test data conflict | Generate new unique data. |
+        | Import/compile error | Fix imports, check class name. |
 
-     3. Sửa code bằng replace_file_content / multi_replace_file_content
-     4. Chạy lại test
-     5. Ghi log vào task.md: "Vòng 2: Fix locator XYZ → PASS"
+     3. Fix code using replace_file_content / multi_replace_file_content.
+     4. Re-run test.
+     5. Log in task.md: "Cycle 2: Fix locator XYZ → PASS"
    ```
 
-3. **⚠️ Rule E3 — CẤM HỎI USER khi fix lỗi.** Chỉ được hỏi khi:
-   - Business logic mâu thuẫn (TC nói A nhưng app hiển thị B)
-   - Server/app không accessible
-   - Đã hết 5 vòng auto-heal mà vẫn fail
+3. **⚠️ Rule E3 — DO NOT ASK THE USER while fixing.** Only ask if:
+   - Business logic contradiction (TC says A but app shows B).
+   - Server/app not accessible.
+   - Failed after 5 auto-heal cycles.
 
-4. **Verify stability** — test phải PASS **2 lần liên tiếp**:
+4. **Verify stability** — tests must PASS **2 consecutive times**:
    ```bash
    # Playwright
    npx playwright test <test_file> --repeat-each=2 --retries=0
    ```
 
-### Bước 7: Cleanup & Delivery
+### Step 7: Cleanup & Delivery
 
-1. **Code cleanup** (bắt buộc):
-   - [ ] Xóa `console.log()` / `print()` / debug log tạm
-   - [ ] Xóa locator không còn sử dụng
-   - [ ] Xóa commented-out code
-   - [ ] Không còn `waitForTimeout()` / `Thread.sleep()`
-   - [ ] Không còn hardcoded test data (email, password)
-   - [ ] Import gọn gàng — không unused imports
+1. **Code cleanup** (mandatory):
+   - [ ] Delete temporary `console.log()` / `print()` / debug logs.
+   - [ ] Delete unused locators.
+   - [ ] Delete commented-out code.
+   - [ ] No `waitForTimeout()` / `Thread.sleep()`.
+   - [ ] No hardcoded test data (email, password).
+   - [ ] Clean imports — no unused imports.
 
-2. **Cập nhật artifact `task.md`** với kết quả cuối:
+2. **Update task.md artifact** with final results:
    ```markdown
-   ## Kết Quả
-   | TC ID | Title | Status | Stability | Ghi chú |
+   ## Results
+   | TC ID | Title | Status | Stability | Notes |
    |---|---|---|---|---|
-   | TC01 | Login thành công | ✅ PASS | 2/2 stable | — |
-   | TC02 | Login sai password | ✅ PASS | 2/2 stable | — |
-   | TC03 | Đăng ký tài khoản | ⚠️ SKIP | — | Cần CAPTCHA |
+   | TC01 | Successful Login | ✅ PASS | 2/2 stable | — |
+   | TC02 | Login with wrong password | ✅ PASS | 2/2 stable | — |
+   | TC03 | Account Registration | ⚠️ SKIP | — | Requires CAPTCHA |
 
    ## Files Created
    - src/pages/login.page.ts
@@ -284,17 +284,17 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
    - src/tests/login.spec.ts
    ```
 
-3. **Báo cáo** cho user:
-   - Tổng: X TC PASS / Y TC FAIL / Z TC SKIP
-   - Danh sách files đã tạo/sửa
-   - Known issues / limitations
-   - Bảng Locator Collection (reference)
+3. **Report** to the user:
+   - Total: X TCs PASS / Y TCs FAIL / Z TCs SKIP.
+   - List of files created/modified.
+   - Known issues / limitations.
+   - Locator Collection table (reference).
 
 ## Output
 
-- **Artifact `task.md`** — checklist tiến độ + kết quả chạy test
-- **Page Object classes** — 1 file per page, locators verified từ DOM
-- **Test classes** — automation scripts hoàn chỉnh, đã PASS stable
-- **Test data utilities** — generators cho data unique + traceable
-- **Bảng Locator Collection** — tất cả elements + primary/fallback locators
-- **Báo cáo kết quả** — PASS/FAIL/SKIP summary
+- **`task.md` artifact** — progress checklist + test run results.
+- **Page Object classes** — 1 file per page, locators verified from DOM.
+- **Test classes** — complete automation scripts, PASS stable.
+- **Test data utilities** — generators for unique + traceable data.
+- **Locator Collection table** — all elements + primary/fallback locators.
+- **Results report** — PASS/FAIL/SKIP summary.

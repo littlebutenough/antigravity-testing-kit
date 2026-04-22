@@ -1,59 +1,59 @@
 ---
-description: Sinh manual test cases nhanh từ requirements (QUICK mode — không qua quy trình 6 bước).
+description: Quickly generate manual test cases from requirements (QUICK mode — bypasses the 6-step process).
 skills:
   - rbt_manual_testing
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.agent/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode QUICK** của skill.
+# Workflow: Quickly Generate Manual Test Cases from Requirements
 
-# Workflow: Sinh Manual Test Cases Nhanh từ Requirements
+> **MANDATORY SKILL:** You MUST load and carefully read the **`rbt_manual_testing`** skill (at `.agent/skills/rbt_manual_testing/SKILL.md`) before starting this task. Use the **QUICK Mode** of the skill.
 
-Workflow này sử dụng **Mode QUICK** của skill `rbt_manual_testing` để sinh test cases nhanh từ requirements đã sẵn có.
+This workflow uses the **QUICK Mode** of the `rbt_manual_testing` skill to quickly generate test cases from existing requirements.
 
-## ⚠️ Nguyên tắc
+## ⚠️ Principles
 
-- **Mode:** QUICK (1 lượt duy nhất, không chờ user giữa chừng)
-- Phù hợp cho module đơn giản, requirements đã rõ ràng
-- Nếu phát hiện requirements quá phức tạp hoặc mơ hồ → **tự động chuyển sang FULL RBT** và thông báo user
-- Tất cả output bằng **Tiếng Việt**
+- **Mode:** QUICK (Single pass, no mid-process waiting for the user).
+- Suitable for simple modules with clear requirements.
+- If requirements are found to be too complex or ambiguous → **automatically switch to FULL RBT** and notify the user.
+- **All output in English**
 
-## Các bước thực hiện
+## Execution Steps
 
-1. **Đọc và hiểu requirements** được user cung cấp
-2. **Xác định các luồng chính:** Happy Path, Negative Path, Boundary Cases
-3. **Áp dụng kỹ thuật thiết kế test case tự động:**
+1. **Read and understand the requirements** provided by the user.
+2. **Identify primary flows:** Happy Path, Negative Path, and Boundary Cases.
+3. **Apply automated test case design techniques:**
    - Equivalence Partitioning (EP)
    - Boundary Value Analysis (BVA)
-   - Decision Table (nếu có nhiều rules)
-   - State Transition (nếu có workflow)
-4. **Sinh test cases đầy đủ fields:**
-   - TC ID (format: `[DỰ_ÁN]_[MODULE]_TC_[SỐ]`)
+   - Decision Table (if multiple rules exist)
+   - State Transition (if workflow exists)
+4. **Generate test cases with full fields:**
+   - TC ID (format: `[PROJECT]_[MODULE]_TC_[NUMBER]`)
    - Module
    - Test Scenario / Test Case Title
    - Pre-conditions
-   - Test Steps (đánh số)
-   - Expected Results (đánh số tương ứng)
-   - Test Data (**phải cụ thể**, không placeholder)
+   - Test Steps (numbered)
+   - Expected Results (correspondingly numbered)
+   - Test Data (**must be specific**, no placeholders)
    - Priority (Critical / High / Medium / Low)
-5. **Xuất ra bảng Markdown chuẩn**
+5. **Export to standard Markdown table.**
 
-## Bảng Output
+## Output Table
 
 ```
 | TC ID | Module | Test Scenario | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 ```
 
-## Quy tắc quan trọng
+## Important Rules
 
-- Test Data phải cụ thể: `test_login_01@domain.com`, không phải "email hợp lệ"
-- Phải bao gồm cả Positive, Negative, và Boundary cases
-- TC ID theo format thống nhất do user quy ước hoặc mặc định `[DỰ_ÁN]_[MODULE]_TC_[SỐ]`
-- Nếu quá nhiều TCs → chia thành Part 1, Part 2 và hỏi user
+- Test Data must be specific: `test_login_01@domain.com`, not "valid email".
+- Must include Positive, Negative, and Boundary cases.
+- TC ID follows a consistent format as per user convention or default `[PROJECT]_[MODULE]_TC_[NUMBER]`.
+- If there are too many TCs → split into Part 1, Part 2, and ask the user.
 
-## Khi nào chuyển sang FULL RBT
+## When to Switch to FULL RBT
 
-Agent **tự động đề xuất chuyển mode** nếu phát hiện:
-- Requirements mơ hồ, cần hỏi Q&A
-- Scope lớn (>3 modules)
-- Logic nghiệp vụ phức tạp, nhiều điều kiện chồng chéo
-- User yêu cầu Traceability Matrix hoặc Risk Assessment
+The agent **automatically proposes switching modes** if it detects:
+- Ambiguous requirements needing Q&A.
+- Large scope (>3 modules).
+- Complex business logic with overlapping conditions.
+- User requests a Traceability Matrix or Risk Assessment.

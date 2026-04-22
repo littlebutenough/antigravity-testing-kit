@@ -1,298 +1,298 @@
 ---
 name: RBT Manual Testing
-description: Skill sinh manual test cases với 2 modes — QUICK (sinh nhanh từ requirements) và FULL RBT (quy trình AI-RBT 6 bước có đánh giá rủi ro). Master skill cho mọi tác vụ manual test case.
+description: Skill for generating manual test cases with 2 modes — QUICK (fast generation from requirements) and FULL RBT (6-step AI-RBT process with risk assessment). Master skill for all manual test case tasks.
 ---
 
 # RBT Manual Testing
 
 ## Description
 
-Đây là **Master Skill** cho mọi tác vụ sinh manual test cases. Skill cung cấp **2 chế độ hoạt động** (modes) để phù hợp với mọi quy mô yêu cầu:
+This is the **Master Skill** for all manual test case generation tasks. The skill provides **2 operating modes** to suit all requirement scales:
 
-| Mode | Khi nào dùng | Thời gian |
-|------|-------------|-----------|
-| **QUICK** | Module đơn giản, cần TC nhanh, requirements rõ ràng | 1 lượt (không chờ user) |
-| **FULL RBT** | Module phức tạp, cần phân tích rủi ro, hệ thống lớn | 6 bước tuần tự (có checkpoint) |
+| Mode | When to use | Execution Time |
+|------|-------------|----------------|
+| **QUICK** | Simple modules, fast TC needed, clear requirements | 1 turn (no waiting for user) |
+| **FULL RBT** | Complex modules, risk analysis needed, large systems | 6 sequential steps (with checkpoints) |
 
-**Nguyên tắc cốt lõi:**
-- **Human Strategy:** Con người xác định chiến lược, mức độ rủi ro và tiêu chuẩn
-- **AI Execution:** AI thực hiện phân tích, viết TCs và rà soát lỗ hổng
-- **Human Verification:** Con người kiểm tra lại kết quả trước khi chốt
+**Core Principles:**
+- **Human Strategy:** Humans define strategy, risk levels, and standards.
+- **AI Execution:** AI performs analysis, writes TCs, and reviews vulnerabilities.
+- **Human Verification:** Humans re-verify results before finalizing.
 
 ---
 
 ## When to Use
 
-Sử dụng skill này khi:
+Use this skill when:
 
-- Sinh manual test cases từ requirements / user stories
-- Phân tích requirements để phát hiện ambiguity
-- Phân rã hệ thống thành modules / features
-- Xây dựng traceability matrix
-- Áp dụng Risk-Based Testing (đánh giá rủi ro cho test cases)
-- Chuẩn hóa test cases sang bảng Markdown (Jira/Excel format)
-- Sinh test cases nhanh từ requirements đơn giản
+- Generating manual test cases from requirements / user stories.
+- Analyzing requirements to detect ambiguities.
+- Decomposing systems into modules / features.
+- Building traceability matrices.
+- Applying Risk-Based Testing (risk assessment for test cases).
+- Standardizing test cases into Markdown tables (Jira/Excel format).
+- Fast generation of test cases from simple requirements.
 
-**KHÔNG** sử dụng skill này khi:
+**DO NOT** use this skill when:
 
-- Cần sinh automation code → dùng `qa_automation_engineer`
-- Cần inspect DOM / sinh locator → dùng `ui_debug_agent` / `smart_locator_agent`
-- Chỉ cần sinh test data → dùng `test_data_generator`
+- Automation code generation is needed → use `qa_automation_engineer`.
+- DOM inspection / locator generation is needed → use `ui_debug_agent` / `smart_locator_agent`.
+- Only test data generation is needed → use `test_data_generator`.
 
 ---
 
-## Mode Routing — Cách chọn mode
+## Mode Routing — How to Choose a Mode
 
-Agent tự động chọn mode dựa trên **trigger keywords** và **ngữ cảnh**:
+Agent automatically selects the mode based on **trigger keywords** and **context**:
 
 ### → Mode QUICK
 
-Kích hoạt khi:
-- User dùng workflow `/generate_testcases_from_requirements`
-- User nói: "sinh test cases nhanh", "tạo TC từ requirement này", "viết test cases cho form..."
-- Requirements đã rõ ràng, scope nhỏ (1 module / 1 tính năng)
-- User không yêu cầu phân tích rủi ro hay quy trình bài bản
+Triggers when:
+- User uses the `/generate_testcases_from_requirements` workflow.
+- User says: "generate fast test cases", "create TC from this requirement", "write test cases for form..."
+- Requirements are already clear, small scope (1 module / 1 feature).
+- User does not request risk analysis or a formal process.
 
 ### → Mode FULL RBT
 
-Kích hoạt khi:
-- User dùng workflow `/generate_manual_testcases_rbt`
-- User nói: "quy trình 6 bước", "phân tích RBT", "sinh test cases đầy đủ", "sinh bộ TC bài bản"
-- Scope lớn (nhiều modules, hệ thống phức tạp)
-- User yêu cầu Traceability Matrix hoặc đánh giá Risk Level
-- Requirements chưa rõ ràng, cần phân tích Ambiguity
+Triggers when:
+- User uses the `/generate_manual_testcases_rbt` workflow.
+- User says: "6-step process", "RBT analysis", "generate full test cases", "generate a formal TC suite".
+- Large scope (multiple modules, complex system).
+- User requests a Traceability Matrix or Risk Level assessment.
+- Requirements are unclear, Ambiguity analysis is needed.
 
-### → Khi không rõ
+### → When Uncertain
 
-Nếu không xác định được mode, agent **hỏi user**:
+If the mode cannot be determined, the agent **asks the user**:
 ```
-Bạn muốn sinh test cases theo chế độ nào?
-1. QUICK — Sinh nhanh từ requirements (không qua bước phân tích)
-2. FULL RBT — Quy trình 6 bước đầy đủ (phân tích → phân rã → RBT → sinh TC)
+Which mode would you like to use for test case generation?
+1. QUICK — Fast generation from requirements (skipping analysis steps).
+2. FULL RBT — Complete 6-step process (analysis → decomposition → RBT → TC generation).
 ```
 
 ---
 
-# Mode 1: QUICK — Sinh Test Cases Nhanh
+# Mode 1: QUICK — Fast Test Case Generation
 
-## Mục đích
+## Purpose
 
-Sinh test cases **nhanh, đủ chất lượng** từ requirements/user stories đã rõ ràng, phù hợp cho module đơn giản hoặc khi cần kết quả ngay.
+Generate **fast, high-quality** test cases from clear requirements/user stories, suitable for simple modules or when immediate results are needed.
 
-## Quy trình (1 lượt duy nhất)
+## Process (Single turn)
 
-**Agent phải:**
+**Agent must:**
 
-1. **Đọc và hiểu requirements** được cung cấp
-2. **Xác định các luồng chính:**
-   - Happy Path (luồng chính)
-   - Negative Path (dữ liệu sai, thiếu)
-   - Boundary Cases (giá trị biên)
-3. **Áp dụng kỹ thuật thiết kế test case** tự động:
-   - **Equivalence Partitioning (EP):** Chia input thành nhóm tương đương
-   - **Boundary Value Analysis (BVA):** Test giá trị tại ranh giới
-   - **Decision Table:** Liệt kê tổ hợp điều kiện (nếu có nhiều rules)
-   - **State Transition:** Test chuyển đổi trạng thái (nếu có workflow)
-4. **Sinh test cases** với đầy đủ fields:
-   - TC ID (format: `[DỰ_ÁN]_[MODULE]_TC_[SỐ]`)
+1. **Read and understand the provided requirements**.
+2. **Identify core flows:**
+   - Happy Path (main flow)
+   - Negative Path (incorrect/missing data)
+   - Boundary Cases (edge values)
+3. **Apply automated test design techniques:**
+   - **Equivalence Partitioning (EP):** Group inputs into equivalent sets.
+   - **Boundary Value Analysis (BVA):** Test values at boundaries.
+   - **Decision Table:** List condition combinations (if multiple rules exist).
+   - **State Transition:** Test state changes (if a workflow exists).
+4. **Generate test cases** with complete fields:
+   - TC ID (format: `[PROJECT]_[MODULE]_TC_[NUMBER]`)
    - Module
    - Test Case Title / Test Scenario
    - Pre-conditions
-   - Test Steps (đánh số)
-   - Expected Results (đánh số tương ứng)
-   - Test Data (**phải cụ thể**, không placeholder)
+   - Test Steps (numbered)
+   - Expected Results (correspondingly numbered)
+   - Test Data (**must be specific**, no placeholders)
    - Priority (Critical / High / Medium / Low)
-5. **Xuất ra bảng Markdown** chuẩn, sẵn sàng copy sang Excel/Jira
+5. **Output a standard Markdown table**, ready for copy-pasting to Excel/Jira.
 
-## Bảng Output
+## Output Table
 
 ```
 | TC ID | Module | Test Scenario | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 ```
 
-## Quy tắc Test Data (áp dụng cho cả 2 modes)
+## Test Data Rules (applies to both modes)
 
 ```
-❌ Sai: "Nhập mã số hợp lệ"
-✅ Đúng: "Nhập mã: KH-2026-0012"
+❌ Wrong: "Enter a valid code"
+✅ Correct: "Enter code: KH-2026-0012"
 
-❌ Sai: "Nhập email hợp lệ"
-✅ Đúng: "Nhập email: test_khachhang_01@domain.com"
+❌ Wrong: "Enter a valid email"
+✅ Correct: "Enter email: test_customer_01@domain.com"
 
-❌ Sai: "Nhập giá trị vượt giới hạn"
-✅ Đúng: "Nhập 256 ký tự vào trường Name (max: 255)"
+❌ Wrong: "Enter value exceeding limit"
+✅ Correct: "Enter 256 characters into the Name field (max: 255)"
 ```
 
-## Anti-Patterns (Mode QUICK)
+## Anti-Patterns (QUICK Mode)
 
-- ❌ Sinh test data chung chung / placeholder
-- ❌ Chỉ có Happy Path, thiếu Negative/Boundary
-- ❌ Bỏ qua validation rules trong requirements
-- ❌ Test Steps mơ hồ ("nhập dữ liệu" → phải ghi rõ nhập gì, ở đâu)
+- ❌ Generating generic/placeholder test data.
+- ❌ Only including Happy Path, missing Negative/Boundary cases.
+- ❌ Ignoring validation rules in requirements.
+- ❌ Vague Test Steps ("enter data" → must specify what to enter and where).
 
 ---
 
-# Mode 2: FULL RBT — Quy Trình AI-RBT 6 Bước
+# Mode 2: FULL RBT — 6-Step AI-RBT Process
 
-## Mục đích
+## Purpose
 
-Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tích Ambiguity, phân rã hệ thống, Traceability Matrix, đánh giá Risk Level, và sinh test cases chi tiết.
+A formal, sequential process for complex modules. Includes Ambiguity analysis, system decomposition, Traceability Matrix, Risk Level assessment, and detailed test case generation.
 
-> ⚠️ **QUAN TRỌNG:** Quy trình này **BẮT BUỘC chạy tuần tự** từng bước. KHÔNG được gộp nhiều bước chạy 1 lần. Mỗi bước phải hoàn thành và được user xác nhận trước khi sang bước tiếp.
+> ⚠️ **IMPORTANT:** This process **MUST run sequentially** step-by-step. DO NOT combine multiple steps into one run. Each step must be completed and confirmed by the user before moving to the next.
 
 > [!NOTE]
-> **2 luồng sử dụng riêng biệt:**
-> - **Luồng Antigravity (slash command):** Agent thực hiện theo hướng dẫn tổng quát bên dưới. Agent KHÔNG cần đọc file prompt.txt.
-> - **Luồng Copy-Paste (ChatGPT/Claude):** QA team copy nội dung prompt chi tiết từ `plans/manual/01-06/prompt.txt` vào chat AI, từng bước một.
+> **2 separate usage flows:**
+> - **Antigravity Flow (slash command):** Agent follows the general instructions below. The agent does NOT need to read the prompt.txt file.
+> - **Copy-Paste Flow (ChatGPT/Claude):** QA team copies detailed prompt content from `plans/manual/01-06/prompt.txt` into the AI chat, step-by-step.
 
-### Bước 1: Context & Role-play (Khởi tạo ngữ cảnh)
+### Step 1: Context & Role-play (Initialize Context)
 
-**Mục đích:** Thiết lập vai trò Senior QA Engineer và nạp bối cảnh dự án.
+**Purpose:** Set the Senior QA Engineer role and load project context.
 
-**Agent phải:**
-1. Yêu cầu user cung cấp:
-   - Tên dự án / tính năng
-   - Mô tả hệ thống hiện tại
-   - Mục tiêu kiểm thử MVP
-   - Tài liệu yêu cầu (Requirements, User Stories, Figma link, PDF...)
-2. Đọc kỹ tài liệu và xác nhận đã hiểu bối cảnh
-3. Tóm tắt scope kiểm thử
-4. **Chờ user xác nhận** trước khi sang Bước 2
+**Agent must:**
+1. Ask the user to provide:
+   - Project / feature name.
+   - Current system description.
+   - MVP testing objectives.
+   - Requirement documents (Requirements, User Stories, Figma link, PDF...).
+2. Carefully read the documents and confirm understanding of the context.
+3. Summarize the testing scope.
+4. **Wait for user confirmation** before moving to Step 2.
 
-**Output:** Xác nhận hiểu bối cảnh + tóm tắt scope kiểm thử.
+**Output:** Confirmation of context understanding + summary of testing scope.
 
 ---
 
-### Bước 2: Analysis & QnA (Phân tích yêu cầu)
+### Step 2: Analysis & QnA (Requirement Analysis)
 
-**Mục đích:** Phân tích tài liệu để phát hiện điểm mờ, thiếu sót, mâu thuẫn.
+**Purpose:** Analyze documentation to detect ambiguities, omissions, and contradictions.
 
-**Agent phải:**
-1. Xác định các luồng:
-   - Happy Path (luồng chính)
-   - Alternate Paths (luồng rẽ nhánh)
-   - Exception Paths (luồng ngoại lệ)
-2. Phát hiện Ambiguities:
-   - Yêu cầu thiếu sót (không quy định độ dài textbox, timeout, hành vi mất kết nối...)
-   - Yêu cầu mâu thuẫn
-   - Yêu cầu chưa rõ ràng
-3. Đặt câu hỏi Q&A có đánh số thứ tự (Q1, Q2...) cho user/PO/BA giải đáp, mỗi câu kèm ngữ cảnh và assumption nếu không được trả lời
-4. **DỪNG LẠI — Chờ user trả lời** các câu hỏi trước khi tiếp tục
+**Agent must:**
+1. Identify flows:
+   - Happy Path (main flow).
+   - Alternate Paths (branching flows).
+   - Exception Paths (exception flows).
+2. Detect Ambiguities:
+   - Omissions (textbox length not specified, timeout, connection loss behavior, etc.).
+   - Contradictions.
+   - Unclear requirements.
+3. Post numbered Q&A questions (Q1, Q2...) for user/PO/BA clarification, with each question including context and an assumption if left unanswered.
+4. **STOP — Wait for user answers** to the questions before proceeding.
 
-**Output:** Danh sách luồng + Ambiguities + Câu hỏi Q&A.
+**Output:** List of flows + Ambiguities + Q&A questions.
 
 > [!IMPORTANT]
-> **Đây là điểm nghẽn quan trọng nhất.** Nếu agent bỏ qua bước này và tự đoán logic, test cases sẽ sai nghiêm trọng. Agent PHẢI dừng lại và đợi user phản hồi.
+> **This is the most critical bottleneck.** If the agent skips this step and guesses logic, test cases will be seriously flawed. The agent MUST stop and wait for user feedback.
 
 ---
 
-### Bước 3: Decomposition (Phân rã hệ thống)
+### Step 3: Decomposition (System Decomposition)
 
-**Mục đích:** Chia tính năng phức tạp thành các Module / Sub-module nhỏ, dễ quản lý.
+**Purpose:** Divide complex features into smaller, manageable Modules / Sub-modules.
 
-**Agent phải:**
-1. Phân rã theo 1 trong 2 cách:
-   - **Theo UI:** Header, Data Table, Form popup, Sidebar...
-   - **Theo luồng:** Flow tạo mới, Flow chỉnh sửa, Flow xóa...
-2. Mô tả ngắn gọn chức năng từng Module
-3. Chỉ ra Dependencies giữa các Module
+**Agent must:**
+1. Decompose using one of two ways:
+   - **By UI:** Header, Data Table, Form popup, Sidebar...
+   - **By flow:** Create flow, Edit flow, Delete flow...
+2. Briefly describe the function of each Module.
+3. Indicate Dependencies between Modules.
 
-**Output:** Danh sách Modules/Sub-modules + Dependencies.
+**Output:** List of Modules/Sub-modules + Dependencies.
 
 ---
 
-### Bước 4: Traceability (Đảm bảo độ bao phủ)
+### Step 4: Traceability (Ensuring Coverage)
 
-**Mục đích:** Thiết lập ma trận truy vết để đảm bảo 100% requirements được phủ test scenarios.
+**Purpose:** Establish a traceability matrix to ensure 100% of requirements are covered by test scenarios.
 
-**Agent phải:**
-1. Map mỗi Module/Rule với mã Yêu cầu (REQ-01, REQ-02...)
-2. Cross-check xem có yêu cầu nào bị thiếu trong danh sách phân rã (Gap Analysis)
-3. Liệt kê High-Level Test Scenarios cho từng Module, tập trung:
-   - Security / phân quyền
-   - UI Validation
-   - Business Logic
-   - Data Integrity
-   - Error Handling
-4. **Chờ user review** danh sách scenarios trước khi sinh test case chi tiết
+**Agent must:**
+1. Map each Module/Rule to a Requirement code (REQ-01, REQ-02...).
+2. Cross-check for missing requirements in the decomposition list (Gap Analysis).
+3. List High-Level Test Scenarios for each Module, focusing on:
+   - Security / Authorization.
+   - UI Validation.
+   - Business Logic.
+   - Data Integrity.
+   - Error Handling.
+4. **Wait for user review** of the scenarios list before generating detailed test cases.
 
 **Output:** Traceability Matrix + High-Level Test Scenarios.
 
 > [!WARNING]
-> **Human Checkpoint:** User cần review danh sách scenarios để bổ sung các trường hợp đặc thù mà AI có thể bỏ sót. Đây là bước đánh giá rủi ro do con người thực hiện.
+> **Human Checkpoint:** User needs to review the scenarios list to add specific cases that AI might miss. This is a risk assessment step performed by humans.
 
 ---
 
-### Bước 5: RBT & TC Generation (Sinh Test Case chi tiết)
+### Step 5: RBT & TC Generation (Detailed Test Case Generation)
 
-**Mục đích:** Sinh test cases chi tiết theo chiến lược Risk-Based Testing.
+**Purpose:** Generate detailed test cases based on a Risk-Based Testing strategy.
 
-**Agent phải:**
-1. Đánh giá Risk Level cho mỗi Module:
-   - **High Risk:** Test kỹ, nhiều cases (nghiệp vụ quan trọng, liên quan tiền, bảo mật)
-   - **Medium Risk:** Test vừa phải
-   - **Low Risk:** Test cơ bản, happy path
-2. Sinh test case với đầy đủ fields:
-   - Module / Sub-module
-   - Test Case Title
+**Agent must:**
+1. Assess Risk Level for each Module:
+   - **High Risk:** Thorough testing, many cases (critical business logic, involving money, security).
+   - **Medium Risk:** Moderate testing.
+   - **Low Risk:** Basic testing, Happy Path.
+2. Generate test cases with complete fields:
+   - Module / Sub-module.
+   - Test Case Title.
    - Pre-conditions
-   - Test Steps (đánh số)
-   - Expected Results (đánh số tương ứng)
-   - Test Data (**phải cụ thể**, không dùng placeholder chung chung)
-   - Priority
-3. Bao phủ đa dạng:
-   - Happy Path
-   - Negative Path (giá trị biên, vượt ký tự)
-   - Edge Cases (timeout, mất kết nối...)
-4. Áp dụng **kỹ thuật thiết kế test case** phù hợp:
-   - **Equivalence Partitioning:** Chia input thành nhóm tương đương, test đại diện mỗi nhóm
-   - **Boundary Value Analysis (BVA):** Test giá trị tại ranh giới (min, min+1, max-1, max)
-   - **Decision Table:** Liệt kê tổ hợp điều kiện → kết quả (cho logic nhiều điều kiện)
-   - **State Transition:** Test chuyển đổi trạng thái hợp lệ + không hợp lệ (cho workflow)
-5. Nếu scenarios quá nhiều → sinh từng Module một, hỏi user để tiếp tục
+   - Test Steps (numbered).
+   - Expected Results (correspondingly numbered).
+   - Test Data (**must be specific**, no generic placeholders).
+   - Priority.
+3. Cover diverse scenarios:
+   - Happy Path.
+   - Negative Path (boundary values, exceeding character limits).
+   - Edge Cases (timeout, connection loss, etc.).
+4. Apply appropriate **test case design techniques**:
+   - **Equivalence Partitioning:** Divide inputs into equivalent groups, test a representative of each.
+   - **Boundary Value Analysis (BVA):** Test values at boundaries (min, min+1, max-1, max).
+   - **Decision Table:** List combinations of conditions → results (for multi-condition logic).
+   - **State Transition:** Test valid + invalid state changes (for workflows).
+5. If there are too many scenarios → generate Module by Module, asking the user to continue.
 
-**Output:** Danh sách Test Cases chi tiết có Risk Level.
+**Output:** List of detailed Test Cases with Risk Levels.
 
 ---
 
-### Bước 6: Template Mapping (Chuẩn hóa Format)
+### Step 6: Template Mapping (Standardizing Format)
 
-**Mục đích:** Đóng gói test cases thành bảng Markdown chuẩn, sẵn sàng copy sang Excel/Jira.
+**Purpose:** Package test cases into a standard Markdown table, ready for copy-pasting to Excel/Jira.
 
-**Agent phải:**
-1. Chuẩn hóa toàn bộ test cases vào bảng Markdown:
+**Agent must:**
+1. Standardize all test cases into a Markdown table:
 
 ```
 | TC ID | Module | Risk Level | Test Title | Pre-Condition | Test Steps | Expected Result | Priority | Test Data |
 ```
 
-2. Quy tắc bảng:
-   - TC ID theo format thống nhất (ví dụ: `CRM_CUST_TC_001`)
-   - Test Steps và Expected Result đánh số, dùng `<br>` xuống dòng trong cell
-   - **TUYỆT ĐỐI không được bỏ sót** bất kỳ test case nào đã sinh ở Bước 5
-   - Nếu quá dài → chia thành Part 1, Part 2... và hỏi user để tiếp tục
-3. Xuất output dưới dạng Artifact (`test_cases_<module>.md`)
+2. Table rules:
+   - TC ID in a consistent format (e.g., `CRM_CUST_TC_001`).
+   - Test Steps and Expected Result numbered, using `<br>` for new lines within cells.
+   - **ABSOLUTELY DO NOT omit** any test case generated in Step 5.
+   - If too long → split into Part 1, Part 2... and ask the user to continue.
+3. Export output as an Artifact (`test_cases_<module>.md`).
 
-**Output:** Bảng Test Cases Markdown hoàn chỉnh.
+**Output:** Complete Markdown Test Case Table.
 
 ---
 
-## Anti-Patterns (NGHIÊM CẤM — áp dụng cho cả 2 modes)
+## Anti-Patterns (FORBIDDEN — applies to both modes)
 
-- ❌ Gộp nhiều bước chạy 1 lần trong FULL RBT (PHẢI tuần tự)
-- ❌ Tự đoán business logic khi chưa hỏi user (Bước 2 - FULL RBT)
-- ❌ Bỏ qua bước phân tích Ambiguity (FULL RBT)
-- ❌ Sinh test data chung chung / placeholder
-- ❌ Rút gọn hoặc bỏ sót test case khi mapping sang bảng
-- ❌ Sinh tất cả test cases 1 lần cho hệ thống lớn (phải chia module)
-- ❌ Chỉ có Happy Path, thiếu Negative/Boundary cases (QUICK)
-- ❌ Test Steps mơ hồ, không ghi rõ dữ liệu nhập
+- ❌ Combining multiple steps into one run in FULL RBT (MUST be sequential).
+- ❌ Guessing business logic without asking the user (Step 2 - FULL RBT).
+- ❌ Skipping the Ambiguity analysis step (FULL RBT).
+- ❌ Generating generic/placeholder test data.
+- ❌ Shortening or omitting test cases when mapping to the table.
+- ❌ Generating all test cases at once for large systems (must divide by module).
+- ❌ Only including Happy Path, missing Negative/Boundary cases (QUICK).
+- ❌ Vague Test Steps, not specifying input data.
 
 ---
 
 ## Prompt Templates
 
-Các prompt template mẫu cho quy trình FULL RBT nằm tại:
+Sample prompt templates for the FULL RBT process are located at:
 
 ```
 plans/manual/
@@ -304,9 +304,9 @@ plans/manual/
 └── 06_template_mapping/prompt.txt
 ```
 
-Agent cần đọc prompt template tương ứng **trước khi** thực hiện mỗi bước (FULL RBT mode).
+The agent needs to read the corresponding prompt template **before** performing each step (FULL RBT mode).
 
-Mode QUICK không yêu cầu đọc prompt templates — agent áp dụng trực tiếp các kỹ thuật EP/BVA/Decision Table.
+QUICK mode does not require reading prompt templates — the agent directly applies EP/BVA/Decision Table techniques.
 
 ---
 
@@ -314,19 +314,19 @@ Mode QUICK không yêu cầu đọc prompt templates — agent áp dụng trực
 
 ### Mode QUICK
 
-| Output | Mô tả |
-|--------|--------|
-| Bảng TC Markdown | Test Cases đầy đủ, sẵn sàng copy sang Excel/Jira |
+| Output | Description |
+|--------|-------------|
+| Markdown TC Table | Complete Test Cases, ready to copy to Excel/Jira |
 
 ### Mode FULL RBT
 
-| Bước | Output |
+| Step | Output |
 |------|--------|
-| 1 | Xác nhận bối cảnh |
-| 2 | Luồng + Ambiguities + Câu hỏi Q&A |
+| 1 | Context confirmation |
+| 2 | Flows + Ambiguities + Q&A Questions |
 | 3 | Module Decomposition + Dependencies |
 | 4 | Traceability Matrix + High-Level Scenarios |
-| 5 | Test Cases chi tiết (Risk Level + Test Data) |
-| 6 | Bảng Markdown chuẩn (Jira/Excel ready) |
+| 5 | Detailed Test Cases (Risk Level + Test Data) |
+| 6 | Standard Markdown Table (Jira/Excel ready) |
 
-Tất cả output phải bằng **Tiếng Việt**, format **Markdown**, sử dụng **Artifact** nếu nội dung dài.
+All output must be in **English**, **Markdown** format, using **Artifact** if the content is long.

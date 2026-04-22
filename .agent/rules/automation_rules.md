@@ -1,80 +1,80 @@
-# Quy Tắc Chung cho QA Automation
+# General Rules for QA Automation
 
-> Áp dụng cho mọi tác vụ automation testing, bất kể framework (Playwright, Selenium, Appium).
+> Applies to all automation testing tasks, regardless of framework (Playwright, Selenium, Appium).
 
-## 1. Kiến Trúc & Framework
+## 1. Architecture & Framework
 
-- Bắt buộc sử dụng mô hình **Page Object Model (POM)**.
-- Phân tách rõ ràng:
-  - **Page classes:** Khai báo locators + methods tương tác UI
-  - **Test classes:** Chứa logic kiểm thử + assertions
-  - **Test data:** Tách riêng khỏi code chức năng (JSON, DataProvider, Utils)
-- Assertions chỉ đặt trong Test classes, KHÔNG đặt trong Page classes.
+- **Page Object Model (POM)** is mandatory.
+- Clear separation:
+  - **Page classes:** Declaration of locators + UI interaction methods
+  - **Test classes:** Contains test logic + assertions
+  - **Test data:** Separated from functional code (JSON, DataProvider, Utils)
+- Assertions should only be placed in Test classes, NOT in Page classes.
 
-## 2. Sinh Dữ Liệu Test (Test Data)
+## 2. Test Data Generation
 
-- Tất cả trường yêu cầu unique (Email, Username, Mã KH...) **phải sinh động**, không hardcode.
-- Sử dụng UUID, Timestamp hoặc thư viện Faker.
-- Dữ liệu phải **traceable** — nhìn vào DB biết ngay test nào tạo ra:
+- All unique fields (Email, Username, Customer ID...) **must be dynamic**, no hardcoding.
+- Use UUID, Timestamp, or Faker library.
+- Data must be **traceable** — looking at the DB should immediately identify which test created it:
   ```
   Format: [prefix]_[testName]_[timestamp]_[random]
-  Ví dụ:  auto_createCustomer_20260402_A3F2@test.com
+  Example: auto_createCustomer_20260402_A3F2@test.com
   ```
-- Hỗ trợ chạy parallel: mỗi test method có data riêng biệt, không conflict.
+- Support parallel execution: each test method has its own data, no conflicts.
 
-## 3. Chất Lượng Code
+## 3. Code Quality
 
-- Không logic trùng lặp — tạo helper methods cho các hành động lặp đi lặp lại.
-- Code phải đơn giản, dễ đọc, dễ bảo trì.
-- Trước khi deliver code:
-  - Xóa toàn bộ `console.log`, `System.out.println`, `print()` sinh ra khi debug
-  - Xóa code bị comment (`//`, `/* */`)
-  - Xóa locator / biến không sử dụng (unused code)
+- No duplicate logic — create helper methods for repetitive actions.
+- Code must be simple, readable, and maintainable.
+- Before delivering code:
+  - Remove all `console.log`, `System.out.println`, `print()` generated during debugging.
+  - Remove commented-out code (`//`, `/* */`).
+  - Remove unused locators/variables.
 
-## 4. Quản Lý File & Thư Mục
+## 4. File & Directory Management
 
-- KHÔNG tự động xóa file source khi chưa xác nhận với user.
-- Kiểm tra cấu trúc thư mục hiện có trước khi tạo file mới — tránh duplicate.
-- Đặt file đúng thư mục theo kiến trúc project (xem `plan/automation/0_project_architecture`).
+- DO NOT automatically delete source files without user confirmation.
+- Check existing directory structure before creating new files — avoid duplicates.
+- Place files in the correct directory according to project architecture (refer to `plan/automation/0_project_architecture`).
 
-## 5. Quy Tắc Đặt Tên
+## 5. Naming Conventions
 
 ### Java
 
-| Thành phần | Quy tắc | Ví dụ |
+| Component | Rule | Example |
 |---|---|---|
-| Page class | PascalCase + hậu tố `Page` | `LoginPage.java`, `CartPage.java` |
-| Test class | PascalCase + hậu tố `Test` | `LoginTest.java`, `CartTest.java` |
-| Test method | Bắt đầu bằng `test` + mô tả hành vi | `testLoginWithValidCredentials()` |
-| Locator biến | lowerCamelCase + hậu tố mô tả element | `loginButton`, `usernameInput` |
-| Utils class | PascalCase + mô tả chức năng | `DataGenerator.java`, `WaitHelper.java` |
+| Page class | PascalCase + `Page` suffix | `LoginPage.java`, `CartPage.java` |
+| Test class | PascalCase + `Test` suffix | `LoginTest.java`, `CartTest.java` |
+| Test method | Starts with `test` + behavior description | `testLoginWithValidCredentials()` |
+| Locator variable | lowerCamelCase + element description suffix | `loginButton`, `usernameInput` |
+| Utils class | PascalCase + functional description | `DataGenerator.java`, `WaitHelper.java` |
 
 ### TypeScript / Playwright
 
-| Thành phần | Quy tắc | Ví dụ |
+| Component | Rule | Example |
 |---|---|---|
-| Page class | PascalCase + hậu tố `Page` | `LoginPage.ts`, `CartPage.ts` |
+| Page class | PascalCase + `Page` suffix | `LoginPage.ts`, `CartPage.ts` |
 | Test file | kebab-case + `.spec.ts` | `login.spec.ts`, `cart.spec.ts` |
-| Test block | `test('mô tả hành vi')` | `test('đăng nhập thành công')` |
-| Locator biến | lowerCamelCase hoặc readonly | `readonly loginButton` |
-| Utils | PascalCase hoặc kebab-case | `DataGenerator.ts`, `data-generator.ts` |
+| Test block | `test('behavior description')` | `test('login successfully')` |
+| Locator variable | lowerCamelCase or readonly | `readonly loginButton` |
+| Utils | PascalCase or kebab-case | `DataGenerator.ts`, `data-generator.ts` |
 
-## 6. Assertions (Kiểm Tra Kết Quả)
+## 6. Assertions
 
-- Mỗi test case **BẮT BUỘC** có ít nhất 1 assertion ở cuối.
-- Nên có assertion xen kẽ ở các bước quan trọng.
-- Assert phải mô tả rõ expected behavior:
+- Each test case **MUST** have at least one assertion at the end.
+- Use interleaved assertions at critical steps.
+- Assertions must clearly describe expected behavior:
   ```java
   // Java/TestNG
-  Assert.assertTrue(dashboardPage.isDisplayed(), "Dashboard phải hiển thị sau khi đăng nhập");
+  Assert.assertTrue(dashboardPage.isDisplayed(), "Dashboard should be displayed after login");
   ```
   ```typescript
   // Playwright
-  await expect(page.getByText('Đăng nhập thành công')).toBeVisible();
+  await expect(page.getByText('Login successful')).toBeVisible();
   ```
 
-## 7. Tính Độc Lập Của Test (Test Independence)
+## 7. Test Independence
 
-- Mỗi test case phải **độc lập** — không phụ thuộc kết quả test khác.
-- Setup/teardown rõ ràng (`@BeforeMethod/@AfterMethod` hoặc `beforeEach/afterEach`).
-- Không chia sẻ state giữa các test methods.
+- Each test case must be **independent** — not dependent on the result of another test.
+- Clear setup/teardown (`@BeforeMethod/@AfterMethod` or `beforeEach/afterEach`).
+- Do not share state between test methods.

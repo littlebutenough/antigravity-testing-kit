@@ -1,6 +1,6 @@
 ---
 name: Flaky Test Analyzer
-description: Skill phân tích và khắc phục các automation test không ổn định (flaky tests), xác định root cause và đề xuất fix.
+description: Skill for analyzing and fixing unstable automation tests (flaky tests), identifying root causes, and proposing fixes.
 ---
 
 # Flaky Test Analyzer

@@ -1,56 +1,56 @@
 ---
-description: Thực thi UI flow trực tiếp trên browser, thu thập locators từ DOM thực tế, và sinh automation scripts. Hỗ trợ Playwright, Selenium, Appium.
+description: Execute UI flows directly on a browser, collect locators from the actual DOM, and generate automation scripts. Supports Playwright, Selenium, Appium.
 skills:
   - ui_debug_agent
   - smart_locator_agent
   - qa_automation_engineer
 ---
 
-# Workflow: Sinh Automation từ UI Flow
+# Workflow: Generate Automation from UI Flow
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`ui_debug_agent`** (tại `.agent/skills/ui_debug_agent/SKILL.md`) trước khi bắt đầu. Ngoài ra tham khảo thêm skill **`smart_locator_agent`** để sinh locator ổn định và **`qa_automation_engineer`** cho quy tắc automation chung.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`ui_debug_agent`** skill (at `.agent/skills/ui_debug_agent/SKILL.md`) before starting. Additionally, refer to the **`smart_locator_agent`** skill for generating stable locators and **`qa_automation_engineer`** for general automation rules.
 
-Workflow này giúp agent **thực thi trực tiếp** một chuỗi thao tác UI trên browser thật, thu thập locators từ DOM thực tế, và sinh automation scripts hoàn chỉnh — tất cả trong một luồng tự động, không cần manual test case có sẵn.
+This workflow helps the agent **directly execute** a sequence of UI actions on a real browser, collect locators from the actual DOM, and generate complete automation scripts — all in an automated flow, without needing an existing manual test case.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Tất cả output bằng Tiếng Việt**
-- **TUYỆT ĐỐI KHÔNG ĐOÁN locator** — phải lấy từ DOM thực tế bằng MCP browser tools
-- **Phải chạy từng bước UI trên browser thật** trước khi sinh code
-- **Desktop viewport 1920×1080** cho tất cả UI debugging
-- ⚠️ **Rule E3:** Khi test FAIL → tự đọc log → phân tích → sửa → chạy lại. KHÔNG hỏi user
+- **All output in English**
+- **ABSOLUTELY NO guessing of locators** — must be obtained from the actual DOM using MCP browser tools.
+- **Must execute each UI step on a real browser** before generating code.
+- **Desktop viewport 1920×1080** for all UI debugging.
+- ⚠️ **Rule E3:** When a test FAILS → read logs → analyze → fix → re-run. DO NOT ask the user.
 
-## Workflow này khác gì `generate_automation_from_testcases`?
+## How is this workflow different from `generate_automation_from_testcases`?
 
-| | `from_testcases` | `from_ui_flow` (workflow này) |
+| | `from_testcases` | `from_ui_flow` (this workflow) |
 |---|---|---|
-| **Input** | File manual test cases có sẵn | Mô tả UI steps bằng lời hoặc URL + hành động |
-| **Approach** | Đọc TC → inspect UI → sinh code | **Chạy thật trên browser** → thu thập locator → sinh code |
-| **Khi nào dùng** | Đã có test case document | Chưa có TC, chỉ biết "vào trang này, click cái kia" |
+| **Input** | Existing manual test case file | Verbal UI step descriptions or URL + actions |
+| **Approach** | Read TC → inspect UI → generate code | **Live browser execution** → collect locators → generate code |
+| **When to use** | Already have a test case document | No TC available, only know "go to this page, click that" |
 
-## Input cần thu thập
+## Required Input
 
-Agent cần ít nhất **1 trong các input** sau từ user:
+The agent needs at least **one of the following inputs** from the user:
 
-| Input | Ví dụ | Độ ưu tiên |
+| Input | Example | Priority |
 |---|---|---|
-| **URL + UI steps mô tả** | "Vào https://example.com, login, tạo user mới" | ⭐ Phổ biến nhất |
-| **URL + recording/video** | User cung cấp video thao tác | Tùy chọn |
-| **URL + screenshots** | User cung cấp ảnh chụp từng bước | Tùy chọn |
-| **Chỉ URL** | "Automate login flow của trang này" | Agent tự khám phá |
+| **URL + UI steps description** | "Go to https://example.com, login, create a new user" | ⭐ Most common |
+| **URL + recording/video** | User-provided interaction video | Optional |
+| **URL + screenshots** | User-provided step-by-step screenshots | Optional |
+| **URL only** | "Automate login flow of this page" | Agent explores autonomously |
 
-Nếu user chưa cung cấp đủ → hỏi:
-- URL ứng dụng?
-- Mô tả flow cần automate (từng bước)?
-- Credentials nếu cần đăng nhập?
-- Framework mong muốn? (mặc định: Playwright + TypeScript)
+If insufficient input is provided → ask:
+- Application URL?
+- Description of the flow to automate (step-by-step)?
+- Credentials if login is required?
+- Preferred framework? (default: Playwright + TypeScript)
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Tiếp nhận & Chuẩn bị (Setup)
+### Step 1: Reception & Preparation (Setup)
 
-1. **Parse UI steps** từ user input:
-   - Chuyển mô tả bằng lời thành danh sách steps có cấu trúc:
+1. **Parse UI steps** from user input:
+   - Convert verbal descriptions into a structured list of steps:
      ```
      Step 1: Navigate to https://example.com/login
      Step 2: Enter username "admin@test.com"
@@ -59,47 +59,47 @@ Nếu user chưa cung cấp đủ → hỏi:
      Step 5: Verify dashboard is displayed
      ```
 
-2. **Xác nhận tech stack** với user (nếu chưa rõ):
+2. **Confirm tech stack** with the user (if unclear):
 
-   | Framework | Ngôn ngữ | Khi nào dùng |
+   | Framework | Language | When to Use |
    |---|---|---|
-   | **Playwright** | TypeScript | Mặc định cho web automation |
-   | **Playwright** | Python | Khi user dùng Python stack |
-   | **Selenium** | Java | Khi user yêu cầu Java/Selenium |
+   | **Playwright** | TypeScript | Default for web automation |
+   | **Playwright** | Python | When the user uses a Python stack |
+   | **Selenium** | Java | When the user requests Java/Selenium |
    | **Appium** | Java | Mobile app automation |
 
-3. **Tạo artifact `task.md`** để theo dõi tiến độ:
+3. **Create task.md artifact** to track progress:
    ```markdown
    # UI Flow Automation Progress
-   - [ ] Bước 1: Chuẩn bị — parse UI steps
-   - [ ] Bước 2: Chạy UI flow trên browser — thu thập locators
-   - [ ] Bước 3: Sinh Page Objects + Test scripts
-   - [ ] Bước 4: Chạy test + Auto-heal
+   - [ ] Step 1: Preparation — parse UI steps
+   - [ ] Step 2: Run UI flow on browser — collect locators
+   - [ ] Step 3: Generate Page Objects + Test scripts
+   - [ ] Step 4: Run test + Auto-heal
    ```
 
-### Bước 2: Chạy UI Flow trên Browser & Thu thập Locators (Live Recon)
+### Step 2: Run UI Flow on Browser & Collect Locators (Live Recon)
 
-> ⚡ Đây là bước **quan trọng nhất** — phân biệt workflow này với các workflow khác.
+> ⚡ This is the **most important step** — distinguishing this workflow from others.
 
-1. **Mở browser bằng MCP** và navigate đến URL:
+1. **Open browser via MCP** and navigate to the URL:
    ```
    browser_navigate → URL
    browser_resize → 1920 × 1080
-   browser_wait_for → page load hoàn tất
-   browser_snapshot → thu thập DOM ban đầu
+   browser_wait_for → page load complete
+   browser_snapshot → collect initial DOM
    ```
 
-2. **Thực thi từng step** theo danh sách, với mỗi step:
+2. **Execute each step** according to the list. For each step:
 
    ```
-   a. browser_snapshot → đọc DOM, xác định element cần tương tác
-   b. Xác định locator tốt nhất (theo locator priority)
-   c. Thực thi action (click / type / select / hover)
-   d. browser_snapshot → xác nhận kết quả action
-   e. Ghi nhận vào bảng locator collection
+   a. browser_snapshot → read DOM, identify the element to interact with
+   b. Identify the best locator (according to locator priority)
+   c. Execute action (click / type / select / hover)
+   d. browser_snapshot → confirm action result
+   e. Record in the locator collection table
    ```
 
-3. **Bảng Locator Collection** (ghi nhận sau mỗi step):
+3. **Locator Collection Table** (recorded after each step):
 
    | Step | Action | Element | Primary Locator | Fallback Locator | Verified |
    |---|---|---|---|---|---|
@@ -109,7 +109,7 @@ Nếu user chưa cung cấp đủ → hỏi:
    | 4 | Click | Login button | `getByRole('button', {name: 'Login'})` | `button[type=submit]` | ✅ |
    | 5 | Assert | Dashboard title | `getByRole('heading', {name: 'Dashboard'})` | `.dashboard-title` | ✅ |
 
-4. **Locator Priority** (tuân thủ `.agent/rules/locator_strategy.md`):
+4. **Locator Priority** (complies with `.agent/rules/locator_strategy.md`):
 
    **Playwright:**
    `getByRole()` → `getByLabel()` → `getByPlaceholder()` → `getByText()` → `getByTestId()` → CSS → XPath
@@ -120,26 +120,26 @@ Nếu user chưa cung cấp đủ → hỏi:
    **Appium:**
    `accessibility-id` → `id` → `name` → `xpath` (relative)
 
-5. **Xử lý tình huống khi chạy UI:**
+5. **Situation Handling while running UI:**
 
-   | Tình huống | Cách xử lý |
+   | Situation | How to Handle |
    |---|---|
-   | Element không tìm thấy | `browser_snapshot` lại → kiểm tra DOM → thử locator khác |
-   | Page chưa load xong | `browser_wait_for` text/element → retry |
-   | Modal/popup xuất hiện | Xử lý popup trước → tiếp tục flow |
-   | Redirect/navigation | `browser_snapshot` lại ở page mới |
-   | Cần scroll | `browser_evaluate` → scrollIntoView |
-   | Cần đăng nhập | Hỏi user credentials hoặc dùng fixture sẵn có |
-   | CAPTCHA / 2FA | Thông báo user — không thể automate |
+   | Element not found | `browser_snapshot` again → check DOM → try different locator |
+   | Page not fully loaded | `browser_wait_for` text/element → retry |
+   | Modal/popup appears | Handle popup first → continue flow |
+   | Redirect/navigation | `browser_snapshot` again on the new page |
+   | Scroll required | `browser_evaluate` → scrollIntoView |
+   | Login required | Ask user for credentials or use existing fixture |
+   | CAPTCHA / 2FA | Notify the user — cannot automate |
 
-6. **Screenshot evidence** — chụp lại ở các milestone quan trọng:
-   - Sau khi login thành công
-   - Sau khi hoàn thành flow chính
-   - Khi gặp lỗi/unexpected state
+6. **Screenshot evidence** — capture at key milestones:
+   - After successful login.
+   - After completing the main flow.
+   - When encountering an error/unexpected state.
 
-### Bước 3: Sinh Automation Scripts (Code Generation)
+### Step 3: Generate Automation Scripts (Code Generation)
 
-1. **Sinh Page Object classes** từ locator collection:
+1. **Generate Page Object classes** from the locator collection:
 
    **Playwright TypeScript:**
    ```typescript
@@ -188,22 +188,22 @@ Nếu user chưa cung cấp đủ → hỏi:
    }
    ```
 
-2. **Sinh Test class:**
+2. **Generate Test class:**
    - Import Page Objects
    - Structure: **Arrange → Act → Assert**
-   - Assertions rõ ràng với message mô tả
-   - Test data unique + traceable (dùng timestamp/random)
+   - Clear assertions with descriptive messages
+   - Unique + traceable test data (using timestamp/random)
 
-3. **Nguyên tắc sinh code:**
-   - Locator PHẢI lấy từ Bước 2 (đã verify trên DOM) — KHÔNG ĐOÁN
-   - Không hardcode test data (credentials đọc từ env/config)
-   - Không dùng `waitForTimeout()` / `Thread.sleep()` — chỉ smart waits
-   - Method names mô tả hành vi user, không mô tả thao tác DOM
-   - Mỗi page → 1 file, mỗi test → 1 file
+3. **Code Generation Principles:**
+   - Locators MUST be from Step 2 (verified on DOM) — DO NOT GUESS.
+   - Do not hardcode test data (credentials read from env/config).
+   - No `waitForTimeout()` / `Thread.sleep()` — only smart waits.
+   - Method names describe user behavior, not DOM operations.
+   - One file per page, one file per test.
 
-### Bước 4: Chạy Test & Tự sửa lỗi (Execution & Auto-Heal)
+### Step 4: Run Test & Auto-Heal (Execution & Auto-Heal)
 
-1. **Chạy test** bằng `run_command`:
+1. **Run test** using `run_command`:
    ```bash
    # Playwright TS
    npx playwright test <test_file> --headed
@@ -215,23 +215,23 @@ Nếu user chưa cung cấp đủ → hỏi:
    mvn test -Dtest=<TestClass>
    ```
 
-2. **Theo dõi kết quả** qua `command_status`:
-   - Nếu **PASS** → chuyển sang verify stability
-   - Nếu **FAIL** → vào vòng lặp Auto-Heal:
+2. **Monitor results** via `command_status`:
+   - If **PASS** → proceed to verify stability
+   - If **FAIL** → enter Auto-Heal loop:
 
    ```
-   WHILE test FAIL (tối đa 5 vòng):
-     1. Đọc error log → xác định step fail
-     2. Phân loại lỗi:
-        - Locator sai → mở browser MCP, inspect lại DOM, thay locator
-        - Timing issue → thêm smart wait hoặc adjust assertion timeout
-        - Page state sai → kiểm tra flow, thêm wait cho navigation
-        - Test data conflict → sinh data mới (unique)
-     3. Sửa code bằng replace_file_content / multi_replace_file_content
-     4. Chạy lại test
+   WHILE test FAIL (max 5 cycles):
+     1. Read error log → identify failing step
+     2. Classify the error:
+        - Incorrect locator → open MCP browser, re-inspect DOM, change locator
+        - Timing issue → add smart wait or adjust assertion timeout
+        - Incorrect page state → check flow, add wait for navigation
+        - Test data conflict → generate new (unique) data
+     3. Fix code using replace_file_content / multi_replace_file_content
+     4. Re-run test
    ```
 
-3. **Verify stability** — chạy test **2 lần liên tiếp** PASS:
+3. **Verify stability** — run test **2 consecutive times** PASS:
    ```bash
    # Playwright
    npx playwright test <test_file> --repeat-each=2
@@ -240,39 +240,39 @@ Nếu user chưa cung cấp đủ → hỏi:
    python -m pytest <test_file> --count=2
    ```
 
-4. **⚠️ Rule E3:** KHÔNG hỏi user trong quá trình fix lỗi. Chỉ hỏi khi:
-   - URL bị chặn / cần captcha
-   - Business logic mâu thuẫn (không rõ expected behavior)
-   - Đã hết 5 vòng auto-heal mà vẫn fail
+4. **⚠️ Rule E3:** DO NOT ask the user during the fix process. Only ask if:
+   - URL blocked / captcha required
+   - Business logic contradiction (unclear expected behavior)
+   - Failed after 5 auto-heal cycles
 
-### Bước 5: Cleanup & Delivery
+### Step 5: Cleanup & Delivery
 
-1. **Code cleanup** (bắt buộc trước khi bàn giao):
-   - [ ] Xóa `console.log()` / `print()` / debug log
-   - [ ] Xóa locator không dùng
-   - [ ] Xóa commented-out code
-   - [ ] Không còn `waitForTimeout()` / `Thread.sleep()`
-   - [ ] Import không thừa
+1. **Code cleanup** (mandatory before delivery):
+   - [ ] Delete `console.log()` / `print()` / debug logs.
+   - [ ] Delete unused locators.
+   - [ ] Delete commented-out code.
+   - [ ] No `waitForTimeout()` / `Thread.sleep()`.
+   - [ ] No redundant imports.
 
-2. **Cập nhật artifact `task.md`** với kết quả:
+2. **Update task.md artifact** with results:
    ```markdown
-   ## Kết quả
+   ## Results
    - ✅ Pages created: LoginPage, DashboardPage
    - ✅ Tests created: login.spec.ts
    - ✅ Test status: 2/2 PASS (stable)
    - 📊 Locators collected: 8 elements, all verified
    ```
 
-3. **Báo cáo** cho user:
-   - Danh sách files đã tạo
-   - Số test PASS/FAIL
-   - Bảng locator collection (để user reference)
-   - Known limitations (nếu có)
+3. **Report** to the user:
+   - List of files created
+   - Number of tests PASS/FAIL
+   - Locator collection table (for user reference)
+   - Known limitations (if any)
 
 ## Output
 
-- **Artifact `task.md`** — checklist tiến độ + kết quả
-- **Page Object classes** — 1 file per page/screen, locators verified từ DOM
-- **Test classes** — script automation hoàn chỉnh, đã test PASS
-- **Bảng Locator Collection** — tất cả elements đã thu thập + primary/fallback locators
-- **Evidence screenshots** — chụp tại các milestone quan trọng
+- **`task.md` artifact** — progress checklist + results
+- **Page Object classes** — 1 file per page/screen, locators verified from DOM
+- **Test classes** — complete automation scripts, PASS tested
+- **Locator Collection table** — all elements collected + primary/fallback locators
+- **Evidence screenshots** — captured at key milestones

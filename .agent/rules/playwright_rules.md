@@ -1,88 +1,88 @@
-# Quy Tắc Dành Riêng Cho Playwright
+# Specific Rules for Playwright
 
-> Áp dụng khi thiết lập và chạy automation với Playwright (TypeScript hoặc Java).
+> Applies when setting up and running automation with Playwright (TypeScript or Java).
 
-## 1. Thiết Lập Browser (BẮT BUỘC)
+## 1. Browser Setup (MANDATORY)
 
-- **Viewport debug:** Mọi quá trình debug UI bắt buộc chạy với viewport desktop: **`1920x1080`**.
-- **Playwright MCP — Resize bắt buộc:** Khi sử dụng Playwright MCP để debug UI, **LUÔN LUÔN** gọi `browser_resize(width=1920, height=1080)` **ngay sau khi mở browser** (sau lệnh `browser_navigate` đầu tiên). Đây là bước bắt buộc, không được bỏ qua.
+- **Debug Viewport:** All UI debugging processes must run with the desktop viewport: **`1920x1080`**.
+- **Playwright MCP — Mandatory Resize:** When using Playwright MCP to debug UI, **ALWAYS** call `browser_resize(width=1920, height=1080)` **immediately after opening the browser** (after the first `browser_navigate` command). This is a mandatory step and must not be skipped.
   ```
-  Thứ tự bắt buộc:
-  1. browser_navigate(url) → mở trang
-  2. browser_resize(width=1920, height=1080) → set viewport
-  3. browser_snapshot() hoặc browser_take_screenshot() → bắt đầu inspect
+  Mandatory Order:
+  1. browser_navigate(url) → Open the page
+  2. browser_resize(width=1920, height=1080) → Set viewport
+  3. browser_snapshot() or browser_take_screenshot() → Start inspecting
   ```
-- **Headed mode:** Bắt buộc mở browser có hiển thị (headed) trong quá trình thiết lập và debug test.
-- **Headless mode:** Chỉ được phép sử dụng khi:
-  - Test đã debug PASS 100% trên headed mode
-  - Hoặc trong CI/CD pipeline mặc định
+- **Headed Mode:** The browser must be opened in visible (headed) mode during setup and test debugging.
+- **Headless Mode:** Only allowed when:
+  - The test has passed 100% in headed mode during debugging.
+  - Or in the default CI/CD pipeline.
 
-## 2. Workflow Phát Triển & Tìm Element
+## 2. Development Workflow & Element Discovery
 
-- Ưu tiên sử dụng **Playwright MCP** để mở browser và tương tác với trang đích.
-- **Inspect DOM thực tế:** Verify và capture selector trực tiếp từ browser DOM.
-- **TUYỆT ĐỐI KHÔNG:**
-  - Suy đoán locator
-  - Copy locator mù quáng từ code cũ mà không verify
-  - Dựa trên URL / tài liệu mà không xác nhận sự tồn tại trên UI thật
+- Prioritize using **Playwright MCP** to open the browser and interact with the target page.
+- **Inspect Real DOM:** Verify and capture selectors directly from the browser DOM.
+- **ABSOLUTELY DO NOT:**
+  - Guess locators.
+  - Blindly copy locators from old code without verification.
+  - Rely on URLs/documentation without confirming existence on the real UI.
 
-## 3. Thứ Tự Ưu Tiên Locator Playwright
+## 3. Playwright Locator Priority Order
 
-Playwright cung cấp bộ locator semantic hướng người dùng. Ưu tiên sử dụng thay vì CSS/XPath:
+Playwright provides a set of user-centric semantic locators. Prioritize using these over CSS/XPath:
 
-1. `getByRole()` — Tốt nhất cho semantic elements (button, link, heading...)
-2. `getByLabel()` — Tốt nhất cho form fields có label
-3. `getByPlaceholder()` — Tốt nhất cho inputs có placeholder text
-4. `getByText()` — Tốt nhất cho text content
-5. `getByTestId()` — Tốt nhất khi element có `data-testid`
-6. `locator("css")` — Fallback khi không có lựa chọn tốt hơn
+1. `getByRole()` — Best for semantic elements (button, link, heading...)
+2. `getByLabel()` — Best for form fields with labels
+3. `getByPlaceholder()` — Best for inputs with placeholder text
+4. `getByText()` — Best for text content
+5. `getByTestId()` — Best when elements have `data-testid`
+6. `locator("css")` — Fallback when no better options are available
 
-Ví dụ:
+Example:
 ```typescript
-// Đúng — Semantic locator
-page.getByRole('button', { name: 'Đăng nhập' })
+// Correct — Semantic locator
+page.getByRole('button', { name: 'Login' })
 page.getByLabel('Email')
-page.getByPlaceholder('Nhập mật khẩu')
+page.getByPlaceholder('Enter password')
 
-// Sai — XPath/CSS thô khi có semantic thay thế
+// Incorrect — Raw XPath/CSS when semantic alternatives exist
 page.locator('//button[@class="btn-login"]')
 page.locator('.form-input:nth-child(2)')
 ```
 
-## 4. Chiến Lược Chờ Đợi (Wait Strategy)
+## 4. Wait Strategy
 
-**NGHIÊM CẤM:**
+**FORBIDDEN:**
 - `page.waitForTimeout()` — hard sleep
-- `await new Promise(r => setTimeout(r, N))` — tự tạo delay
-- Bất kỳ cách nào cố định thời gian chờ
+- `await new Promise(r => setTimeout(r, N))` — manual delay
+- Any method that fixes wait time
 
-**SỬ DỤNG:**
-- Tận dụng auto-waiting mặc định của Playwright
+**USE:**
+- Leverage Playwright's default auto-waiting.
 - Web-First Assertions:
   ```typescript
   await expect(locator).toBeVisible();
   await expect(locator).toBeEnabled();
-  await expect(locator).toHaveText('Thành công');
+  await expect(locator).toHaveText('Success');
   await expect(page).toHaveURL(/dashboard/);
   ```
-- Chỉ dùng `waitForSelector()` khi `expect()` không đáp ứng được yêu cầu đặc biệt
+- Only use `waitForSelector()` when `expect()` does not meet special requirements.
 
-## 5. Cấu Trúc Test
+## 5. Test Structure
 
 ```typescript
-test.describe('Tên Module', () => {
+test.describe('Module Name', () => {
   test.beforeEach(async ({ page }) => {
     // Setup: navigate, login...
   });
 
-  test('mô tả hành vi cần test', async ({ page }) => {
-    // Arrange: khởi tạo page objects, data
-    // Act: thực hiện hành động
-    // Assert: kiểm tra kết quả
+  test('behavior description to test', async ({ page }) => {
+    // Arrange: initialize page objects, data
+    // Act: perform actions
+    // Assert: check results
   });
 });
 ```
 
-- Mỗi test block phải có **assertion rõ ràng**
-- Sử dụng `test.describe` để nhóm test theo module
-- Sử dụng `beforeEach` / `afterEach` để setup / teardown
+- Each test block must have **clear assertions**.
+- Use `test.describe` to group tests by module.
+- Use `beforeEach` / `afterEach` for setup / teardown.

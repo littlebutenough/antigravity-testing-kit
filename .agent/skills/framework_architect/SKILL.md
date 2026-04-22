@@ -1,36 +1,36 @@
 ---
 name: Framework Architect
-description: Skill thiết kế và scaffold automation framework hoàn chỉnh cho Playwright, Selenium, và Appium — bao gồm project structure, base classes, config management, reporting, và CI/CD integration.
+description: Skill for designing and scaffolding a complete automation framework for Playwright, Selenium, and Appium — including project structure, base classes, config management, reporting, and CI/CD integration.
 ---
 
 # Framework Architect
 
 ## Description
 
-Skill chuyên biệt giúp agent thiết kế, scaffold và triển khai automation framework từ đầu. Hỗ trợ đa nền tảng (Web, Mobile, API) với các framework phổ biến nhất.
+A specialized skill that helps the agent design, scaffold, and implement an automation framework from scratch. Supports multi-platform (Web, Mobile, API) with the most popular frameworks.
 
-Agent có thể:
+The agent can:
 
-- Thiết kế project structure theo best practices
-- Sinh base classes, config management, driver/browser management
-- Tích hợp reporting (Allure, HTML Report, Playwright Report)
-- Cấu hình CI/CD pipeline (GitHub Actions, GitLab CI, Jenkins)
-- Sinh template Page Object Model, fixtures, helpers
-- Tạo file cấu hình (package.json, pom.xml, build.gradle, playwright.config.ts)
+- Design project structure according to best practices.
+- Generate base classes, config management, and driver/browser management.
+- Integrate reporting (Allure, HTML Report, Playwright Report).
+- Configure CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins).
+- Generate Page Object Model templates, fixtures, and helpers.
+- Create configuration files (package.json, pom.xml, build.gradle, playwright.config.ts).
 
 ---
 
 ## When to Use
 
-Sử dụng skill này khi:
+Use this skill when:
 
-- User yêu cầu tạo/thiết kế automation framework mới
-- User cần scaffold project structure cho test automation
-- User muốn chuẩn hóa framework hiện tại
-- User cần tích hợp reporting hoặc CI/CD vào framework
-- User hỏi về best practices cho framework design
+- The user requests to create/design a new automation framework.
+- The user needs to scaffold a project structure for test automation.
+- The user wants to standardize an existing framework.
+- The user needs to integrate reporting or CI/CD into the framework.
+- The user asks about best practices for framework design.
 
-Trigger keywords: "create framework", "design framework", "scaffold project", "thiết kế framework", "tạo project mới"
+Trigger keywords: "create framework", "design framework", "scaffold project", "new project"
 
 ---
 
@@ -38,7 +38,7 @@ Trigger keywords: "create framework", "design framework", "scaffold project", "t
 
 ### 🌐 Web Automation
 
-| Stack | Ngôn ngữ | Runner | Report | Build Tool |
+| Stack | Language | Runner | Report | Build Tool |
 |---|---|---|---|---|
 | **Playwright + TypeScript** | TypeScript | Playwright Test | HTML Report, Allure | npm |
 | **Playwright + Java** | Java | TestNG / JUnit5 | Allure Report | Maven / Gradle |
@@ -48,14 +48,14 @@ Trigger keywords: "create framework", "design framework", "scaffold project", "t
 
 ### 📱 Mobile Automation
 
-| Stack | Ngôn ngữ | Runner | Report | Build Tool |
+| Stack | Language | Runner | Report | Build Tool |
 |---|---|---|---|---|
 | **Appium + Java** | Java | TestNG | Allure, ExtentReports | Maven / Gradle |
 | **Appium + Python** | Python | Pytest | Allure, pytest-html | pip |
 
 ### 🔌 API Automation
 
-| Stack | Ngôn ngữ | Runner | Report |
+| Stack | Language | Runner | Report |
 |---|---|---|---|
 | **REST Assured** | Java | TestNG | Allure |
 | **Playwright API** | TypeScript | Playwright Test | HTML Report |
@@ -65,53 +65,53 @@ Trigger keywords: "create framework", "design framework", "scaffold project", "t
 
 ## Framework Components
 
-Mỗi framework PHẢI bao gồm các thành phần sau (tùy chỉnh theo stack):
+Each framework MUST include the following components (customized per stack):
 
 ### 1. Project Structure (Mandatory)
-- Cấu trúc thư mục rõ ràng, phân tách pages/tests/utils/config
-- File README.md hướng dẫn setup + chạy test
-- File .gitignore phù hợp
+- Clear directory structure, separating pages/tests/utils/config.
+- README.md file with setup + test execution instructions.
+- Appropriate .gitignore file.
 
 ### 2. Configuration Management (Mandatory)
-- Quản lý environment (dev/staging/prod) qua config file hoặc .env
-- Centralized config — không hardcode giá trị trong test
-- Sensitive data (credentials) qua environment variables, KHÔNG commit vào repo
+- Environment management (dev/staging/prod) via config files or .env.
+- Centralized config — no hardcoding values in tests.
+- Sensitive data (credentials) via environment variables, DO NOT commit to the repo.
 
 ### 3. Browser / Driver Management (Mandatory)
-- **Playwright:** playwright.config.ts / conftest.py với browser setup
-- **Selenium:** WebDriverManager hoặc Driver Factory pattern
-- **Appium:** Desired Capabilities factory, Appium server config
+- **Playwright:** playwright.config.ts / conftest.py with browser setup.
+- **Selenium:** WebDriverManager or Driver Factory pattern.
+- **Appium:** Desired Capabilities factory, Appium server config.
 
 ### 4. Base Classes (Mandatory)
-- Base Page — chứa common methods (wait, click, type, screenshot)
-- Base Test — chứa setup/teardown, test lifecycle hooks
-- Không hardcode waits — chỉ dùng smart waits
+- Base Page — contains common methods (wait, click, type, screenshot).
+- Base Test — contains setup/teardown, test lifecycle hooks.
+- No hardcoded waits — use only smart waits.
 
 ### 5. Page Object Model (Mandatory)
-- Mỗi page/screen → 1 Page class
-- Locators khai báo ở đầu class, không inline trong test
-- Methods mô tả hành vi người dùng (không phải thao tác DOM)
+- Each page/screen → 1 Page class.
+- Locators declared at the top of the class, not inline in tests.
+- Methods describing user behavior (not DOM operations).
 
 ### 6. Test Data Management (Mandatory)
-- Data factory / builder pattern cho test data
-- Data external (JSON/YAML/CSV) cho data-driven tests
-- Data unique + traceable (timestamp/random prefix)
+- Data factory / builder pattern for test data.
+- External data (JSON/YAML/CSV) for data-driven tests.
+- Unique + traceable data (timestamp/random prefix).
 
 ### 7. Utilities (Mandatory)
-- Wait helpers (smart waits, custom conditions)
-- Screenshot utilities (capture on failure)
-- Logger (structured logging, không dùng print/console.log)
-- Date/Time helpers, String generators
+- Wait helpers (smart waits, custom conditions).
+- Screenshot utilities (capture on failure).
+- Logger (structured logging, do not use print/console.log).
+- Date/Time helpers, String generators.
 
 ### 8. Reporting (Mandatory)
-- Tích hợp ít nhất 1 reporting tool
-- Screenshot attach on failure
-- Test execution summary (pass/fail/skip counts)
+- Integrate at least one reporting tool.
+- Attach screenshot on failure.
+- Test execution summary (pass/fail/skip counts).
 
-### 9. CI/CD Pipeline (Optional — nhưng khuyến khích)
-- GitHub Actions / GitLab CI / Jenkins pipeline template
-- Parallel execution config
-- Artifact upload (reports, screenshots)
+### 9. CI/CD Pipeline (Optional — but encouraged)
+- GitHub Actions / GitLab CI / Jenkins pipeline template.
+- Parallel execution config.
+- Artifact upload (reports, screenshots).
 
 ---
 
@@ -233,7 +233,7 @@ project-root/
 
 ```
 project-root/
-├── playwright.config.py        # Pytest-playwright config (nếu có)
+├── playwright.config.py        # Pytest-playwright config (if any)
 ├── pyproject.toml              # Python project config
 ├── requirements.txt            # Dependencies
 ├── conftest.py                 # Root fixtures + browser setup
@@ -264,30 +264,30 @@ project-root/
 
 ## Design Principles
 
-1. **DRY (Don't Repeat Yourself)** — Mỗi logic chỉ viết 1 lần, tái sử dụng qua Base classes và Utils
-2. **Single Responsibility** — Mỗi class/module làm 1 việc (Page chỉ chứa UI interaction, Test chỉ chứa test logic)
-3. **Open/Closed** — Framework dễ mở rộng (thêm page, thêm test) mà không sửa core
-4. **Configuration over Code** — Env, browser, timeout... quản lý qua config, không hardcode
-5. **Fail Fast, Log Rich** — Screenshot on failure, structured logging, clear assertion messages
+1. **DRY (Don't Repeat Yourself)** — Each logic is written once, reused via Base classes and Utils.
+2. **Single Responsibility** — Each class/module does one thing (Page contains only UI interaction, Test contains only test logic).
+3. **Open/Closed** — The framework is easy to extend (add pages, add tests) without modifying the core.
+4. **Configuration over Code** — Env, browser, timeout... managed via config, not hardcoded.
+5. **Fail Fast, Log Rich** — Screenshot on failure, structured logging, clear assertion messages.
 
 ---
 
 ## Anti-Patterns (FORBIDDEN)
 
-| ❌ Anti-Pattern | ✅ Đúng cách |
+| ❌ Anti-Pattern | ✅ Correct Way |
 |---|---|
-| Hardcode URL/credentials trong code | Đọc từ .env hoặc config file |
-| Locator inline trong test | Khai báo trong Page class |
+| Hardcoding URL/credentials in code | Read from .env or config file |
+| Inline locators in tests | Declare in Page class |
 | `Thread.sleep()` / `waitForTimeout()` | Smart waits (`expect()`, `WebDriverWait`) |
 | Global mutable state | Isolated fixtures/setup per test |
-| Monolithic test file (1 file 500+ dòng) | Tách theo module/feature |
+| Monolithic test file (1 file 500+ lines) | Separate by module/feature |
 | `System.out.println()` / `console.log()` | Logger framework (Log4j, winston, logging) |
 
 ---
 
 ## Rules References
 
-Agent PHẢI tuân thủ các rules chi tiết:
+The agent MUST comply with detailed rules:
 
 - `.agent/rules/automation_rules.md` — General automation best practices
 - `.agent/rules/locator_strategy.md` — Locator selection priority

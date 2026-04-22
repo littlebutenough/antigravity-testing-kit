@@ -1,67 +1,67 @@
 ---
-description: Sinh manual test cases chất lượng cao theo quy trình AI-RBT 6 bước (Risk-Based Testing) từ requirements.
+description: Generate high-quality manual test cases using the 6-step AI-RBT (Risk-Based Testing) process from requirements.
 skills:
   - rbt_manual_testing
   - requirements_analyzer
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.agent/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements_analyzer`** để hiểu cách phân tích giao diện nếu cần.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`rbt_manual_testing`** skill (at `.agent/skills/rbt_manual_testing/SKILL.md`) before starting this task. Use the **FULL RBT Mode** of the skill. Additionally, refer to the **`requirements_analyzer`** skill for UI analysis if needed.
 
-# Workflow: Sinh Manual Test Cases theo AI-RBT Framework (FULL RBT Mode)
+# Workflow: Generate Manual Test Cases using AI-RBT Framework (FULL RBT Mode)
 
-Workflow này sử dụng **Mode FULL RBT** của skill `rbt_manual_testing` — quy trình **AI-RBT (AI-Driven Risk-Based Testing)** gồm 6 bước tuần tự để sinh manual test cases từ tài liệu yêu cầu.
+This workflow uses the **FULL RBT Mode** of the `rbt_manual_testing` skill — a sequential 6-step **AI-RBT (AI-Driven Risk-Based Testing)** process to generate manual test cases from requirement documents.
 
 > [!NOTE]
-> **Luồng này dành cho Antigravity (slash command).** Agent thực hiện theo hướng dẫn trong skill, KHÔNG cần đọc file prompt.txt.
-> Nếu QA team muốn dùng prompt chi tiết hơn (ChatGPT/Claude), hãy copy-paste từng bước từ `plans/manual/01-06/prompt.txt`.
+> **This flow is for Antigravity (slash command).** The agent follows the instructions in the skill; there is NO need to read the `prompt.txt` file.
+> If the QA team wishes to use a more detailed prompt (ChatGPT/Claude), please copy-paste each step from `plans/manual/01-06/prompt.txt`.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Mode:** FULL RBT (6 bước tuần tự)
-- **BẮT BUỘC chạy tuần tự** từng bước, KHÔNG gộp nhiều bước
-- **PHẢI dừng lại** chờ user phản hồi tại Bước 2 (Q&A) và Bước 4 (Review Scenarios)
-- Nếu user chưa cung cấp requirements, hỏi user cung cấp trước khi bắt đầu
-- Tất cả output bằng **Tiếng Việt**
+- **Mode:** FULL RBT (6 sequential steps)
+- **MANDATORY sequential execution** of each step; DO NOT combine steps.
+- **MUST stop** and wait for user feedback at Step 2 (Q&A) and Step 4 (Review Scenarios).
+- If the user hasn't provided requirements, ask them to do so before starting.
+- **All output in English**
 
-## Các bước thực hiện
+## Execution Steps
 
-Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` → phần **Mode 2: FULL RBT**.
+Follow the detailed instructions in the `rbt_manual_testing` skill → **Mode 2: FULL RBT** section.
 
-### Bước 1: Khởi tạo ngữ cảnh (Context & Role-play)
-1. Yêu cầu user cung cấp: tên dự án, mô tả hệ thống, mục tiêu MVP, tài liệu yêu cầu
-2. Đọc kỹ tài liệu, xác nhận hiểu bối cảnh
-3. **Chờ user xác nhận** → sang Bước 2
+### Step 1: Context & Role-play Initialization
+1. Ask the user for: project name, system description, MVP goals, requirement documents.
+2. Read documents carefully, confirm understanding of the context.
+3. **Wait for user confirmation** → proceed to Step 2.
 
-### Bước 2: Phân tích yêu cầu (Analysis & QnA)
-1. Xác định Happy Path, Alternate Paths, Exception Paths
-2. Phát hiện Ambiguities (thiếu sót, mâu thuẫn, chưa rõ ràng)
-3. Đặt câu hỏi Q&A có đánh số (Q1, Q2...) cho user/PO/BA, kèm ngữ cảnh + assumption
-4. **DỪNG LẠI — Chờ user trả lời câu hỏi** → sang Bước 3
+### Step 2: Requirement Analysis (Analysis & Q&A)
+1. Identify Happy Path, Alternate Paths, and Exception Paths.
+2. Detect Ambiguities (omissions, contradictions, lack of clarity).
+3. Pose numbered Q&A questions (Q1, Q2...) to the user/PO/BA, including context + assumptions.
+4. **STOP — Wait for user answers** → proceed to Step 3.
 
-### Bước 3: Phân rã hệ thống (Decomposition)
-1. Chia tính năng thành Modules / Sub-modules
-2. Mô tả chức năng từng Module + Dependencies giữa chúng
+### Step 3: System Decomposition
+1. Divide features into Modules / Sub-modules.
+2. Describe the functionality of each module + their dependencies.
 
-### Bước 4: Đảm bảo độ bao phủ (Traceability)
-1. Map Module → mã Yêu cầu (REQ-01, REQ-02...)
-2. Cross-check thiếu sót (Gap Analysis), liệt kê High-Level Scenarios
-3. **Chờ user review** scenarios → sang Bước 5
+### Step 4: Ensure Coverage (Traceability)
+1. Map Module → Requirement ID (REQ-01, REQ-02...).
+2. Cross-check for gaps (Gap Analysis), list High-Level Scenarios.
+3. **Wait for user scenario review** → proceed to Step 5.
 
-### Bước 5: Sinh Test Case chi tiết (RBT & TC Generation)
-1. Đánh giá Risk Level (High/Medium/Low) cho mỗi Module
-2. Sinh test cases đầy đủ: Title, Pre-condition, Steps, Expected, Test Data, Priority
-3. Áp dụng kỹ thuật: EP, BVA, Decision Table, State Transition
-4. Test Data phải cụ thể (không placeholder chung)
-5. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
+### Step 5: Detailed Test Case Generation (RBT & TC Gen)
+1. Assess Risk Level (High/Medium/Low) for each Module.
+2. Generate complete test cases: Title, Pre-condition, Steps, Expected, Test Data, Priority.
+3. Apply techniques: EP, BVA, Decision Table, State Transition.
+4. Test Data must be specific (no generic placeholders).
+5. If too many → generate per Module, ask user to continue.
 
-### Bước 6: Chuẩn hóa Format (Template Mapping)
-1. Đóng gói toàn bộ test cases vào bảng Markdown chuẩn:
+### Step 6: Format Standardization (Template Mapping)
+1. Package all test cases into a standard Markdown table:
    `| TC ID | Module | Risk Level | Test Title | Pre-Condition | Test Steps | Expected Result | Priority | Test Data |`
-2. Không được bỏ sót test case nào
-3. Xuất dưới dạng Artifact nếu dài
+2. Do not omit any test cases.
+3. Export as an Artifact if lengthy.
 
 ## Output
 
-- Bảng Test Cases Markdown hoàn chỉnh, sẵn sàng copy sang Excel/Jira/TestRail
+- Complete Markdown Test Case table, ready for copy-pasting to Excel/Jira/TestRail.
 - Traceability Matrix
-- Danh sách Ambiguities đã giải quyết
+- List of resolved Ambiguities.

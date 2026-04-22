@@ -1,116 +1,116 @@
 ---
-description: Khám phá ứng dụng web, sinh test plan và test scenarios. Hỗ trợ 2 mode — PLAN (chỉ test plan) và FULL (test plan + automation skeleton).
+description: Explore web applications, generate test plans and test scenarios. Supports 2 modes — PLAN (test plan only) and FULL (test plan + automation skeleton).
 skills:
   - qa_automation_engineer
   - requirements_analyzer
   - ui_debug_agent
 ---
 
-# Workflow: Khám Phá Ứng Dụng & Sinh Test Plan
+# Workflow: App Exploration & Test Plan Generation
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`qa_automation_engineer`** (tại `.agent/skills/qa_automation_engineer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`requirements_analyzer`** và **`ui_debug_agent`** để hỗ trợ phân tích UI.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`qa_automation_engineer`** skill (at `.agent/skills/qa_automation_engineer/SKILL.md`) before starting. Additionally, refer to the **`requirements_analyzer`** and **`ui_debug_agent`** skills to support UI analysis.
 
-Workflow này giúp agent tự động khám phá một ứng dụng web, phân tích cấu trúc, xác định các modules/user flows quan trọng, và sinh ra Test Plan hoàn chỉnh.
+This workflow helps the agent automatically explore a web application, analyze its structure, identify key modules/user flows, and generate a complete Test Plan.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Tất cả output bằng Tiếng Việt**
-- **KHÔNG đoán** cấu trúc app — phải inspect DOM thực tế qua MCP/browser tools
-- **Phải chờ user xác nhận** scope tại Bước 2 trước khi sinh chi tiết
-- Nếu user chưa cung cấp URL → hỏi trước khi bắt đầu
+- **All output in English**
+- **DO NOT guess** the app structure — inspect the actual DOM via MCP/browser tools.
+- **Must wait for user confirmation** of the scope at Step 2 before generating details.
+- If the user has not provided a URL → ask before starting.
 
-## 2 Chế độ (Mode)
+## 2 Modes
 
-| Mode | Khi nào sử dụng | Output |
+| Mode | When to Use | Output |
 |---|---|---|
-| **PLAN** (mặc định) | User cần khám phá app, lập test plan, xác định scenarios | Modules, User Flows, Test Scenarios, Priority |
-| **FULL** | User yêu cầu thêm automation skeleton hoặc nói "full automation suite" | Như PLAN + Manual Test Cases + Automation Skeleton (POM + Test classes) |
+| **PLAN** (default) | User needs to explore the app, create a test plan, define scenarios | Modules, User Flows, Test Scenarios, Priority |
+| **FULL** | User requests an automation skeleton or "full automation suite" | Same as PLAN + Manual Test Cases + Automation Skeleton (POM + Test classes) |
 
-> Nếu user nói "generate full automation suite", "bootstrap automation", hoặc yêu cầu code → tự động chuyển sang **Mode FULL**.
+> If the user says "generate full automation suite", "bootstrap automation", or requests code → automatically switch to **FULL Mode**.
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Tiếp nhận & Khám phá ứng dụng (Recon)
+### Step 1: Reception & App Exploration (Recon)
 
-1. Nhận URL ứng dụng từ user
-2. Sử dụng **MCP browser tools** (Playwright MCP) để mở ứng dụng:
+1. Receive application URL from the user.
+2. Use **MCP browser tools** (Playwright MCP) to open the application:
    - `browser_navigate` → URL
    - `browser_resize(1920, 1080)` → desktop viewport
-   - `browser_snapshot` → thu thập cấu trúc DOM
-3. Khám phá **navigation menus**, sidebar, header để xác định các modules chính
-4. Lần lượt truy cập từng module chính, dùng `browser_snapshot` để ghi nhận:
-   - Tên module / trang
-   - Các thành phần UI chính (forms, tables, buttons, modals)
-   - Các action có thể thực hiện (CRUD, search, filter, export...)
-5. Nếu app yêu cầu đăng nhập → hỏi user cung cấp credentials hoặc dùng fixture sẵn có
+   - `browser_snapshot` → collect DOM structure.
+3. Explore **navigation menus**, sidebar, and header to identify main modules.
+4. Access each main module sequentially, use `browser_snapshot` to record:
+   - Module / page name.
+   - Key UI components (forms, tables, buttons, modals).
+   - Actions possible (CRUD, search, filter, export...).
+5. If the app requires login → ask the user for credentials or use existing fixtures.
 
-### Bước 2: Phân tích & Xác nhận scope (Analysis — CHECKPOINT)
+### Step 2: Analysis & Scope Confirmation (Analysis — CHECKPOINT)
 
-1. Tổng hợp kết quả khám phá thành danh sách:
-   - **Modules đã phát hiện** (tên, mô tả ngắn, số lượng features)
-   - **User Flows chính** (Happy Path cho mỗi module)
-   - **Dependencies** giữa các modules (nếu có)
-2. Đánh giá **Risk Level** sơ bộ cho mỗi module:
-   - 🔴 **High Risk** — Module core, ảnh hưởng nhiều user, logic phức tạp
-   - 🟡 **Medium Risk** — Module phụ trợ, sử dụng thường xuyên
-   - 🟢 **Low Risk** — Module ít sử dụng, ít thay đổi
-3. **⏸️ DỪNG LẠI — Trình bày cho user review:**
-   - Danh sách modules + risk level
-   - User flows đã xác định
-   - Hỏi user: "Bạn muốn tập trung vào modules nào? Có flow nào cần bổ sung?"
-4. **Chờ user xác nhận** scope trước khi sang Bước 3
+1. Synthesize exploration results into a list:
+   - Detected modules (name, short description, number of features).
+   - Main User Flows (Happy Path for each module).
+   - Dependencies between modules (if any).
+2. Preliminary **Risk Level** assessment for each module:
+   - 🔴 **High Risk** — Core module, high user impact, complex logic.
+   - 🟡 **Medium Risk** — Supporting module, frequently used.
+   - 🟢 **Low Risk** — Rarely used module, minimal changes.
+3. **⏸️ STOP — Present for user review:**
+   - List of modules + risk levels.
+   - Identified user flows.
+   - Ask user: "Which modules do you want to focus on? Are there any missing flows?"
+4. **Wait for user confirmation** of the scope before proceeding to Step 3.
 
-### Bước 3: Sinh Test Scenarios & Priority
+### Step 3: Generate Test Scenarios & Priority
 
-1. Với mỗi module/flow đã được user xác nhận, sinh test scenarios:
-   - **Happy Path** — luồng chính thành công
-   - **Negative Path** — nhập sai, thiếu dữ liệu, lỗi validation
-   - **Edge Cases** — boundary values, concurrent access, empty states
-2. Gán **Priority** cho mỗi scenario dựa trên Risk Level:
-   - **P1 (Critical)** — Core flows, regression blockers, dữ liệu nhạy cảm
-   - **P2 (High)** — Main features, tính năng sử dụng thường xuyên
-   - **P3 (Medium)** — Secondary features, UI/UX checks
-   - **P4 (Low)** — Nice-to-have, cosmetic checks
+1. For each module/flow confirmed by the user, generate test scenarios:
+   - **Happy Path** — main successful flow.
+   - **Negative Path** — invalid input, missing data, validation errors.
+   - **Edge Cases** — boundary values, concurrent access, empty states.
+2. Assign **Priority** to each scenario based on Risk Level:
+   - **P1 (Critical)** — Core flows, regression blockers, sensitive data.
+   - **P2 (High)** — Main features, frequently used functionality.
+   - **P3 (Medium)** — Secondary features, UI/UX checks.
+   - **P4 (Low)** — Nice-to-have, cosmetic checks.
 
-### Bước 4: Đóng gói Test Plan (Output — Mode PLAN)
+### Step 4: Package Test Plan (Output — PLAN Mode)
 
-1. Tạo **artifact** `test_plan.md` với cấu trúc:
-   - **Tổng quan ứng dụng** — mục đích, tech stack (nếu xác định được), URL
-   - **Danh sách Modules** — bảng gồm: Module, Mô tả, Risk Level, Số scenarios
-   - **User Flows** — mô tả từng flow chính (steps)
-   - **Test Scenarios** — bảng: `| ID | Module | Scenario | Priority | Loại (Happy/Negative/Edge) |`
-   - **Automation Candidates** — đánh dấu scenarios nào nên tự động hóa và lý do
-2. Nếu user chọn **Mode PLAN** → **KẾT THÚC** tại đây
+1. Create the `test_plan.md` **artifact** with the following structure:
+   - **App Overview** — purpose, tech stack (if identified), URL.
+   - **Module List** — table including: Module, Description, Risk Level, Number of scenarios.
+   - **User Flows** — description of each main flow (steps).
+   - **Test Scenarios** — table: `| ID | Module | Scenario | Priority | Category (Happy/Negative/Edge) |`.
+   - **Automation Candidates** — mark scenarios suitable for automation and why.
+2. If the user chooses **PLAN Mode** → **END** here.
 
-### Bước 5: Sinh Manual Test Cases (Mode FULL)
+### Step 5: Generate Manual Test Cases (FULL Mode)
 
-> Chỉ thực hiện khi ở **Mode FULL**
+> Only perform in **FULL Mode**.
 
-1. Chuyển test scenarios (Bước 3) thành **manual test cases đầy đủ**:
-   - TC ID, Module, Test Title, Pre-conditions, Test Steps, Expected Results, Test Data, Priority
-2. Test Data phải **cụ thể** (không placeholder chung chung)
-3. Xuất dưới dạng bảng Markdown trong artifact
+1. Convert test scenarios (Step 3) into **full manual test cases**:
+   - TC ID, Module, Test Title, Pre-conditions, Test Steps, Expected Results, Test Data, Priority.
+   - Test Data must be specific (no generic placeholders).
+2. Export as Markdown tables in the artifact.
 
-### Bước 6: Sinh Automation Skeleton (Mode FULL)
+### Step 6: Generate Automation Skeleton (FULL Mode)
 
-> Chỉ thực hiện khi ở **Mode FULL**
+> Only perform in **FULL Mode**.
 
-1. Xác định **tech stack** automation (hỏi user nếu chưa rõ):
-   - Mặc định: Playwright + TypeScript (hoặc Selenium + Java theo preference)
-2. Sinh **Page Object classes** cho mỗi module:
-   - Locator thu thập từ DOM thực tế (Bước 1), KHÔNG đoán
-   - Methods tương tác rõ nghĩa
-3. Sinh **Test class skeleton** cho top-priority scenarios (P1, P2)
-4. Đảm bảo tuân thủ **POM pattern** và **locator strategy** theo rules
+1. Identify automation **tech stack** (ask user if unclear):
+   - Default: Playwright + TypeScript (or Selenium + Java according to preference).
+2. Generate **Page Object classes** for each module:
+   - Locators collected from actual DOM (Step 1), DO NOT guess.
+   - Clearly named interaction methods.
+3. Generate **Test class skeleton** for top-priority scenarios (P1, P2).
+4. Ensure compliance with **POM pattern** and **locator strategy** rules.
 
 ## Output
 
 ### Mode PLAN
-- Artifact `test_plan.md` gồm: App overview, Modules, User Flows, Test Scenarios (có Priority), Automation Candidates
+- Artifact `test_plan.md` includes: App overview, Modules, User Flows, Test Scenarios (with Priority), Automation Candidates.
 
 ### Mode FULL
-- Tất cả output của Mode PLAN, cộng thêm:
-- Manual Test Cases (bảng Markdown)
-- Page Object classes
-- Test class skeletons
-- Assertions validating expected behavior
+- All output from PLAN Mode, plus:
+- Manual Test Cases (Markdown table).
+- Page Object classes.
+- Test class skeletons.
+- Assertions validating expected behavior.

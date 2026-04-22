@@ -1,60 +1,60 @@
 ---
-description: Lấy Requirements / User Stories từ Jira ticket và lưu thành file markdown hoặc JSON.
+description: Fetch Requirements / User Stories from Jira tickets and save as markdown or JSON files.
 skills:
   - jira_integration
 ---
 
 # Workflow: Fetch Jira Requirements
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`jira_integration`** (tại `.agent/skills/jira_integration/SKILL.md`) để biết cách sử dụng scripts trước khi bắt đầu.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`jira_integration`** skill (at `.agent/skills/jira_integration/SKILL.md`) to understand how to use the scripts before starting.
 
-Workflow này giúp lấy requirements, user stories, hoặc issues từ Jira và chuyển thành tài liệu phục vụ test automation.
+This workflow helps fetch requirements, user stories, or issues from Jira and convert them into documents for test automation.
 
-## Các bước thực hiện:
+## Execution Steps:
 
-1. **Kiểm tra prerequisites:**
-   - Đọc skill `jira_integration` để nắm cấu trúc scripts.
-   - Kiểm tra file `.env` đã tồn tại và được cấu hình đúng.
-   - Kiểm tra dependencies đã được cài đặt (`scripts/integrations/node_modules/`).
-   - Nếu chưa cài, chạy: `cd scripts/integrations && npm install`
+1. **Check prerequisites:**
+   - Read the `jira_integration` skill to understand the script structure.
+   - Check if the `.env` file exists and is correctly configured.
+   - Check if dependencies are installed (`scripts/integrations/node_modules/`).
+   - If not installed, run: `cd scripts/integrations && npm install`
 
-2. **Xác định thông tin cần lấy:**
-   - Hỏi user cung cấp thông tin:
-     - **Issue key** cụ thể (VD: `PROJ-123`) → dùng `--issue`
-     - **Project key + Issue type** (VD: `PROJ`, `Story`) → dùng `--project --type`
-     - **JQL query** tùy chỉnh → dùng `--jql`
-     - **Epic key** (lấy children) → dùng `--epic`
-   - Xác định format output: `json` (default) hoặc `md` (markdown requirement)
+2. **Identify information to fetch:**
+   - Ask the user to provide information:
+     - **Issue key** specifically (e.g., `PROJ-123`) → use `--issue`
+     - **Project key + Issue type** (e.g., `PROJ`, `Story`) → use `--project --type`
+     - **Custom JQL query** → use `--jql`
+     - **Epic key** (fetch children) → use `--epic`
+   - Identify output format: `json` (default) or `md` (markdown requirement)
 
-3. **Thực thi script:**
-   - Chạy lệnh phù hợp:
+3. **Execute the script:**
+   - Run the appropriate command:
    ```bash
-   # Lấy 1 issue cụ thể
+   # Fetch a specific issue
    node scripts/integrations/jira/jira_fetcher.js --issue <ISSUE_KEY>
 
-   # Lấy issues theo project
+   # Fetch issues by project
    node scripts/integrations/jira/jira_fetcher.js --project <PROJECT_KEY> --type <TYPE> --max <N>
 
-   # Tìm theo JQL
+   # Find via JQL
    node scripts/integrations/jira/jira_fetcher.js --jql "<JQL_QUERY>"
 
-   # Xuất Markdown
+   # Export Markdown
    node scripts/integrations/jira/jira_fetcher.js --issue <KEY> --format md --output ./requirements/jira
    ```
 
-4. **Xử lý kết quả:**
-   - Kiểm tra output file được tạo trong `requirements/jira/` (hoặc `--output` chỉ định).
-   - Nếu format `json`: Đọc và hiển thị tóm tắt issues cho user.
-   - Nếu format `md`: Hiển thị nội dung markdown requirement cho user review.
-   - Nếu gặp lỗi: Đọc log, phân tích nguyên nhân theo bảng Troubleshooting trong skill.
+4. **Handle results:**
+   - Check the output file created in `requirements/jira/` (or specified via `--output`).
+   - If JSON format: Read and display issue summary to the user.
+   - If Markdown format: Display markdown requirement content for user review.
+   - If errors occur: Read logs, analyze causes according to the Troubleshooting table in the skill.
 
-5. **Xử lý lỗi thường gặp:**
-   - **HTTP 401**: Token sai → hướng dẫn user kiểm tra `JIRA_API_TOKEN` hoặc `JIRA_PAT`
-   - **HTTP 404**: Issue không tồn tại hoặc `JIRA_BASE_URL` sai
-   - **File .env not found**: Hướng dẫn user copy `.env.example` → `.env`
-   - **Module not found**: Chạy `npm install` trong `scripts/integrations/`
+5. **Handle common errors:**
+   - **HTTP 401**: Incorrect token → guide user to check `JIRA_API_TOKEN` or `JIRA_PAT`
+   - **HTTP 404**: Issue does not exist or `JIRA_BASE_URL` is incorrect
+   - **File .env not found**: Guide user to copy `.env.example` → `.env`
+   - **Module not found**: Run `npm install` in `scripts/integrations/`
 
 6. **Delivery:**
-   - Trình bày kết quả bằng Tiếng Việt.
-   - Nếu user yêu cầu chuyển thành requirement document, sử dụng skill `requirements_analyzer` để format lại.
-   - Lưu file output vào thư mục phù hợp (`requirements/jira/`).
+   - Present results in English.
+   - If the user requests conversion to a requirement document, use the `requirements_analyzer` skill to reformat.
+   - Save the output file to the appropriate directory (`requirements/jira/`).

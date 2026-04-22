@@ -1,19 +1,19 @@
 # Project Context
 
-## Hướng Dẫn Sử Dụng
+## Usage Instructions
 
-File này chứa thông tin ngữ cảnh của dự án đang test. **Agent cần đọc file này trước khi bắt đầu bất kỳ tác vụ automation nào** để hiểu đúng domain và tech stack.
+This file contains the context information of the project under test. **The Agent must read this file before starting any automation task** to correctly understand the domain and tech stack.
 
-> ⚠️ **Bạn cần cập nhật file này** cho mỗi dự án cụ thể. Dưới đây là template.
+> ⚠️ **You need to update this file** for each specific project. Below is the template.
 
 ---
 
 ## Application Overview
 
-- **Tên ứng dụng:** [Tên app]
-- **Mô tả:** [Mô tả ngắn về ứng dụng]
-- **Loại:** [Web App / Mobile App / API]
-- **URL môi trường test:** [URL staging/test]
+- **Application Name:** [App Name]
+- **Description:** [Brief description of the application]
+- **Type:** [Web App / Mobile App / API]
+- **Test Environment URL:** [Staging/Test URL]
 
 ## Tech Stack
 
@@ -24,21 +24,21 @@ File này chứa thông tin ngữ cảnh của dự án đang test. **Agent cầ
 
 ## Key Features & Modules
 
-| Module | Mô tả | Priority |
-|--------|--------|----------|
-| Login | Đăng nhập, quên mật khẩu, 2FA | High |
-| Dashboard | Trang tổng quan | Medium |
-| User Management | CRUD users, phân quyền | High |
+| Module | Description | Priority |
+|--------|-------------|----------|
+| Login | Login, forgot password, 2FA | High |
+| Dashboard | Overview page | Medium |
+| User Management | CRUD users, permissions | High |
 | ... | ... | ... |
 
 ## Environment Details
 
-| Môi trường | URL | Credentials |
-|------------|-----|-------------|
+| Environment | URL | Credentials |
+|-------------|-----|-------------|
 | Dev | ... | ... |
 | Staging | ... | ... |
-| Production | ... | N/A (không test trên prod) |
+| Production | ... | N/A (do not test on prod) |
 
 ## Notes
 
-- Thêm các lưu ý đặc biệt về business rules, edge cases, hoặc known issues ở đây.
+- Add special notes about business rules, edge cases, or known issues here.

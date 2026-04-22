@@ -1,22 +1,22 @@
 # Prompt Templates
 
-Các prompt templates tái sử dụng cho các tác vụ QA automation phổ biến. Agent có thể tham khảo khi cần format output hoặc khi user cung cấp yêu cầu chưa rõ ràng.
+Reusable prompt templates for common QA automation tasks. The Agent can refer to these when formatting output or when the user provides unclear requests.
 
 ---
 
 ## 1. Test Case Generation
 
 ```
-Phân tích requirement sau và sinh test cases:
+Analyze the following requirement and generate test cases:
 
-**Requirement:** [Mô tả requirement]
+**Requirement:** [Requirement description]
 
 **Output format:**
 | TC ID | Test Case Title | Precondition | Steps | Expected Result | Priority | Type |
 
-**Yêu cầu:**
-- Bao gồm positive, negative, boundary, edge cases
-- Sử dụng tiếng Việt cho mô tả
+**Requirements:**
+- Include positive, negative, boundary, and edge cases
+- Use English for descriptions
 - Priority: High / Medium / Low
 - Type: Positive / Negative / Boundary / Edge
 ```
@@ -26,7 +26,7 @@ Phân tích requirement sau và sinh test cases:
 ## 2. Automation Script Generation
 
 ```
-Chuyển đổi test case sau thành automation script:
+Convert the following test case into an automation script:
 
 **Test Case:** [TC content]
 **Framework:** [Selenium Java / Playwright TypeScript]
@@ -35,12 +35,12 @@ Chuyển đổi test case sau thành automation script:
 **Output:**
 1. Page Object class(es)
 2. Test class
-3. Test data (nếu cần)
+3. Test data (if needed)
 
-**Quy tắc:**
-- Smart waits only (không hard sleep)
-- Random test data với prefix + timestamp
-- Assertions rõ ràng
+**Rules:**
+- Smart waits only (no hard sleep)
+- Random test data with prefix + timestamp
+- Clear assertions
 ```
 
 ---
@@ -48,13 +48,13 @@ Chuyển đổi test case sau thành automation script:
 ## 3. API Test Generation
 
 ```
-Sinh API tests từ Swagger specification:
+Generate API tests from Swagger specification:
 
 **Swagger URL:** [URL]
-**Endpoint(s):** [Endpoint cần test]
+**Endpoint(s):** [Endpoint to test]
 **Framework:** REST Assured + TestNG
 
-**Bao gồm:**
+**Include:**
 - Happy path (200 OK)
 - Validation errors (400)
 - Authentication (401/403)
@@ -68,16 +68,16 @@ Sinh API tests từ Swagger specification:
 ## 4. Locator Generation
 
 ```
-Inspect element và sinh locator ổn định:
+Inspect element and generate stable locators:
 
-**Element:** [Mô tả element cần tìm]
+**Element:** [Description of the element to find]
 **Page URL:** [URL]
 **Tool:** [Selenium / Playwright]
 
 **Output:**
-- Locator chính (primary)
-- Locator dự phòng (fallback)
-- Giải thích lý do chọn locator
+- Primary locator
+- Fallback locator
+- Reasoning for choosing the locator
 ```
 
 ---
@@ -85,15 +85,15 @@ Inspect element và sinh locator ổn định:
 ## 5. Flaky Test Analysis
 
 ```
-Phân tích test flaky và đề xuất fix:
+Analyze flaky test and propose fixes:
 
 **Test file:** [Path to test]
-**Triệu chứng:** [Mô tả hành vi flaky]
+**Symptom:** [Description of flaky behavior]
 
-**Phân tích:**
+**Analysis:**
 1. Root cause
-2. Pattern phát hiện (timing, data, environment, selector)
-3. Đề xuất fix cụ thể
+2. Detection pattern (timing, data, environment, selector)
+3. Specific fix proposal
 4. Code fix
 ```
 
@@ -102,12 +102,12 @@ Phân tích test flaky và đề xuất fix:
 ## 6. Test Data Generation
 
 ```
-Sinh test data cho module:
+Generate test data for module:
 
-**Module:** [Tên module]
-**Fields:** [Danh sách fields cần data]
+**Module:** [Module name]
+**Fields:** [List of fields requiring data]
 
-**Bao gồm:**
+**Include:**
 - Valid data (happy path)
 - Invalid data (negative)
 - Boundary values (min, max, empty, null)

@@ -1,60 +1,60 @@
-# Quy Tắc Dành Riêng Cho Selenium WebDriver
+# Specific Rules for Selenium WebDriver
 
-> Áp dụng khi tự động hóa browser với Java và Selenium WebDriver.
+> Applies when automating browsers with Java and Selenium WebDriver.
 
-## 1. Thứ Tự Ưu Tiên Locator
+## 1. Locator Priority Order
 
-Tuân thủ nghiêm ngặt thứ tự sau để đảm bảo tốc độ và độ ổn định:
+Strictly follow this order to ensure speed and stability:
 
-1. `id` — Nhanh nhất, unique nhất
-2. `data-testid` / `data-test` / `data-qa` — Thuộc tính chuyên cho test
-3. `name` — Thuộc tính HTML chuẩn
-4. `cssSelector` — Linh hoạt, nhanh
-5. `xpath` — Lựa chọn cuối cùng
+1. `id` — Fastest, most unique
+2. `data-testid` / `data-test` / `data-qa` — Dedicated test attributes
+3. `name` — Standard HTML attribute
+4. `cssSelector` — Flexible, fast
+5. `xpath` — Last resort
 
-Ví dụ đúng:
+Correct example:
 ```java
 driver.findElement(By.id("login-btn"));
 driver.findElement(By.cssSelector("button[data-testid='submit-btn']"));
 driver.findElement(By.name("username"));
 ```
 
-Ví dụ sai — XPath cấu trúc phụ thuộc vị trí:
+Incorrect example — position-dependent structural XPath:
 ```java
-// NGHIÊM CẤM: XPath tuyệt đối dựa trên DOM structure
+// FORBIDDEN: Absolute XPath based on DOM structure
 driver.findElement(By.xpath("//div[3]/div[2]/form/div[1]/button"));
 ```
 
-## 2. Chiến Lược Chờ Đợi (Wait Strategy)
+## 2. Wait Strategy
 
-**NGHIÊM CẤM:**
-- `Thread.sleep()` — Trong mọi trường hợp
-- Bất kỳ cách nào cố định thời gian chờ
+**FORBIDDEN:**
+- `Thread.sleep()` — In any case.
+- Any method that fixes wait time.
 
-**SỬ DỤNG:**
-- Java Explicit Waits với `WebDriverWait` + `ExpectedConditions`:
+**USE:**
+- Java Explicit Waits with `WebDriverWait` + `ExpectedConditions`:
 
 ```java
 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-// Chờ element hiển thị
+// Wait for element to be visible
 WebElement element = wait.until(
     ExpectedConditions.visibilityOfElementLocated(By.id("profile"))
 );
 
-// Chờ element click được
+// Wait for element to be clickable
 wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-btn")));
 
-// Chờ text xuất hiện
+// Wait for text to appear
 wait.until(ExpectedConditions.textToBePresentInElementLocated(
-    By.id("message"), "Thành công"
+    By.id("message"), "Success"
 ));
 
-// Chờ URL chuyển hướng
+// Wait for URL redirection
 wait.until(ExpectedConditions.urlContains("/dashboard"));
 ```
 
-- Có thể tạo custom `FluentWait` nếu cần polling linh hoạt:
+- You can create a custom `FluentWait` if flexible polling is needed:
 ```java
 Wait<WebDriver> fluentWait = new FluentWait<>(driver)
     .withTimeout(Duration.ofSeconds(15))
@@ -62,16 +62,16 @@ Wait<WebDriver> fluentWait = new FluentWait<>(driver)
     .ignoring(NoSuchElementException.class);
 ```
 
-## 3. Thiết Lập Browser
+## 3. Browser Setup
 
-- **Viewport:** Đặt viewport desktop (`1920x1080`) khi debug:
+- **Viewport:** Set desktop viewport (`1920x1080`) when debugging:
   ```java
   driver.manage().window().setSize(new Dimension(1920, 1080));
   ```
-- **Headed mode:** Bắt buộc khi debug (không set `--headless`)
-- **Headless mode:** Chỉ dùng khi test đã PASS trên headed hoặc trong CI/CD
+- **Headed Mode:** Mandatory when debugging (do not set `--headless`).
+- **Headless Mode:** Only use when tests have passed in headed mode or in CI/CD.
 
-## 4. Cấu Trúc Test (TestNG)
+## 4. Test Structure (TestNG)
 
 ```java
 public class LoginTest extends BaseTest {
@@ -93,7 +93,7 @@ public class LoginTest extends BaseTest {
         // Assert
         DashboardPage dashboard = new DashboardPage(driver);
         Assert.assertTrue(dashboard.isDisplayed(),
-            "Dashboard phải hiển thị sau khi đăng nhập thành công");
+            "Dashboard should be displayed after successful login");
     }
 
     @AfterMethod
@@ -103,12 +103,12 @@ public class LoginTest extends BaseTest {
 }
 ```
 
-## 5. Assertions (Kiểm Tra Kết Quả)
+## 5. Assertions
 
-- Sử dụng TestNG Assertions (`Assert.assertEquals`, `Assert.assertTrue`...)
-- Luôn thêm **message mô tả** vào assertion:
+- Use TestNG Assertions (`Assert.assertEquals`, `Assert.assertTrue`...).
+- Always add a **descriptive message** to the assertion:
   ```java
-  Assert.assertEquals(actualTitle, "Dashboard", "Tiêu đề trang phải là Dashboard");
-  Assert.assertTrue(element.isDisplayed(), "Element phải hiển thị trên trang");
+  Assert.assertEquals(actualTitle, "Dashboard", "Page title should be Dashboard");
+  Assert.assertTrue(element.isDisplayed(), "Element should be displayed on the page");
   ```
-- Mỗi test method phải có ít nhất **1 assertion** ở cuối
+- Each test method must have at least **1 assertion** at the end.

@@ -1,144 +1,144 @@
 ---
-description: Sinh test data cho ma trận kết hợp đa chiều bằng pipeline chạy thật qua nhiều modules. Input từ /generate_cross_module_test_plan.
+description: Generate test data for multi-dimensional combinatorial matrices using a live pipeline across multiple modules. Input from /generate_cross_module_test_plan.
 skills:
   - test_data_generator
   - ui_debug_agent
   - qa_automation_engineer
 ---
 
-# /generate_combinatorial_test_data — Sinh Test Data Cho Ma Trận Kết Hợp
+# /generate_combinatorial_test_data — Generate Test Data for Combinatorial Matrix
 
-> **Dùng khi:** Đã có ma trận kết hợp (từ `/generate_cross_module_test_plan`) và cần **tạo test data thực tế** bằng cách chạy qua nhiều modules trên browser, hoặc sinh bộ data có cấu trúc sẵn sàng cho automation.
+> **Use case:** When you already have a combinatorial matrix (from `/generate_cross_module_test_plan`) and need to **create actual test data** by running through multiple modules in a browser, or generate a structured data set ready for automation.
 
-> **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Quy tắc sinh data (xem phần Multi-Step Pipeline)
-> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Inspect DOM khi chạy browser
-> - **Workflow:** `.agent/workflows/generate_cross_module_test_plan.md` — Hiểu cấu trúc ma trận đầu vào
+> **MANDATORY:** Before starting, you MUST load and carefully read:
+> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Data generation rules (see Multi-Step Pipeline section).
+> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Inspect DOM during browser execution.
+> - **Workflow:** `.agent/workflows/generate_cross_module_test_plan.md` — Understand the input matrix structure.
 
 ---
 
-## Mối quan hệ với các workflows khác
+## Relationship with Other Workflows
 
 ```
-/generate_cross_module_test_plan     →  Ma trận kết hợp (input)
+/generate_cross_module_test_plan     →  Combinatorial Matrix (input)
         ↓
-/generate_combinatorial_test_data    →  Bộ test data (workflow này)
+/generate_combinatorial_test_data    →  Test Data Set (this workflow)
         ↓
-/generate_manual_testcases_rbt       →  Test cases chi tiết
+/generate_manual_testcases_rbt       →  Detailed Test Cases
         ↓
-/generate_automation_from_testcases  →  Automation scripts
+/generate_automation_from_testcases  →  Automation Scripts
 ```
 
 ---
 
 ## 2 Modes
 
-| Mode | Khi nào dùng | Output |
+| Mode | When to Use | Output |
 |------|-------------|--------|
-| **GENERATE** (mặc định) | Sinh bộ data có cấu trúc từ ma trận — KHÔNG chạy browser | File JSON/CSV/Markdown với data cho mỗi bộ kết hợp |
-| **PIPELINE** | Cần tạo data THẬT trên hệ thống bằng cách chạy qua từng module trên browser | Data thật đã tạo + IDs + screenshots evidence |
+| **GENERATE** (default) | Generate structured data set from matrix — NO browser execution | JSON/CSV/Markdown file with data for each combination. |
+| **PIPELINE** | Need to create REAL data in the system by running through each module in a browser | Actual created data + IDs + screenshot evidence. |
 
-> Agent tự chọn mode:
-> - User nói "sinh data", "generate data" → **GENERATE**
-> - User nói "tạo data trên hệ thống", "chạy tạo data", "setup data thật" → **PIPELINE**
-> - Nếu không rõ → hỏi user
+> Agent chooses mode automatically:
+> - User says "generate data", "create data set" → **GENERATE**.
+> - User says "create data in the system", "run data creation", "setup real data" → **PIPELINE**.
+> - If unclear → ask the user.
 
 ---
 
-## Input cần từ User
+## Required User Input
 
-| Input | Bắt buộc | Mô tả |
+| Input | Mandatory | Description |
 |-------|----------|-------|
-| **Ma trận kết hợp** | ✅ | File `.md` / bảng Markdown từ `/generate_cross_module_test_plan` |
-| **URL ứng dụng** | ✅ (PIPELINE) | Để agent chạy browser tạo data |
-| **Credentials** | ⚠️ PIPELINE | Nếu app cần đăng nhập |
-| **Output format** | ❌ | `json` (mặc định), `csv`, `markdown`, `code` (TS/Java/Python) |
-| **Ngôn ngữ data** | ❌ | Tiếng Việt / Tiếng Anh (mặc định: theo context) |
+| **Combinatorial Matrix** | ✅ | .md file / Markdown table from `/generate_cross_module_test_plan`. |
+| **Application URL** | ✅ (PIPELINE) | For agent to run browser and create data. |
+| **Credentials** | ⚠️ PIPELINE | If app requires login. |
+| **Output format** | ❌ | `json` (default), `csv`, `markdown`, `code` (TS/Java/Python). |
+| **Data Language** | ❌ | English (default), or as per context. |
 
 ---
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Đọc & Parse Ma Trận Kết Hợp
+### Step 1: Read & Parse Combinatorial Matrix
 
-1. **Đọc file ma trận** từ user cung cấp:
-   - File local → `view_file`
-   - Inline trong chat → parse trực tiếp
-   - URL → `read_url_content`
+1. **Read the matrix file** provided by the user:
+   - Local file → `view_file`.
+   - Inline in chat → parse directly.
+   - URL → `read_url_content`.
 
-2. **Parse và validate:**
-   - Xác định danh sách dimensions (D1, D2, D3...)
-   - Xác định values của mỗi dimension
-   - Đọc expected template/formula cho mỗi bộ
-   - Đếm tổng số bộ kết hợp cần sinh data
+2. **Parse and validate:**
+   - Identify list of dimensions (D1, D2, D3...).
+   - Identify values for each dimension.
+   - Read expected template/formula for each set.
+   - Count total number of combinations needing data generation.
 
-3. **Trình bày tóm tắt:**
+3. **Present Summary:**
    ```markdown
-   📊 Ma trận đã đọc:
-   - Dimensions: 5 (Đối tác, Thanh toán, Thuế, Công nợ, Nguồn TS)
-   - Tổng bộ kết hợp: 20 (Pairwise)
-   - Mode: GENERATE / PIPELINE
+   📊 Matrix Read Summary:
+   - Dimensions: 5 (Partner, Payment, Tax, Debt, Asset Source).
+   - Total Combinations: 20 (Pairwise).
+   - Mode: GENERATE / PIPELINE.
    
-   Bắt đầu sinh data? (Y/N)
+   Start generating data? (Y/N)
    ```
 
 ---
 
-### Bước 2: Phân Tích Fields & Data Requirements Mỗi Module
+### Step 2: Analyze Fields & Data Requirements Per Module
 
-1. **Với mỗi module** trong chuỗi, xác định fields cần data:
+1. **For each module** in the chain, identify fields requiring data:
 
    ```markdown
    | Module | Field | Type | Required | Constraints | Data Source |
    |--------|-------|------|----------|-------------|-------------|
-   | Đối tác | partner_name | string | ✅ | max: 200 | Random + prefix |
-   | Đối tác | partner_type | select | ✅ | enum: [TC, CN, HKD] | Từ dimension D1 |
-   | Đối tác | tax_id | string | ✅ | 10-13 digits | Random unique |
-   | Thanh toán | currency | select | ✅ | enum: [VND, USD] | Từ dimension D2 |
-   | Thanh toán | amount | number | ✅ | min: 1 | Business-relevant values |
-   | Thuế | tax_type | select | ✅ | enum: [PIT, VAT, NT, MT] | Từ dimension D3 |
+   | Partner | partner_name | string | ✅ | max: 200 | Random + prefix |
+   | Partner | partner_type | select | ✅ | enum: [TC, CN, HKD] | From dimension D1 |
+   | Partner | tax_id | string | ✅ | 10-13 digits | Random unique |
+   | Payment | currency | select | ✅ | enum: [VND, USD] | From dimension D2 |
+   | Payment | amount | number | ✅ | min: 1 | Business-relevant values |
+   | Tax | tax_type | select | ✅ | enum: [PIT, VAT, NT, MT] | From dimension D3 |
    | ...| ... | ... | ... | ... | ... |
    ```
 
-2. **Phân loại fields:**
+2. **Classify Fields:**
 
-   | Loại | Mô tả | Cách sinh data |
+   | Category | Description | Data Generation Method |
    |------|-------|----------------|
-   | **Dimension fields** | Giá trị thuộc dimension trong ma trận | Lấy từ bộ kết hợp (không random) |
-   | **Supporting fields** | Fields bắt buộc nhưng không phải dimension | Sinh random + unique + traceable |
-   | **Computed fields** | Tự tính từ formula | Tính theo business rules |
-   | **Reference fields** | ID/code từ module trước | Copy từ output module trước |
+   | **Dimension fields** | Values belonging to dimensions in the matrix | Extracted from combination (no random). |
+   | **Supporting fields** | Mandatory fields that are not dimensions | Generated random + unique + traceable. |
+   | **Computed fields** | Automatically calculated from formula | Calculated according to business rules. |
+   | **Reference fields** | ID/code from previous module | Copied from output of previous module. |
 
 ---
 
-### Bước 3: Sinh Test Data — Mode GENERATE
+### Step 3: Generate Test Data — GENERATE Mode
 
-> Thực hiện khi mode = GENERATE (mặc định)
+> Perform when mode = GENERATE (default).
 
-1. **Với mỗi bộ kết hợp** trong ma trận, sinh 1 bộ data đầy đủ:
+1. **For each combination** in the matrix, generate 1 complete data set:
 
    ```json
    {
      "combination_id": "COMBO_01",
      "dimensions": {
-       "D1_partner_type": "Tổ chức",
+       "D1_partner_type": "Organization",
        "D2_payment_type": "VND",
        "D3_tax_type": "VAT 10%",
-       "D4_debt_type": "Thông thường",
-       "D5_asset_source": "Quỹ A"
+       "D4_debt_type": "Normal",
+       "D5_asset_source": "Fund A"
      },
      "module_data": {
        "module_1_partner": {
          "partner_name": "auto_combo01_tc_1712049200",
-         "partner_type": "Tổ chức",
+         "partner_type": "Organization",
          "tax_id": "0123456789",
-         "address": "Số 1 Nguyễn Huệ, Q1, HCM"
+         "address": "1 Nguyen Hue, Dist 1, HCM"
        },
        "module_2_payment": {
          "currency": "VND",
          "amount": 100000000,
          "payment_date": "2026-04-15",
-         "description": "Thanh toán combo01"
+         "description": "Payment for combo01"
        },
        "module_3_tax": {
          "tax_type": "VAT",
@@ -146,7 +146,7 @@ skills:
          "tax_amount": 10000000
        },
        "module_4_debt": {
-         "debt_type": "Thông thường",
+         "debt_type": "Normal",
          "advance_amount": 0
        }
      },
@@ -159,76 +159,76 @@ skills:
    }
    ```
 
-2. **Sinh đủ data cho TẤT CẢ bộ kết hợp** → đóng gói vào 1 file output
+2. **Generate data for ALL combinations** → package into 1 output file.
 
-3. **Đảm bảo data rules:**
-   - Unique per combo (không trùng giữa các bộ)
-   - Traceable: prefix `auto_combo{XX}_{dimension_short}`
-   - No real PII
-   - Computed values phải đúng theo formula
+3. **Ensure Data Rules:**
+   - Unique per combo (no overlap between sets).
+   - Traceable: prefix `auto_combo{XX}_{dimension_short}`.
+   - No real PII.
+   - Computed values must correctly follow the formula.
 
 ---
 
-### Bước 3P: Sinh Test Data — Mode PIPELINE (chạy thật trên browser)
+### Step 3P: Generate Test Data — PIPELINE Mode (Live browser execution)
 
-> Thực hiện khi mode = PIPELINE
+> Perform when mode = PIPELINE.
 
-1. **Mở browser bằng MCP:**
+1. **Open browser via MCP:**
    ```
-   browser_navigate → URL ứng dụng
+   browser_navigate → App URL
    browser_resize → 1920 × 1080
    ```
 
-2. **Loop qua từng bộ kết hợp:**
+2. **Loop through each combination:**
 
    ```
    FOR each combo in matrix:
      FOR each module in chain:
-       1. Navigate → module URL
-       2. browser_snapshot → xác nhận state
-       3. Điền data theo bộ combo:
-          - Dimension fields → chọn giá trị theo combo
-          - Supporting fields → sinh random + traceable
-       4. Submit / Save
-       5. browser_wait_for → confirm success
-       6. browser_snapshot → capture kết quả
-       7. Extract output (ID, code...) → lưu cho module tiếp theo
+       1. Navigate → module URL.
+       2. `browser_snapshot` → confirm state.
+       3. Fill data according to combo:
+          - Dimension fields → choose value per combo.
+          - Supporting fields → generate random + traceable.
+       4. Submit / Save.
+       5. `browser_wait_for` → confirm success.
+       6. `browser_snapshot` → capture result.
+       7. Extract output (ID, code...) → save for next module.
      END FOR
      
-     // Ở module cuối — verify output
-     8. Capture biên bản / output cuối
-     9. browser_take_screenshot → evidence
-     10. Ghi nhận: combo_id, created_ids, template_found, formula_verified
+     // Final module — verify output
+     8. Capture final report / output.
+     9. `browser_take_screenshot` → evidence.
+     10. Record: combo_id, created_ids, template_found, formula_verified.
    END FOR
    ```
 
-3. **Xử lý lỗi trong pipeline:**
+3. **Error Handling in Pipeline:**
 
-   | Lỗi | Cách xử lý |
+   | Error | How to Handle |
    |-----|-----------|
-   | Submit fail (validation) | Screenshot → ghi log → skip combo → báo user |
-   | Module load chậm | `browser_wait_for` với timeout tăng dần |
-   | Session expired | Re-login → retry từ module bị fail |
-   | Data trùng | Sinh lại data unique, retry |
-   | Combo không hợp lệ (constraint) | Skip → đánh dấu "INVALID" trong report |
+   | Submit fail (validation) | Screenshot → log error → skip combo → notify user. |
+   | Slow module load | `browser_wait_for` with incremental timeouts. |
+   | Session expired | Re-login → retry from the failed module. |
+   | Duplicate data | Re-generate unique data, retry. |
+   | Invalid combo (constraint) | Skip → mark as "INVALID" in the report. |
 
-4. **Giới hạn pipeline:**
-   - Tối đa **30 bộ kết hợp** / phiên chạy (tránh timeout)
-   - Nếu > 30 → chia batch, hỏi user "Tiếp tục batch tiếp?"
-   - Sau mỗi 10 bộ → báo progress cho user
+4. **Pipeline Limits:**
+   - Maximum **30 combinations** per session (to avoid timeout).
+   - If > 30 → split into batches, ask user: "Continue with next batch?".
+   - Every 10 sets → report progress to the user.
 
 ---
 
-### Bước 4: Đóng Gói Output & Báo Cáo
+### Step 4: Packaging Output & Reporting
 
-#### Output cho Mode GENERATE:
+#### Output for GENERATE Mode:
 
-Tạo artifact file(s) theo format user yêu cầu:
+Create artifact file(s) in the format requested by the user:
 
-**JSON (mặc định):**
+**JSON (default):**
 ```json
 {
-  "feature": "Biên bản thanh toán đối tác",
+  "feature": "Partner Payment Report",
   "generated_at": "2026-04-15T17:00:00Z",
   "strategy": "pairwise",
   "total_combinations": 20,
@@ -242,9 +242,9 @@ Tạo artifact file(s) theo format user yêu cầu:
 
 **Markdown Table:**
 ```markdown
-| Combo | Đối tác | Thanh toán | Thuế | Công nợ | Nguồn | Partner Name | Amount | Expected Template | Expected Total |
+| Combo | Partner | Payment | Tax | Debt | Source | Partner Name | Amount | Expected Template | Expected Total |
 |-------|---------|-----------|------|---------|-------|-------------|--------|------------------|----------------|
-| 01 | Tổ chức | VND | VAT | Thường | Quỹ A | auto_c01_tc | 100M | BB_TC_VND_VAT | 110M |
+| 01 | Org | VND | VAT | Normal | Fund A | auto_c01_tc | 100M | BB_TC_VND_VAT | 110M |
 | 02 | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 ```
 
@@ -254,7 +254,7 @@ Tạo artifact file(s) theo format user yêu cầu:
 export const combinatorialData = [
   {
     id: 'COMBO_01',
-    partner: { name: `auto_combo01_${Date.now()}`, type: 'Tổ chức', taxId: '0123456789' },
+    partner: { name: `auto_combo01_${Date.now()}`, type: 'Organization', taxId: '0123456789' },
     payment: { currency: 'VND', amount: 100_000_000 },
     tax: { type: 'VAT', rate: 10 },
     expected: { template: 'BB_TC_VND_VAT', total: 110_000_000 },
@@ -263,7 +263,7 @@ export const combinatorialData = [
 ];
 ```
 
-#### Output cho Mode PIPELINE:
+#### Output for PIPELINE Mode:
 
 ```markdown
 ## Pipeline Execution Report
@@ -277,46 +277,46 @@ export const combinatorialData = [
 ### Summary
 - ✅ Passed: 18/20
 - ❌ Failed: 2/20 (COMBO_03: Tax module validation error, COMBO_17: Timeout)
-- 📊 Data created: 18 partners, 18 payments, 18 tax configs, 18 biên bản
+- 📊 Data created: 18 partners, 18 payments, 18 tax configs, 18 reports.
 ```
 
 ---
 
-## Data Rules (BẮT BUỘC)
+## Data Rules (MANDATORY)
 
-| # | Rule | Mô tả |
+| # | Rule | Description |
 |---|------|-------|
-| 1 | **Unique per combo** | Mỗi bộ kết hợp dùng data riêng — không chia sẻ giữa combos |
-| 2 | **Traceable** | Prefix: `auto_combo{XX}_{dimension_short}_{timestamp}` |
-| 3 | **Dimension values exact** | Giá trị dimension PHẢI đúng như trong ma trận — KHÔNG random |
-| 4 | **Supporting fields random** | Fields không thuộc dimension → sinh random + unique |
-| 5 | **Computed values verified** | Giá trị tính toán phải đúng theo formula trong ma trận |
-| 6 | **No real PII** | KHÔNG dùng dữ liệu cá nhân thật |
-| 7 | **Include expected output** | Mỗi combo PHẢI có expected template + formula + computed values |
+| 1 | **Unique per combo** | Each combination uses its own data — no sharing between combos. |
+| 2 | **Traceable** | Prefix: `auto_combo{XX}_{dimension_short}_{timestamp}`. |
+| 3 | **Dimension values exact** | Dimension values MUST be exactly as in the matrix — NO random. |
+| 4 | **Supporting fields random** | Fields not in dimensions → generate random + unique. |
+| 5 | **Computed values verified** | Calculated values must be correct according to the matrix formula. |
+| 6 | **No real PII** | DO NOT use real personal identifiable information. |
+| 7 | **Include expected output** | Each combo MUST have an expected template + formula + computed values. |
 
 ---
 
-## NGHIÊM CẤM
+## FORBIDDEN
 
-| ❌ Không được làm | ✅ Thay thế đúng |
+| ❌ Forbidden Action | ✅ Correct Alternative |
 |-------------------|-----------------|
-| Random dimension values | Dimension values lấy chính xác từ ma trận |
-| Hardcode data giống nhau cho mọi combo | Data unique per combo với traceable prefix |
-| Bỏ qua expected output | Mỗi combo PHẢI có expected template + values |
-| Chạy pipeline > 30 combos / phiên không hỏi | Chia batch 30, hỏi user tiếp tục |
-| Bỏ qua combo fail, không report | Ghi log đầy đủ: combo nào fail, tại sao, screenshot |
-| Đọc `.env` để lấy credentials | Hỏi User hoặc dùng fixture sẵn có |
+| Random dimension values | Dimension values must be extracted exactly from the matrix. |
+| Hardcoding same data for all combos | Unique data per combo with traceable prefix. |
+| Ignoring expected output | Each combo MUST include expected template + values. |
+| Running pipeline > 30 combos without asking | Batch by 30, ask user to continue. |
+| Ignoring failed combos without reporting | Log details: which combo failed, why, with screenshot. |
+| Reading .env for credentials | Ask the User or use an existing fixture. |
 
 ---
 
-## Checklist cuối
+## Final Checklist
 
-- [ ] Đã đọc và parse ma trận kết hợp đầy đủ
-- [ ] Phân loại fields: dimension / supporting / computed / reference
-- [ ] Data sinh ra unique per combo + traceable
-- [ ] Dimension values đúng 100% so với ma trận
-- [ ] Computed values đúng theo formula
-- [ ] (PIPELINE) Screenshots evidence cho mỗi combo
-- [ ] (PIPELINE) Report pass/fail cho mỗi combo
-- [ ] Không chứa real PII
-- [ ] Output file đúng format user yêu cầu
+- [ ] Read and parsed the combinatorial matrix fully.
+- [ ] Classified fields: dimension / supporting / computed / reference.
+- [ ] Generated data is unique per combo + traceable.
+- [ ] Dimension values match the matrix 100%.
+- [ ] Computed values match the formula.
+- [ ] (PIPELINE) Screenshot evidence for each combo.
+- [ ] (PIPELINE) Pass/fail report for each combo.
+- [ ] Contains no real PII.
+- [ ] Output file matches user's requested format.

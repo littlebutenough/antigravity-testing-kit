@@ -1,48 +1,48 @@
 ---
-description: Sinh locator ổn định cho UI element. Hỗ trợ Playwright, Selenium, Appium.
+description: Generate stable locators for UI elements. Supports Playwright, Selenium, Appium.
 skills:
   - smart_locator_agent
   - ui_debug_agent
 ---
 
-# /generate_locator — Sinh Locator Ổn Định Cho UI Automation
+# /generate_locator — Generate Stable Locators for UI Automation
 
-> User cung cấp element cần tìm locator (mô tả, screenshot, URL, hoặc HTML snippet).
-> AI inspect DOM/UI hierarchy thực tế, sinh locator ổn định theo priority chuẩn, verify uniqueness, trả về kết quả.
+> The user provides the element needing a locator (description, screenshot, URL, or HTML snippet).
+> AI inspects the actual DOM/UI hierarchy, generates a stable locator based on standard priority, verifies uniqueness, and returns the result.
 
-> **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.agent/skills/smart_locator_agent/SKILL.md` — Quy trình sinh locator
-> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Quy trình inspect DOM
-> - **Rule:** `.agent/rules/locator_strategy.md` — Bản đồ ưu tiên locator
-> - **Rule:** `.agent/rules/<framework>_rules.md` — Quy tắc riêng framework đang dùng
+> **MANDATORY:** Before starting, you MUST load and carefully read:
+> - **Skill:** `.agent/skills/smart_locator_agent/SKILL.md` — Locator generation process.
+> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — DOM inspection process.
+> - **Rule:** `.agent/rules/locator_strategy.md` — Locator priority map.
+> - **Rule:** `.agent/rules/<framework>_rules.md` — Specific rules for the framework in use.
 
 ---
 
-## Input cần từ User
+## Required User Input
 
-| Input | Bắt buộc | Mô tả |
+| Input | Mandatory | Description |
 |-------|----------|-------|
-| Mô tả element | ✅ | VD: "nút Login", "dropdown chọn Country", "ô nhập Email" |
-| URL trang chứa element | ✅ | Để AI navigate và inspect DOM thực tế |
-| Framework | ✅ | `playwright`, `selenium`, hoặc `appium` |
-| HTML snippet | ❌ | Nếu User đã có sẵn DOM context — AI dùng để phân tích nhanh |
-| Page class đích | ❌ | File Page class mà locator sẽ được thêm vào |
-| Login yêu cầu | ❌ | Nếu trang yêu cầu đăng nhập — User cho biết cách login |
+| Element Description | ✅ | e.g., "Login button", "Country dropdown", "Email input field". |
+| Page URL | ✅ | For the AI to navigate and inspect the actual DOM. |
+| Framework | ✅ | `playwright`, `selenium`, or `appium`. |
+| HTML snippet | ❌ | If the User has existing DOM context — AI uses it for quick analysis. |
+| Target Page Class | ❌ | The Page class file where the locator will be added. |
+| Login Requirement | ❌ | If the page requires login — User specifies how to login. |
 
-> **Lưu ý về Login:** Nếu trang yêu cầu đăng nhập, User PHẢI chỉ rõ cách login (fixture, script, URL login...). AI KHÔNG ĐƯỢC tự đọc `.env` hay đoán credentials.
+> **Note on Login:** If the page requires login, the User MUST specify how to login (fixture, script, login URL...). The AI MUST NOT read `.env` or guess credentials.
 
 ---
 
-## Các bước thực hiện
+## Execution Steps
 
-### Phase 1: Phân tích yêu cầu
+### Phase 1: Requirement Analysis
 
-1. **Hiểu element cần tìm** — Xác định rõ:
-   - **Loại element:** button, input, link, dropdown, dialog, table row, checkbox, radio...
-   - **Context:** Nằm trong page chính, dialog/modal, sidebar, table, iframe?
-   - **Thao tác:** click, fill, select, hover, verify text, verify visibility?
+1. **Understand the target element** — Clearly identify:
+   - Element type: button, input, link, dropdown, dialog, table row, checkbox, radio...
+   - Context: Is it in the main page, dialog/modal, sidebar, table, iframe?
+   - Action: click, fill, select, hover, verify text, verify visibility?
 
-2. **Xác định framework và đọc rules tương ứng:**
+2. **Identify framework and read corresponding rules:**
 
    | Framework | Rule file |
    |-----------|-----------|
@@ -50,24 +50,24 @@ skills:
    | Selenium | `.agent/rules/selenium_rules.md` |
    | Appium | `.agent/rules/appium_rules.md` |
 
-3. **Kiểm tra Page class hiện tại (nếu User chỉ định):**
-   - Đọc file Page class → biết locator đã có sẵn
-   - Tránh trùng lặp hoặc xung đột naming
+3. **Check current Page class (if specified):**
+   - Read Page class file → see existing locators.
+   - Avoid duplication or naming conflicts.
 
 ---
 
-### Phase 2: Inspect DOM / UI Hierarchy thực tế
+### Phase 2: Inspect Actual DOM / UI Hierarchy
 
-> ⚠️ **NGUYÊN TẮC BẤT DI BẤT DỊCH: KHÔNG BAO GIỜ ĐOÁN LOCATOR. PHẢI INSPECT THỰC TẾ.**
+> ⚠️ **UNALTERABLE PRINCIPLE: NEVER GUESS LOCATORS. MUST INSPECT ACTUAL UI.**
 
 #### 2A. Web (Playwright MCP)
 
-4. **Navigate đến trang chứa element:**
+4. **Navigate to the page containing the element:**
    ```
    browser_navigate(url=<target_url>)
    ```
 
-5. **Resize viewport (BẮT BUỘC):**
+5. **Resize viewport (MANDATORY):**
    ```
    browser_resize(width=1920, height=1080)
    ```
@@ -77,37 +77,37 @@ skills:
    browser_snapshot()
    ```
 
-7. **Phân tích element trong snapshot:**
-   - Tìm ref element trong DOM tree
-   - Ghi lại **tất cả attributes có giá trị**: `role`, `aria-label`, `aria-labelledby`, `data-testid`, `data-test`, `data-qa`, `id`, `name`, `placeholder`, `type`, `href`, text content
-   - Ghi lại **parent context** (dialog? table? sidebar? iframe?)
+7. **Analyze element in snapshot:**
+   - Find reference element in the DOM tree.
+   - Record all valued attributes: `role`, `aria-label`, `aria-labelledby`, `data-testid`, `data-test`, `data-qa`, `id`, `name`, `placeholder`, `type`, `href`, text content.
+   - Record parent context (dialog? table? sidebar? iframe?).
 
-8. **Nếu element bị ẩn** (dropdown menu, modal, tooltip...):
-   - Thực hiện action mở element: `browser_click(ref=<trigger>)`
-   - Capture lại: `browser_snapshot()`
+8. **If element is hidden** (dropdown menu, modal, tooltip...):
+   - Execute action to open element: `browser_click(ref=<trigger>)`.
+   - Re-capture: `browser_snapshot()`.
 
 #### 2B. Mobile (Appium)
 
-4. **Dùng Appium Inspector** hoặc `page_source` để lấy UI hierarchy
-5. **Ghi lại attributes:** `accessibility-id`, `resource-id`, `content-desc`, `text`, `class`, `bounds`
-6. **Nếu element nằm trong scroll view** → scroll đến element trước khi inspect
+4. **Use Appium Inspector** or `page_source` to retrieve UI hierarchy.
+5. **Record attributes:** `accessibility-id`, `resource-id`, `content-desc`, `text`, `class`, `bounds`.
+6. **If element is in a scroll view** → scroll to the element before inspecting.
 
 ---
 
-### Phase 3: Sinh locator theo Priority
+### Phase 3: Generate Locator by Priority
 
-9. **Áp dụng bản đồ ưu tiên (Master Priority Map):**
+9. **Apply Master Priority Map:**
 
-   | # | Loại | Khi nào dùng |
+   | # | Type | When to Use |
    |---|------|-------------|
-   | 1 | Accessibility / Aria | Element có `role`, `aria-label` rõ ràng |
-   | 2 | Test attribute | Element có `data-testid`, `data-test`, `data-qa` |
-   | 3 | ID / name | Element có `id` hoặc `name` ổn định (không auto-generated) |
+   | 1 | Accessibility / Aria | Element has clear `role`, `aria-label`. |
+   | 2 | Test attribute | Element has `data-testid`, `data-test`, `data-qa`. |
+   | 3 | ID / name | Element has stable `id` or `name` (not auto-generated). |
    | 4 | Framework semantic | Playwright: `getByRole`, `getByLabel`... |
-   | 5 | CSS Selector | Dùng attribute cụ thể, tránh class động |
-   | 6 | XPath | Lựa chọn cuối cùng — chỉ dùng XPath tương đối |
+   | 5 | CSS Selector | Use specific attributes, avoid dynamic classes. |
+   | 6 | XPath | Final choice — only use relative XPath. |
 
-10. **Sinh locator theo framework:**
+10. **Generate locator by framework:**
 
     **Playwright (TypeScript/JavaScript):**
     ```typescript
@@ -128,7 +128,7 @@ skills:
     page.locator('#submit-button')
     page.locator('[data-testid="submit-btn"]')
 
-    // Priority 6: XPath (cuối cùng)
+    // Priority 6: XPath (Final)
     page.locator('//button[@type="submit"]')
     ```
 
@@ -150,7 +150,7 @@ skills:
     # Priority 5: CSS
     page.locator("#submit-button")
 
-    # Priority 6: XPath (cuối cùng)
+    # Priority 6: XPath (Final)
     page.locator("//button[@type='submit']")
     ```
 
@@ -168,7 +168,7 @@ skills:
     // Priority 4: CSS Selector
     driver.findElement(By.cssSelector("button.btn-primary[type='submit']"));
 
-    // Priority 5: XPath (cuối cùng)
+    // Priority 5: XPath (Final)
     driver.findElement(By.xpath("//button[@type='submit']"));
     ```
 
@@ -186,15 +186,15 @@ skills:
     // Priority 4: Class Chain (iOS)
     driver.findElement(AppiumBy.iOSClassChain("**/XCUIElementTypeButton[`label == 'Login'`]"));
 
-    // Priority 5: XPath (cuối cùng)
+    // Priority 5: XPath (Final)
     driver.findElement(AppiumBy.xpath("//android.widget.Button[@text='Login']"));
     ```
 
 ---
 
-### Phase 4: Validate locator
+### Phase 4: Validate Locator
 
-11. **Verify uniqueness — PHẢI match đúng 1 element:**
+11. **Verify uniqueness — MUST match exactly 1 element:**
 
     **Web (Playwright MCP):**
     ```
@@ -213,27 +213,27 @@ skills:
     assert matches.size() == 1;
     ```
 
-12. **Verify visibility** — Element phải tương tác được:
-    - Không bị overlay bởi element khác
-    - Không ở trạng thái `hidden`, `display:none`, `visibility:hidden`
-    - Không nằm ngoài viewport (cần scroll)
+12. **Verify visibility** — Element must be interactable:
+    - Not overlaid by another element.
+    - Not in `hidden`, `display:none`, or `visibility:hidden` state.
+    - Not outside the viewport (requires scrolling).
 
-13. **Verify stability — Kiểm tra checklist:**
-    - [ ] Không dùng dynamic CSS class (VD: `css-1n2xyz`, `sc-bdnxRM`)
-    - [ ] Không dùng XPath tuyệt đối (VD: `//html/body/div[1]/div[2]/button`)
-    - [ ] Không dùng auto-generated ID (VD: `ember123`, `react-select-2-input`)
-    - [ ] Không dùng `nth-child` / `nth-of-type` khi có lựa chọn tốt hơn
-    - [ ] Sống sót qua page reload
-    - [ ] Ổn định trên nhiều trạng thái trang (loading, loaded, có data, không data)
+13. **Verify stability — Checklist:**
+    - [ ] No dynamic CSS classes (e.g., `css-1n2xyz`, `sc-bdnxRM`).
+    - [ ] No absolute XPath (e.g., `//html/body/div[1]/div[2]/button`).
+    - [ ] No auto-generated IDs (e.g., `ember123`, `react-select-2-input`).
+    - [ ] No `nth-child` / `nth-of-type` if better options exist.
+    - [ ] Survives page reload.
+    - [ ] Stable across multiple page states (loading, loaded, with data, no data).
 
 ---
 
-### Phase 5: Trả kết quả
+### Phase 5: Return Results
 
-14. **Output Format — BẮT BUỘC cung cấp đầy đủ 3 phần:**
+14. **Output Format — MUST provide all 3 sections:**
 
 ```markdown
-## Locator Result: [Mô tả element]
+## Locator Result: [Element description]
 
 **Framework:** [Playwright / Selenium / Appium]
 
@@ -241,45 +241,45 @@ skills:
 ```<language>
 // Locator code — copy-paste ready
 ```
-- **Loại:** [Role-based / Test ID / CSS / ...]
-- **Unique:** ✅ Match 1 element
-- **Stability:** ✅ Không dùng dynamic class / absolute xpath
+- **Type:** [Role-based / Test ID / CSS / ...]
+- **Unique:** ✅ Matches 1 element
+- **Stability:** ✅ No dynamic class / absolute XPath used
 
 ### 🔄 Fallback Locator
 ```<language>
-// Locator thay thế khi primary hỏng
+// Backup locator when primary fails
 ```
-- **Loại:** [CSS / XPath / ...]
-- **Khi nào dùng:** Khi primary locator bị break do DOM thay đổi
+- **Type:** [CSS / XPath / ...]
+- **When to use:** When primary locator breaks due to DOM changes.
 
 ### 💡 Reasoning
-- Giải thích tại sao chọn Primary locator này
-- Tại sao loại bỏ các candidate khác
-- Rủi ro tiềm ẩn (nếu có)
+- Explain why this Primary locator was chosen.
+- Why other candidates were discarded.
+- Potential risks (if any).
 
-### 📋 Usage Example (nếu User yêu cầu)
+### 📋 Usage Example (if requested)
 ```<language>
-// Ví dụ sử dụng locator trong test code
+// Example usage in test code
 ```
 ```
 
-15. **(Tùy chọn) Nếu User yêu cầu thêm vào Page class:**
-    - Thêm locator đúng vị trí trong Page class
-    - Đặt tên theo naming convention của project
-    - Tạo method sử dụng locator nếu cần
+15. **(Optional) If User requests addition to Page class:**
+    - Add locator in the correct position within the Page class.
+    - Name it according to project naming conventions.
+    - Create methods using the locator if necessary.
 
 ---
 
-## Common Patterns (Tham khảo)
+## Common Patterns (Reference)
 
-### Scoping locator trong Dialog / Modal:
+### Scoping locator within Dialog / Modal:
 ```typescript
-// Playwright — scope vào dialog trước
+// Playwright — scope into dialog first
 const dialog = page.getByRole('dialog');
 dialog.getByRole('button', { name: 'Confirm' }).click();
 ```
 ```java
-// Selenium — scope vào dialog
+// Selenium — scope into dialog
 WebElement dialog = driver.findElement(By.cssSelector("[role='dialog']"));
 dialog.findElement(By.cssSelector("button[data-testid='confirm']")).click();
 ```
@@ -297,38 +297,38 @@ page.locator(f"//a[normalize-space()='{text}']")
 
 ### Table row action:
 ```typescript
-// Playwright — filter row rồi interact
+// Playwright — filter row then interact
 const row = page.getByRole('row').filter({ hasText: 'John Doe' });
 row.getByRole('button', { name: 'Edit' }).click();
 ```
 ```java
-// Selenium — XPath relative trong table
+// Selenium — XPath relative in table
 driver.findElement(By.xpath("//tr[contains(., 'John Doe')]//button[text()='Edit']"));
 ```
 
 ---
 
-## NGHIÊM CẤM
+## FORBIDDEN
 
-| ❌ Không được làm | ✅ Thay thế đúng |
+| ❌ Forbidden Action | ✅ Correct Alternative |
 |-------------------|-----------------|
-| Đoán locator không inspect DOM/UI | `browser_snapshot()` hoặc Appium Inspector trước |
-| Dùng CSS class động (`css-1n2xyz`, `sc-xxx`) | Dùng role, aria, data-testid, text |
-| Dùng XPath tuyệt đối (`//html/body/div[1]...`) | Dùng XPath tương đối với attribute |
-| Dùng auto-generated ID (`ember123`, `:r1:`) | Dùng stable attribute hoặc text |
-| Trả locator không verify uniqueness | Luôn verify match đúng 1 element |
-| Chỉ trả 1 locator, không có fallback | Trả Primary + Fallback + Reasoning |
-| Đọc `.env` để lấy credentials login | Hỏi User cách login hoặc dùng fixture có sẵn |
+| Guessing locators without inspecting DOM/UI | Use `browser_snapshot()` or Appium Inspector first. |
+| Using dynamic CSS classes (`css-1n2xyz`, `sc-xxx`) | Use role, aria, data-testid, text. |
+| Using absolute XPath (`//html/body/div[1]...`) | Use relative XPath with attributes. |
+| Using auto-generated IDs (`ember123`, `:r1:`) | Use stable attributes or text. |
+| Returning locator without verifying uniqueness | Always verify it matches exactly 1 element. |
+| Returning only 1 locator without fallback | Return Primary + Fallback + Reasoning. |
+| Reading `.env` for login credentials | Ask User for login method or use available fixture. |
 
 ---
 
-## Checklist cuối
+## Final Checklist
 
-- [ ] Đã inspect DOM/UI hierarchy thực tế (không đoán)
-- [ ] Locator theo đúng priority: accessibility > test-id > id/name > semantic > css > xpath
-- [ ] Primary locator match đúng 1 element duy nhất
-- [ ] Có Fallback locator
-- [ ] Có Reasoning giải thích lý do chọn
-- [ ] Không dùng dynamic class, absolute xpath, auto-generated ID
-- [ ] Locator ổn định qua page reload và nhiều trạng thái
-- [ ] (Nếu thêm vào Page class) Đã verify code chạy không lỗi
+- [ ] Inspected actual DOM/UI hierarchy (no guessing).
+- [ ] Locator follows priority: accessibility > test-id > id/name > semantic > css > xpath.
+- [ ] Primary locator matches exactly 1 unique element.
+- [ ] Provided Fallback locator.
+- [ ] Provided Reasoning for selection.
+- [ ] No dynamic classes, absolute XPath, or auto-generated IDs used.
+- [ ] Locator is stable across page reloads and multiple states.
+- [ ] (If added to Page class) Verified code runs without errors.

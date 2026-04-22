@@ -1,6 +1,6 @@
 ---
 name: QA Automation Engineer
-description: Skill hỗ trợ agent thực hiện các tác vụ QA automation testing bao gồm generate test cases, automation scripts, API tests, locators, phân tích flaky tests, và tạo test data.
+description: Skill supporting the agent in performing QA automation testing tasks including generating test cases, automation scripts, API tests, locators, flaky test analysis, and test data creation.
 ---
 
 # QA Automation Engineer
@@ -47,7 +47,7 @@ Typical prompts include:
 - Generate Selenium automation from test case
 - Generate automation from UI steps
 - Generate API tests from Swagger
-- Generate regression suite → _(redirect sang `generate_application_test_plan` hoặc `generate_manual_testcases_rbt`)_
+- Generate regression suite → _(redirect to `generate_application_test_plan` or `generate_manual_testcases_rbt`)_
 - Generate test data
 - Analyze flaky test
 - Generate locator for element
@@ -61,16 +61,16 @@ When the user request matches a specific task, select the appropriate workflow f
 
 ### Generate test cases from requirements
 
-> **Delegate:** Tác vụ này thuộc skill **`rbt_manual_testing`** — không phải `qa_automation_engineer`.
+> **Delegate:** This task belongs to the **`rbt_manual_testing`** skill — not `qa_automation_engineer`.
 
-Use workflow: `generate_testcases_from_requirements` (QUICK mode) hoặc `generate_manual_testcases_rbt` (FULL RBT mode).
+Use workflow: `generate_testcases_from_requirements` (QUICK mode) or `generate_manual_testcases_rbt` (FULL RBT mode).
 
 Triggers when user asks:
 
 - generate test cases → **delegate to `rbt_manual_testing` (QUICK mode)**
 - write manual test cases → **delegate to `rbt_manual_testing` (QUICK mode)**
 - test scenarios from requirement → **delegate to `rbt_manual_testing` (QUICK mode)**
-- sinh test cases đầy đủ / quy trình 6 bước → **delegate to `rbt_manual_testing` (FULL RBT mode)**
+- generate complete test cases / 6-step process → **delegate to `rbt_manual_testing` (FULL RBT mode)**
 
 ---
 
@@ -124,17 +124,17 @@ Triggers when user asks:
 
 Use workflow: `generate_cross_module_test_plan`
 
-> Workflow dành cho **tính năng phức tạp đi qua nhiều modules nối tiếp**. Sinh Data Flow Map + Ma trận kết hợp đa chiều (Pairwise / Business-critical / Full Cartesian).
+> Workflow for **complex features spanning multiple sequential modules**. Generates Data Flow Map + Multi-dimensional Combinatorial Matrix (Pairwise / Business-critical / Full Cartesian).
 
 Triggers when user asks:
 
-- phân tích tính năng cross-module
-- test nhiều module liên kết
-- sinh ma trận kết hợp / combinatorial matrix
-- test tính năng có nhiều điều kiện kết hợp
+- analyze cross-module features
+- test multiple linked modules
+- generate combinatorial matrix
+- test features with multiple combined conditions
 - analyze multi-module feature
 - pairwise testing
-- decision table đa chiều / nhiều chiều
+- multi-dimensional decision table
 
 ---
 
@@ -142,21 +142,21 @@ Triggers when user asks:
 
 Use workflow: `generate_combinatorial_test_data`
 
-> Sinh test data cho ma trận kết hợp. Hỗ trợ 2 modes: **GENERATE** (sinh offline) và **PIPELINE** (chạy thật trên browser qua N modules).
+> Generates test data for combinatorial matrices. Supports 2 modes: **GENERATE** (offline generation) and **PIPELINE** (live browser execution through N modules).
 
 Triggers when user asks:
 
-- sinh data cho ma trận kết hợp
-- tạo test data cho combinatorial matrix
-- chạy pipeline tạo data qua nhiều module
+- generate data for combinatorial matrix
+- create test data for combinatorial matrix
+- run pipeline to create data across multiple modules
 - generate combinatorial test data
-- setup data cho cross-module test
+- setup data for cross-module test
 
 ---
 
 ### Generate regression suite
 
-> **Không có workflow riêng.** Dùng `generate_application_test_plan` (Mode PLAN) hoặc `generate_manual_testcases_rbt` (FULL RBT) tùy theo input.
+> **No standalone workflow.** Use `generate_application_test_plan` (Mode PLAN) or `generate_manual_testcases_rbt` (FULL RBT) depending on the input.
 
 Triggers when user asks:
 
@@ -167,7 +167,7 @@ Triggers when user asks:
 
 ### Generate automation framework
 
-> **Delegate:** Tác vụ này sử dụng skill **`framework_architect`** để thiết kế framework.
+> **Delegate:** This task uses the **`framework_architect`** skill to design the framework.
 
 Use workflow: `generate_automation_framework`
 
@@ -178,7 +178,7 @@ Triggers when user asks:
 - design Playwright framework
 - design Appium framework
 - scaffold automation project
-- thiết kế framework mới
+- design new framework
 
 ---
 
@@ -186,8 +186,8 @@ Triggers when user asks:
 
 Use workflow: `generate_application_test_plan`
 
-> Workflow này có **2 modes**: PLAN (mặc định — chỉ test plan) và FULL (test plan + automation skeleton).
-> Khi user yêu cầu "full automation suite" hoặc "bootstrap automation" → tự động chọn Mode FULL.
+> This workflow has **2 modes**: PLAN (default — test plan only) and FULL (test plan + automation skeleton).
+> When the user requests a "full automation suite" or "bootstrap automation" → automatically selects Mode FULL.
 
 Triggers when user asks:
 
@@ -236,18 +236,18 @@ Triggers when user asks:
 
 ### Analyze requirement document
 
-> **Delegate:** Tác vụ này sử dụng skill **`requirements_analyzer`** để phân tích requirement documents.
+> **Delegate:** This task uses the **`requirements_analyzer`** skill to analyze requirement documents.
 
 Use workflow: `analyze_requirement_document`
 
-> Workflow chỉ **phân tích** requirement — KHÔNG sinh test cases. Output là tài liệu phân tích chi tiết gồm: AC breakdown, dependencies, ambiguities, risks.
+> Workflow only **analyzes** requirements — DOES NOT generate test cases. Output is a detailed analysis document including: AC breakdown, dependencies, ambiguities, risks.
 
 Triggers when user asks:
 
-- phân tích requirement document
-- review yêu cầu / analyze this ticket
-- phân tích Jira ticket / requirement
-- tìm điểm mơ hồ trong requirement
+- analyze requirement document
+- review requirement / analyze this ticket
+- analyze Jira ticket / requirement
+- find ambiguities in requirements
 - analyze requirement / review requirement document
 
 ---
@@ -259,7 +259,7 @@ Use workflow: `fetch_jira_requirements`
 Triggers when user asks:
 
 - fetch jira requirements
-- lấy requirement từ jira
+- get requirements from jira
 - get jira ticket
 - import user stories from jira
 
@@ -272,7 +272,7 @@ Use workflow: `import_test_results_xray`
 Triggers when user asks:
 
 - push test results to xray
-- đẩy kết quả test lên xray
+- push test results to xray
 - import test execution to jira
 - upload playwright results to xray
 
@@ -339,10 +339,10 @@ The agent may consult additional documentation in the `references/` folder:
 - `TEST_STRATEGY.md` — Testing objectives, scope, execution plan
 - `PROMPT_TEMPLATES.md` — Reusable prompt templates for common QA tasks
 
-External references (thay thế cho các file đã gộp):
+External references (replacement for merged files):
 
-- `plans/automation/project_architecture/README.md` — Repository structure & project architecture (thay thế REPOSITORY_MAP.md)
-- `GEMINI.md` > "Cleanup & Delivery" — Quality checklist / Definition of Done (thay thế SELF_CHECK.md)
+- `plans/automation/project_architecture/README.md` — Repository structure & project architecture (replaces REPOSITORY_MAP.md)
+- `GEMINI.md` > "Cleanup & Delivery" — Quality checklist / Definition of Done (replaces SELF_CHECK.md)
 
 ---
 

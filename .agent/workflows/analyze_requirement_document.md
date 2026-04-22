@@ -1,175 +1,175 @@
 ---
-description: Phân tích requirement document (Jira ticket, .doc, user story) — sinh tài liệu phân tích chi tiết, KHÔNG sinh test cases.
+description: Analyze requirement documents (Jira ticket, .doc, user story) — generate detailed analysis documents, DO NOT generate test cases.
 skills:
   - requirements_analyzer
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`requirements_analyzer`** (tại `.agent/skills/requirements_analyzer/SKILL.md`) để hiểu cách phân tích yêu cầu chuẩn trước khi bắt đầu.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`requirements_analyzer`** skill (at `.agent/skills/requirements_analyzer/SKILL.md`) to understand standard requirement analysis before starting.
 
-# Workflow: Phân Tích Requirement Document
+# Workflow: Requirement Document Analysis
 
-Workflow này phân tích requirement documents (Jira tickets, .doc files, user stories, design mockups) và sinh ra một tài liệu phân tích chi tiết. **KHÔNG sinh test cases** — chỉ tập trung vào hiểu, phân rã, và phát hiện rủi ro/mơ hồ trong yêu cầu.
+This workflow analyzes requirement documents (Jira tickets, .doc files, user stories, design mockups) and generates a detailed analysis document. **DO NOT generate test cases** — focus only on understanding, decomposing, and detecting risks/ambiguities in the requirements.
 
-## Khi nào sử dụng
+## When to Use
 
-- User cung cấp Jira ticket (.doc) hoặc requirement document và yêu cầu "phân tích"
-- User muốn hiểu rõ scope, acceptance criteria, và dependencies trước khi viết test
-- User cần danh sách các điểm mơ hồ (ambiguities) để clarify với PO/BA
-- User nói: "phân tích requirement", "review yêu cầu", "analyze this ticket"
+- The user provides a Jira ticket (.doc) or requirement document and asks for an "analysis".
+- The user wants to clearly understand the scope, acceptance criteria, and dependencies before writing tests.
+- The user needs a list of ambiguities to clarify with the PO/BA.
+- The user says: "analyze requirement", "review requirement", "analyze this ticket".
 
-## Đầu vào (Input)
+## Input
 
-Agent cần thu thập từ user:
+The agent needs to collect from the user:
 
-| # | Input | Bắt buộc | Mô tả |
+| # | Input | Mandatory | Description |
 |---|---|---|---|
-| 1 | **Requirement document** | ✅ | File .doc, .md, URL Jira, hoặc text mô tả yêu cầu |
-| 2 | **Mockup/Screenshot** | ⭕ Khuyến khích | Hình ảnh UI design, wireframe, hoặc screenshot hiện tại |
-| 3 | **Related tickets** | ⭕ Tùy chọn | Các ticket phụ thuộc hoặc liên quan (dependencies) |
-| 4 | **Context bổ sung** | ⭕ Tùy chọn | Thông tin về hệ thống hiện tại, business domain |
+| 1 | **Requirement document** | ✅ | .doc, .md files, Jira URL, or requirement description text. |
+| 2 | **Mockup/Screenshot** | ⭕ Encouraged | UI design images, wireframes, or current screenshots. |
+| 3 | **Related tickets** | ⭕ Optional | Dependent or related tickets (dependencies). |
+| 4 | **Additional Context** | ⭕ Optional | Information about the current system, business domain. |
 
 > [!NOTE]
-> Nếu user chỉ cung cấp file .doc mà không có mockup, agent vẫn phải phân tích đầy đủ dựa trên nội dung document. Nếu có mockup/screenshot, agent phân tích UI chi tiết hơn.
+> If the user only provides a .doc file without mockups, the agent must still perform a full analysis based on the document content. If mockups/screenshots are provided, the agent performs a more detailed UI analysis.
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Thu thập và đọc hiểu (Information Gathering)
+### Step 1: Information Gathering
 
-1. **Đọc requirement document** được user cung cấp (file .doc, .md, hoặc URL)
-   - Nếu file .doc format HTML (export từ Jira): parse HTML để trích xuất nội dung
-   - Xác định: Ticket ID, Type, Priority, Status, Reporter, Assignee, Fix Version, Sprint, Labels
-2. **Đọc mockup/screenshot** nếu có — phân tích UI layout, components, fields
-3. **Kiểm tra related tickets** nếu có trong cùng thư mục hoặc được user cung cấp
-   - Đọc và tóm tắt dependencies
-4. **Xác nhận** đã nắm được bối cảnh → tiếp tục phân tích
+1. **Read the requirement document** provided by the user (.doc, .md file, or URL).
+   - If the .doc file is in HTML format (exported from Jira): parse the HTML to extract content.
+   - Identify: Ticket ID, Type, Priority, Status, Reporter, Assignee, Fix Version, Sprint, Labels.
+2. **Read mockups/screenshots** if available — analyze UI layout, components, and fields.
+3. **Check related tickets** if available in the same directory or provided by the user.
+   - Read and summarize dependencies.
+4. **Confirm** context understanding → continue analysis.
 
-### Bước 2: Trích xuất thông tin cốt lõi (Core Analysis)
+### Step 2: Core Analysis
 
-1. **Tổng quan Ticket** — Bảng metadata (ID, Type, Priority, Status, Sprint, Assignee...)
-2. **User Story** — Trích xuất format "As a... I want... So that..."
-3. **Phạm vi áp dụng (Scope)** — Xác định rõ các module/page/component bị ảnh hưởng
-4. **Acceptance Criteria** — Phân rã từng AC thành các nhóm logic, bao gồm:
-   - Mô tả chi tiết từng AC
-   - Bảng so sánh (nếu có cột mới, field mới, rule mới)
-   - Phân biệt rõ **mặc định vs tùy chọn** (nếu applicable)
+1. **Ticket Overview** — Metadata table (ID, Type, Priority, Status, Sprint, Assignee...).
+2. **User Story** — Extract "As a... I want... So that..." format.
+3. **Scope** — Clearly identify affected modules/pages/components.
+4. **Acceptance Criteria** — Decompose each AC into logical groups, including:
+   - Detailed description of each AC.
+   - Comparison tables (if there are new columns, fields, or rules).
+   - Clearly distinguish between **default vs. optional** (if applicable).
 
-### Bước 3: Phân tích UI từ Mockup (nếu có)
+### Step 3: UI Analysis from Mockup (if available)
 
-Nếu user cung cấp mockup/screenshot:
+If the user provides mockups/screenshots:
 
-1. **Mô tả layout** — Breadcrumb, header, sidebar, main content, footer
-2. **Liệt kê components** — Tables, forms, modals, buttons, dropdowns, tabs
-3. **Chi tiết fields** — Tên field, loại (input/dropdown/date picker), label, placeholder
-4. **So sánh** mockup với document — phát hiện inconsistency
-5. **Chụp quan sát** vào carousel trong artifact (nếu hình có sẵn)
+1. **Layout description** — Breadcrumb, header, sidebar, main content, footer.
+2. **Component listing** — Tables, forms, modals, buttons, dropdowns, tabs.
+3. **Field details** — Field name, type (input/dropdown/date picker), label, placeholder.
+4. **Compare mockup with document** — detect inconsistencies.
+5. **Capture observations** into a carousel in the artifact (if images are available).
 
-### Bước 4: Phân tích Dependencies (Phụ thuộc)
+### Step 4: Dependency Analysis
 
-1. Xác định các ticket/feature liên quan (referenced trong AC hoặc comments)
-2. Đọc và tóm tắt nội dung ticket phụ thuộc
-3. Nếu có mockup riêng cho dependency → phân tích UI chi tiết (fields, modals, interactions)
-4. Tổng hợp **Business Rules** từ tất cả requirements + mockups
-5. Đánh dấu rõ quy tắc nào từ ticket chính vs ticket phụ thuộc
+1. Identify related tickets/features (referenced in AC or comments).
+2. Read and summarize dependent ticket content.
+3. If there is a separate mockup for the dependency → detailed UI analysis (fields, modals, interactions).
+4. Synthesize **Business Rules** from all requirements + mockups.
+5. Clearly mark which rules are from the main ticket vs. dependent tickets.
 
-### Bước 5: Phát hiện Ambiguities & Risks (Trọng tâm)
+### Step 5: Detecting Ambiguities & Risks (Core Focus)
 
 > [!IMPORTANT]
-> Đây là phần **giá trị cao nhất** của workflow — phát hiện những gì requirement KHÔNG nói rõ.
+> This is the **highest value** part of the workflow — identifying what the requirements DO NOT state clearly.
 
-**5.1. Điểm mơ hồ (Ambiguities):**
+**5.1. Ambiguities:**
 
-Với mỗi ambiguity, ghi rõ:
-- **Mã:** AMB-XX (đánh số tuần tự)
-- **Câu hỏi:** Mô tả rõ ràng điều gì chưa rõ
-- **Nguy cơ:** Impact nếu không được giải quyết
-- **Mức độ:** 🔴 High / 🟡 Medium / 🟢 Low
+For each ambiguity, specify:
+- **Code:** AMB-XX (sequential numbering).
+- **Question:** Clear description of what is unclear.
+- **Risk:** Impact if not resolved.
+- **Level:** 🔴 High / 🟡 Medium / 🟢 Low.
 
-Các hướng phát hiện ambiguity:
-- Từ khóa mơ hồ: "where applicable", "as needed", "similar to", "etc."
-- Validation rules thiếu: min/max, format, required/optional
-- Hành vi edge case: lỗi mạng, concurrent access, trống data
-- Inconsistency giữa document và mockup (tên cột, format, layout)
-- Threshold/config chưa xác định (ví dụ: bao nhiêu ngày = "approaching deadline"?)
-- Conflict giữa requirements cũ và mới
+Directions for detecting ambiguity:
+- Vague keywords: "where applicable", "as needed", "similar to", "etc."
+- Missing validation rules: min/max, format, required/optional.
+- Edge case behavior: network errors, concurrent access, empty data.
+- Inconsistency between document and mockup (column names, format, layout).
+- Undefined thresholds/configs (e.g., how many days = "approaching deadline"?).
+- Conflicts between old and new requirements.
 
-**5.2. Rủi ro kiểm thử (Testing Risks):**
+**5.2. Testing Risks:**
 
-Với mỗi risk, ghi rõ:
-- **Mã:** RISK-XX
-- **Tên rủi ro**
-- **Mô tả**
-- **Mitigation** (cách giảm thiểu)
+For each risk, specify:
+- **Code:** RISK-XX.
+- **Risk Name**
+- **Description**
+- **Mitigation**
 
-### Bước 6: Tổng hợp và trình bày (Synthesis & Delivery)
+### Step 6: Synthesis & Delivery
 
-1. **Ma trận trạng thái** (nếu có state transitions) — bảng mapping trạng thái → hành vi
-2. **Checklist AC** — Tóm tắt tất cả AC dạng checkbox, nhóm theo chức năng
-3. **Khuyến nghị kiểm thử** — Gợi ý top 10 điều cần quan tâm nhất khi test
-4. **Xuất Artifact** — Lưu toàn bộ phân tích vào file `.md`
+1. **State Matrix** (if state transitions exist) — state to behavior mapping table.
+2. **AC Checklist** — Summary of all AC in checkbox format, grouped by function.
+3. **Testing Recommendations** — Suggestions for the top 10 most important things to consider during testing.
+4. **Export Artifact** — Save the entire analysis to a `.md` file.
 
-## Cấu trúc Output (Template Artifact)
+## Output Structure (Artifact Template)
 
-Agent PHẢI xuất artifact theo cấu trúc sau:
+The agent MUST export the artifact following this structure:
 
 ```markdown
-# 📋 Phân Tích Requirement: [TICKET-ID]
+# 📋 Requirement Analysis: [TICKET-ID]
 ## [Ticket Title]
 
-## 1. Tổng Quan Ticket
-(Bảng metadata)
+## 1. Ticket Overview
+(Metadata table)
 
 ## 2. User Story
 (As a... I want... So that...)
 
-## 3. Phạm Vi Áp Dụng (Scope)
-(Bảng liệt kê modules/pages bị ảnh hưởng)
+## 3. Scope
+(Table listing affected modules/pages)
 
-## 4. Acceptance Criteria — Phân Tích Chi Tiết
-### 4.1. [Nhóm AC 1]
-### 4.2. [Nhóm AC 2]
-### 4.N. [Nhóm AC N]
+## 4. Acceptance Criteria — Detailed Analysis
+### 4.1. [AC Group 1]
+### 4.2. [AC Group 2]
+### 4.N. [AC Group N]
 
-## 5. Phụ Thuộc (Dependencies)
-### 5.1. [Ticket phụ thuộc]
-#### 5.1.1. [Chi tiết UI nếu có mockup]
-#### 5.1.N. Business Rules tổng hợp
+## 5. Dependencies
+### 5.1. [Dependent Ticket]
+#### 5.1.1. [UI Details if mockups available]
+#### 5.1.N. Synthesized Business Rules
 
-## 6. Phân Tích Mockup/Screenshot
+## 6. Mockup/Screenshot Analysis
 ### 6.1. [Mockup 1]
 ### 6.N. [Mockup N]
 
-## 7. Các Điểm Mơ Hồ & Rủi Ro
-### 7.1. Điểm Mơ Hồ (Ambiguities)
-(Bảng: #, Câu hỏi, Nguy cơ, Mức độ)
-### 7.2. Rủi Ro Kiểm Thử
-(Bảng: #, Rủi ro, Mô tả, Mitigation)
+## 7. Ambiguities & Risks
+### 7.1. Ambiguities
+(Table: #, Question, Risk, Level)
+### 7.2. Testing Risks
+(Table: #, Risk, Description, Mitigation)
 
-## 8. Ma Trận Trạng Thái (nếu applicable)
-(Bảng state → behavior)
+## 8. State Matrix (if applicable)
+(State → behavior table)
 
-## 9. Tóm Tắt Acceptance Criteria (Checklist)
-(Checkbox nhóm theo chức năng)
+## 9. Acceptance Criteria Summary (Checklist)
+(Checkboxes grouped by function)
 
-## 10. Khuyến Nghị Cho Kiểm Thử
-(Danh sách gợi ý, KHÔNG phải test cases)
+## 10. Testing Recommendations
+(List of suggestions, NOT test cases)
 ```
 
-## Quy tắc quan trọng
+## Important Rules
 
-- ❌ **KHÔNG sinh test cases** — workflow này chỉ phân tích, không tạo TC
-- ❌ **KHÔNG tự đoán** business logic nếu document không nói rõ → đưa vào Ambiguities
-- ❌ **KHÔNG bỏ qua comments** trong Jira ticket — comments thường chứa thông tin quan trọng bổ sung
-- ✅ **PHẢI đọc related tickets** nếu được reference trong AC
-- ✅ **PHẢI phân tích mockup** chi tiết nếu được cung cấp (fields, layout, interactions)
-- ✅ **PHẢI ghi rõ inconsistency** giữa document và mockup
-- ✅ **PHẢI viết bằng Tiếng Việt**, format Markdown, xuất Artifact
-- ✅ **PHẢI copy hình ảnh** vào thư mục artifacts nếu cần embed trong artifact
+- ❌ **DO NOT generate test cases** — this workflow is for analysis only, not TC creation.
+- ❌ **DO NOT guess business logic** if the document is unclear → add to Ambiguities.
+- ❌ **DO NOT ignore comments** in the Jira ticket — comments often contain important supplementary information.
+- ✅ **MUST read related tickets** if referenced in the AC.
+- ✅ **MUST analyze mockups** in detail if provided (fields, layout, interactions).
+- ✅ **MUST clearly state inconsistencies** between document and mockup.
+- ✅ **MUST write in English**, Markdown format, export Artifact.
+- ✅ **MUST copy images** to the artifacts directory if embedding in the artifact is needed.
 
-## Mối quan hệ với workflows khác
+## Relationship with Other Workflows
 
-| Sau khi phân tích xong | Workflow tiếp theo |
+| After analysis is complete | Next Workflow |
 |---|---|
-| Cần sinh test cases nhanh | `/generate_testcases_from_requirements` |
-| Cần sinh test cases bài bản (RBT 6 bước) | `/generate_manual_testcases_rbt` |
-| Cần sinh automation scripts | `/generate_automation_from_testcases` |
-| Cần phân tích cross-module | `/generate_cross_module_test_plan` |
+| Need to generate test cases quickly | `/generate_testcases_from_requirements` |
+| Need formal test case generation (6-step RBT) | `/generate_manual_testcases_rbt` |
+| Need to generate automation scripts | `/generate_automation_from_testcases` |
+| Need cross-module analysis | `/generate_cross_module_test_plan` |

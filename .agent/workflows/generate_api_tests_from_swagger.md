@@ -1,118 +1,118 @@
 ---
-description: Sinh API test cases và automation scripts từ Swagger/OpenAPI specification. Hỗ trợ 2 mode — SPEC (chỉ test cases) và FULL (test cases + automation scripts).
+description: Generate API test cases and automation scripts from Swagger/OpenAPI specification. Supports 2 modes — SPEC (test cases only) and FULL (test cases + automation scripts).
 skills:
   - qa_automation_engineer
   - test_data_generator
 ---
 
-# Workflow: Sinh API Tests từ Swagger/OpenAPI
+# Workflow: Generate API Tests from Swagger/OpenAPI
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`qa_automation_engineer`** (tại `.agent/skills/qa_automation_engineer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`test_data_generator`** để sinh test data đúng chuẩn.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`qa_automation_engineer`** skill (at `.agent/skills/qa_automation_engineer/SKILL.md`) before starting. Additionally, refer to the **`test_data_generator`** skill to generate standard test data.
 
-Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác định các endpoints, sinh API test cases có cấu trúc, và (tùy mode) tự động sinh automation scripts hoàn chỉnh.
+This workflow helps the agent analyze Swagger/OpenAPI specifications, identify endpoints, generate structured API test cases, and (depending on the mode) automatically generate complete automation scripts.
 
-## ⚠️ Nguyên tắc thực thi
+## ⚠️ Execution Principles
 
-- **Tất cả output bằng Tiếng Việt**
-- **KHÔNG đoán** schema/endpoint — phải đọc spec thực tế (JSON/YAML)
-- **Phải chờ user xác nhận** scope tại Bước 2 trước khi sinh chi tiết
-- Nếu user chưa cung cấp Swagger URL/file → hỏi trước khi bắt đầu
-- ⚠️ **Rule E3:** Khi test FAIL → tự đọc log → phân tích → sửa → chạy lại. KHÔNG hỏi user trong quá trình fix lỗi
+- **All output in English**
+- **DO NOT guess** schemas/endpoints — analyze the actual spec (JSON/YAML).
+- **Must wait for user confirmation** of the scope at Step 2 before generating details.
+- If the user has not provided a Swagger URL/file → ask before starting.
+- ⚠️ **Rule E3:** When a test FAILS → read logs → analyze → fix → re-run. DO NOT ask the user during the fix process.
 
-## 2 Chế độ (Mode)
+## 2 Modes
 
-| Mode | Khi nào sử dụng | Output |
+| Mode | When to Use | Output |
 |---|---|---|
-| **SPEC** (mặc định) | User cần API test cases dưới dạng tài liệu | API Test Cases (Markdown) + Test Data Matrix |
-| **FULL** | User yêu cầu cả automation scripts | Như SPEC + Automation Scripts + Project Structure |
+| **SPEC** (default) | User needs API test cases as documentation | API Test Cases (Markdown) + Test Data Matrix |
+| **FULL** | User requests automation scripts as well | Same as SPEC + Automation Scripts + Project Structure |
 
-> Nếu user nói "generate automation", "viết code test API", hoặc yêu cầu scripts → tự động chuyển sang **Mode FULL**.
+> If the user says "generate automation", "write API test code", or requests scripts → automatically switch to **FULL Mode**.
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Tiếp nhận & Phân tích Spec (Parse & Analyze)
+### Step 1: Reception & Spec Analysis (Parse & Analyze)
 
-1. **Thu thập Swagger/OpenAPI spec** từ user:
-   - **URL trực tiếp** (VD: `https://api.example.com/swagger.json`) → dùng `read_url_content` để fetch
-   - **File local** (JSON/YAML) → dùng `view_file` để đọc
-   - **Swagger UI URL** → trích xuất URL spec gốc (thường là `/v2/api-docs` hoặc `/v3/api-docs`)
-   - **Scalar API Reference URL** → inspect HTML để tìm `data-configuration` chứa URL spec (thường là `/swagger/json`, `/reference/json`, hoặc relative path trong attribute `url`). VD: `https://book.anhtester.com/swagger` → spec tại `https://book.anhtester.com/swagger/json`
-   - **Các dạng API Doc khác** (Redoc, Stoplight, RapiDoc) → tìm URL spec trong page source hoặc network requests
-2. **Parse spec** và trích xuất thông tin:
-   - Base URL, API version, authentication scheme (Bearer, API Key, OAuth2, Basic)
-   - Danh sách tất cả endpoints: `method + path`
+1. **Collect Swagger/OpenAPI spec** from the user:
+   - **Direct URL** (e.g., `https://api.example.com/swagger.json`) → use `read_url_content` to fetch.
+   - **Local file** (JSON/YAML) → use `view_file` to read.
+   - **Swagger UI URL** → extract the original spec URL (usually `/v2/api-docs` or `/v3/api-docs`).
+   - **Scalar API Reference URL** → inspect HTML to find `data-configuration` containing the spec URL (usually `/swagger/json`, `/reference/json`, or relative path in the `url` attribute). E.g., `https://book.anhtester.com/swagger` → spec at `https://book.anhtester.com/swagger/json`.
+   - **Other API Doc formats** (Redoc, Stoplight, RapiDoc) → find the spec URL in page source or network requests.
+2. **Parse spec** and extract information:
+   - Base URL, API version, authentication scheme (Bearer, API Key, OAuth2, Basic).
+   - List of all endpoints: `method + path`
    - Request parameters: path, query, header, body (schema + required fields)
    - Response schemas: status codes, response body structure
    - Models/Definitions: reusable data models
-3. **Phân loại endpoints** theo nhóm:
-   - **CRUD operations** — Create, Read, Update, Delete
-   - **Authentication** — Login, Register, Token refresh
-   - **Business Logic** — Các API xử lý nghiệp vụ phức tạp
-   - **Utility** — Health check, config, metadata
+3. **Classify endpoints** into groups:
+   - **CRUD operations** — Create, Read, Update, Delete.
+   - **Authentication** — Login, Register, Token refresh.
+   - **Business Logic** — Complex business processing APIs.
+   - **Utility** — Health check, config, metadata.
 
-### Bước 2: Xác nhận Scope & Tech Stack (CHECKPOINT — ⏸️ DỪNG LẠI)
+### Step 2: Scope & Tech Stack Confirmation (CHECKPOINT — ⏸️ STOP)
 
-1. **Trình bày tóm tắt** cho user review:
-   - Tổng số endpoints phát hiện (phân nhóm)
-   - Authentication method
-   - Danh sách endpoint groups + số lượng API mỗi nhóm
-   - Mode đề xuất (SPEC hay FULL)
-2. **Hỏi user xác nhận:**
-   - "Bạn muốn test tất cả endpoints hay chỉ tập trung vào nhóm nào?"
-   - "Bạn muốn output là test cases (SPEC) hay cả automation scripts (FULL)?"
-   - Nếu Mode FULL: "Tech stack mong muốn?" (mặc định theo bảng bên dưới)
-3. **Chờ user xác nhận** scope trước khi sang Bước 3
+1. **Present a summary** for user review:
+   - Total endpoints detected (grouped).
+   - Authentication method.
+   - List of endpoint groups + number of APIs per group.
+   - Proposed Mode (SPEC or FULL).
+2. **Ask the user to confirm:**
+   - "Do you want to test all endpoints or just focus on specific groups?"
+   - "Do you want the output to be test cases (SPEC) or both test cases and automation scripts (FULL)?"
+   - If FULL Mode: "What is your preferred tech stack?" (default according to the table below).
+3. **Wait for user confirmation** of the scope before proceeding to Step 3.
 
-**Tech Stack mặc định (Mode FULL):**
+**Default Tech Stack (FULL Mode):**
 
-| Framework | Ngôn ngữ | Khi nào dùng |
+| Framework | Language | When to Use |
 |---|---|---|
-| **REST Assured** | Java | Mặc định cho Java projects, TestNG runner |
-| **Playwright API Testing** | TypeScript | Khi user dùng Playwright hoặc TypeScript stack |
-| **Supertest + Jest** | TypeScript/JS | Khi user dùng Node.js backend |
-| **Requests + Pytest** | Python | Khi user dùng Python stack |
+| **REST Assured** | Java | Default for Java projects, TestNG runner |
+| **Playwright API Testing** | TypeScript | When the user uses Playwright or TypeScript stack |
+| **Supertest + Jest** | TypeScript/JS | When the user uses Node.js backend |
+| **Requests + Pytest** | Python | When the user uses Python stack |
 
-### Bước 3: Sinh API Test Scenarios & Test Data
+### Step 3: Generate API Test Scenarios & Test Data
 
-1. **Với mỗi endpoint** trong scope đã xác nhận, sinh test scenarios theo 5 loại:
-   - **✅ Happy Path** — Request hợp lệ, response đúng schema + status code
-   - **❌ Negative — Validation** — Thiếu required fields, sai data type, vượt max length
-   - **❌ Negative — Auth** — Không có token, token hết hạn, token sai role
-   - **🔲 Boundary** — Min/max values, empty string, null, special characters
-   - **⚡ Edge Cases** — Concurrent requests, duplicate creation, large payload, unicode/emoji
+1. **For each endpoint** within the confirmed scope, generate test scenarios in 5 categories:
+   - **✅ Happy Path** — Valid request, response matches schema + status code.
+   - **❌ Negative — Validation** — Missing required fields, wrong data type, exceeds max length.
+   - **❌ Negative — Auth** — No token, expired token, token with wrong role.
+   - **🔲 Boundary** — Min/max values, empty string, null, special characters.
+   - **⚡ Edge Cases** — Concurrent requests, duplicate creation, large payload, unicode/emoji.
 
-2. **Với mỗi scenario**, xác định rõ:
-   - **Request:** Method, URL, Headers, Body/Params (giá trị cụ thể)
-   - **Expected Response:** Status code, Response body structure, Error message
-   - **Priority:** P1 (Critical) / P2 (High) / P3 (Medium) / P4 (Low)
+2. **For each scenario**, clearly define:
+   - **Request:** Method, URL, Headers, Body/Params (specific values).
+   - **Expected Response:** Status code, Response body structure, Error message.
+   - **Priority:** P1 (Critical) / P2 (High) / P3 (Medium) / P4 (Low).
 
-3. **Sinh Test Data Matrix** (sử dụng skill `test_data_generator`):
-   - Data valid cho Happy Path
-   - Data invalid cho Negative cases (mỗi field 1 bộ negative)
-   - Boundary values theo schema constraints (minLength, maxLength, min, max, pattern)
-   - Data phải **unique + traceable** (VD: `auto_api_1712049200@test.com`)
+3. **Generate Test Data Matrix** (using the `test_data_generator` skill):
+   - Valid data for Happy Path.
+   - Invalid data for Negative cases (one negative set per field).
+   - Boundary values according to schema constraints (minLength, maxLength, min, max, pattern).
+   - Data must be **unique + traceable** (e.g., `auto_api_1712049200@test.com`).
 
-### Bước 4: Đóng gói API Test Cases (Output — Mode SPEC)
+### Step 4: Package API Test Cases (Output — SPEC Mode)
 
-1. Tạo **artifact** `api_test_cases.md` với cấu trúc:
-   - **Tổng quan API** — Base URL, Version, Auth method, Tổng endpoints
-   - **Endpoint Catalog** — Bảng: `| # | Method | Path | Mô tả | Số Test Cases |`
-   - **Test Cases chi tiết** — Theo từng endpoint:
+1. Create the `api_test_cases.md` **artifact** with the following structure:
+   - **API Overview** — Base URL, Version, Auth method, Total endpoints.
+   - **Endpoint Catalog** — Table: `| # | Method | Path | Description | Number of Test Cases |`.
+   - **Detailed Test Cases** — Per endpoint:
 
    ```
-   | TC ID | Endpoint | Scenario | Request | Expected Response | Priority | Loại |
+   | TC ID | Endpoint | Scenario | Request | Expected Response | Priority | Category |
    ```
 
-   - **Test Data Matrix** — Bảng data valid/invalid/boundary cho mỗi model
-   - **Dependencies & Execution Order** — Thứ tự chạy test (VD: phải tạo user trước khi test get user)
+   - **Test Data Matrix** — Valid/invalid/boundary data table for each model.
+   - **Dependencies & Execution Order** — Test execution order (e.g., must create user before testing get user).
 
-2. Nếu user chọn **Mode SPEC** → **KẾT THÚC** tại đây
+2. If the user chooses **SPEC Mode** → **END** here.
 
-### Bước 5: Sinh Automation Scripts (Mode FULL)
+### Step 5: Generate Automation Scripts (FULL Mode)
 
-> Chỉ thực hiện khi ở **Mode FULL**
+> Only perform in **FULL Mode**.
 
-1. **Thiết kế project structure** phù hợp với framework:
+1. **Design project structure** appropriate for the framework:
 
    **REST Assured (Java):**
    ```
@@ -147,88 +147,88 @@ Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác địn
        └── api-fixtures.ts     # Shared fixtures (auth tokens, etc.)
    ```
 
-2. **Sinh code** theo thứ tự:
-   - **Base API class** — Config baseURL, default headers, auth interceptor, request/response logging
-   - **Model/DTO classes** — Từ Swagger definitions/schemas
-   - **API client classes** — Methods cho mỗi endpoint (return typed response)
-   - **Test Data generators** — Data factory với random + traceable values
-   - **Test classes** — Gọi API client, assert status code + response body + schema
+2. **Generate code** in order:
+   - **Base API class** — Config baseURL, default headers, auth interceptor, request/response logging.
+   - **Model/DTO classes** — From Swagger definitions/schemas.
+   - **API client classes** — Methods for each endpoint (return typed response).
+   - **Test Data generators** — Data factory with random + traceable values.
+   - **Test classes** — Call API client, assert status code + response body + schema.
 
-3. **Assertions bắt buộc** cho mỗi test:
-   - ✅ HTTP Status Code (exact match)
-   - ✅ Response body — key fields matching expected values
-   - ✅ Response time < threshold (nếu có SLA)
-   - ✅ Response schema validation (đúng cấu trúc)
-   - ✅ Error message chính xác cho negative cases
-   - ✅ Headers check (Content-Type, CORS nếu relevant)
+3. **Mandatory assertions** for each test:
+   - ✅ HTTP Status Code (exact match).
+   - ✅ Response body — key fields matching expected values.
+   - ✅ Response time < threshold (if SLA exists).
+   - ✅ Response schema validation (correct structure).
+   - ✅ Accurate error message for negative cases.
+   - ✅ Headers check (Content-Type, CORS if relevant).
 
-4. **Best practices trong code:**
-   - Dùng **Builder pattern hoặc Factory** cho test data
-   - **Chaining requests** khi cần setup data (VD: create → get → update → delete)
-   - **Soft assertions** khi cần check nhiều fields cùng lúc
-   - **Parameterized tests** cho data-driven scenarios
-   - **Cleanup/teardown** — xóa test data đã tạo sau khi test xong
-   - Không hardcode token/credentials — đọc từ env hoặc config
+4. **Code Best Practices:**
+   - Use **Builder pattern or Factory** for test data.
+   - **Chain requests** for data setup (e.g., create → get → update → delete).
+   - **Soft assertions** for checking multiple fields simultaneously.
+   - **Parameterized tests** for data-driven scenarios.
+   - **Cleanup/teardown** — delete created test data after completion.
+   - Do not hardcode tokens/credentials — read from env or config.
 
-### Bước 6: Chạy thử nghiệm & Tự sửa lỗi (Execution & Auto-Heal)
+### Step 6: Testing & Auto-Heal (Execution & Auto-Heal)
 
-> Chỉ thực hiện khi ở **Mode FULL**
+> Only perform in **FULL Mode**.
 
-1. **Chạy test** bằng `run_command`:
+1. **Run test** using `run_command`:
    - REST Assured: `mvn test -Dtest=<TestClass>`
    - Playwright: `npx playwright test tests/api/`
    - Pytest: `python -m pytest tests/api/`
 
-2. **Theo dõi** kết quả qua `command_status`:
-   - Nếu **PASS** → cập nhật artifact, báo cáo kết quả
-   - Nếu **FAIL** → áp dụng vòng lặp Auto-Heal:
+2. **Monitor** results via `command_status`:
+   - If **PASS** → update artifact, report results.
+   - If **FAIL** → apply Auto-Heal loop:
 
    ```
    WHILE test FAIL:
-     1. Đọc error log → xác định root cause
-     2. Phân loại lỗi:
-        - Schema mismatch → cập nhật model/assertion
-        - Auth failure → kiểm tra token flow
-        - 404/405 → kiểm tra lại endpoint path/method
-        - Timeout → tăng timeout hoặc kiểm tra server
-        - Data conflict → thay test data unique mới
-     3. Sửa code bằng `replace_file_content` hoặc `multi_replace_file_content`
-     4. Chạy lại test
-     5. Lặp cho đến khi PASS (tối đa 5 vòng)
+     1. Read error log → identify root cause.
+     2. Classify error:
+        - Schema mismatch → update model/assertion.
+        - Auth failure → check token flow.
+        - 404/405 → re-check endpoint path/method.
+        - Timeout → increase timeout or check server.
+        - Data conflict → replace with new unique test data.
+     3. Fix code using replace_file_content or multi_replace_file_content.
+     4. Re-run test.
+     5. Repeat until PASS (max 5 cycles).
    ```
 
-3. **⚠️ Rule E3:** KHÔNG hỏi user trong quá trình fix lỗi. Chỉ hỏi khi:
-   - Server API không response (down/blocked)
-   - Business rule mâu thuẫn với spec
-   - Đã hết 5 vòng auto-heal mà vẫn fail
+3. **⚠️ Rule E3:** DO NOT ask the user during the fix process. Only ask if:
+   - Server API does not respond (down/blocked).
+   - Business rule contradicts the spec.
+   - Still failing after 5 auto-heal cycles.
 
-## Xử lý lỗi thường gặp
+## Common Error Handling
 
-| Lỗi | Nguyên nhân | Cách xử lý |
+| Error | Cause | How to Handle |
 |---|---|---|
-| Swagger URL trả về HTML | URL là Swagger UI, không phải spec | Tìm URL spec gốc (`/v2/api-docs`, `/v3/api-docs`, `/swagger.json`) |
-| Scalar URL trả về HTML | URL là Scalar API Reference UI | Inspect HTML tìm `data-configuration` → lấy field `url` → nối với base URL. Thử: `/swagger/json`, `/reference/json` |
-| Spec rỗng hoặc không parse được | File corrupt hoặc format không chuẩn | Hỏi user cung cấp lại, thử convert YAML ↔ JSON |
-| Auth endpoint không rõ | Spec không document auth flow | Hỏi user về auth method và cách lấy token |
-| Response schema khác spec | API thực tế không khớp với document | Note là known issue, adjust test theo response thực tế |
-| Rate limiting | API có giới hạn request/phút | Thêm delay giữa các test hoặc dùng retry logic |
+| Swagger URL returns HTML | URL is Swagger UI, not the spec | Find original spec URL (/v2/api-docs, /v3/api-docs, /swagger.json). |
+| Scalar URL returns HTML | URL is Scalar API Reference UI | Inspect HTML for data-configuration → get url field → append to base URL. Try: /swagger/json, /reference/json. |
+| Spec empty or cannot be parsed | Corrupt file or non-standard format | Ask user to re-provide, try converting YAML ↔ JSON. |
+| Unknown auth endpoint | Spec doesn't document auth flow | Ask user about auth method and how to obtain token. |
+| Response schema differs from spec | Actual API doesn't match document | Note as known issue, adjust test per actual response. |
+| Rate limiting | API has request-per-minute limit | Add delay between tests or use retry logic. |
 
 ## Output
 
-### Mode SPEC
+### SPEC Mode
 - Artifact `api_test_cases.md`:
-  - API Overview (Base URL, Version, Auth)
-  - Endpoint Catalog (bảng tổng hợp)
-  - Test Cases chi tiết (phân nhóm theo endpoint)
-  - Test Data Matrix
-  - Execution Order & Dependencies
+  - API Overview (Base URL, Version, Auth).
+  - Endpoint Catalog (summary table).
+  - Detailed Test Cases (grouped by endpoint).
+  - Test Data Matrix.
+  - Execution Order & Dependencies.
 
-### Mode FULL
-- Tất cả output của Mode SPEC, cộng thêm:
-  - Project structure (phù hợp với framework)
-  - Base API class + Auth helper
-  - Model/DTO classes
-  - API client classes (per resource)
-  - Test classes với assertions đầy đủ
-  - Test data generators
-  - Kết quả chạy test (PASS/FAIL report)
+### FULL Mode
+- All output from SPEC Mode, plus:
+  - Project structure (framework-appropriate).
+  - Base API class + Auth helper.
+  - Model/DTO classes.
+  - API client classes (per resource).
+  - Test classes with full assertions.
+  - Test data generators.
+  - Test run results (PASS/FAIL report).

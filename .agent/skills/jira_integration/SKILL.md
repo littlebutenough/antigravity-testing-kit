@@ -1,124 +1,124 @@
 ---
 name: jira_integration
-description: Skill tích hợp Jira/Xray — lấy requirements từ Jira, xác thực Xray, và đẩy kết quả test lên Xray Cloud/Server.
+description: Skill for integrating Jira/Xray — fetching requirements from Jira, authenticating with Xray, and pushing test results to Xray Cloud/Server.
 ---
 
 # Jira & Xray Integration Skill
 
-## Mô tả
+## Description
 
-Skill này cung cấp khả năng tích hợp giữa Antigravity Testing Kit với hệ thống Jira và Xray để:
+This skill provides integration capabilities between Antigravity Testing Kit and Jira/Xray systems for:
 
-1. **Lấy Requirements/User Stories** từ Jira → chuyển thành tài liệu yêu cầu chuẩn
-2. **Xác thực Xray** (Cloud hoặc Server/Data Center)
-3. **Đẩy kết quả test** (Playwright, JUnit, Allure) lên Xray Test Management
+1. **Fetch Requirements/User Stories** from Jira → convert to standard requirement documents.
+2. **Xray Authentication** (Cloud or Server/Data Center).
+3. **Push Test Results** (Playwright, JUnit, Allure) to Xray Test Management.
 
 ---
 
-## Khi nào sử dụng
+## When to Use
 
-Agent sử dụng skill này khi user yêu cầu:
+The agent uses this skill when the user requests:
 
-- Lấy requirement / user story từ Jira
-- Kết nối / test connection đến Jira API
-- Đẩy kết quả test lên Xray
-- Import test results lên Jira
-- Xác thực Xray token
-- Tích hợp CI/CD với Jira
+- Fetch requirements / user stories from Jira.
+- Connect / test connection to Jira API.
+- Push test results to Xray.
+- Import test results to Jira.
+- Authenticate Xray token.
+- CI/CD integration with Jira.
 
 Trigger keywords:
-- "fetch jira", "lấy requirement từ jira", "get jira ticket"
-- "import xray", "đẩy kết quả lên xray", "push test results"
-- "test jira connection", "kiểm tra kết nối jira"
+- "fetch jira", "get requirement from jira", "get jira ticket"
+- "import xray", "push results to xray", "push test results"
+- "test jira connection", "check jira connection"
 
 ---
 
-## Cấu trúc Scripts
+## Script Structure
 
 ```
 scripts/integrations/
 ├── jira/
-│   ├── jira_fetcher.js      # Lấy Requirement/User Story từ Jira
-│   ├── xray_auth.js         # Xác thực và lấy Token Xray
-│   ├── xray_importer.js     # Import kết quả test lên Xray
-│   └── utils.js             # Hàm utility dùng chung
+│   ├── jira_fetcher.js      # Fetch Requirement/User Story from Jira
+│   ├── xray_auth.js         # Authenticate and get Xray Token
+│   ├── xray_importer.js     # Import test results to Xray
+│   └── utils.js             # Shared utility functions
 └── package.json             # Dependencies (axios, dotenv)
 ```
 
 ---
 
-## Điều kiện tiên quyết (Prerequisites)
+## Prerequisites
 
-### 1. Cài đặt dependencies
+### 1. Install Dependencies
 
 ```bash
 cd scripts/integrations
 npm install
 ```
 
-### 2. Cấu hình .env
+### 2. Configure .env
 
-Copy `.env.example` thành `.env` ở thư mục gốc project:
+Copy `.env.example` to `.env` in the project root:
 
 ```bash
 cp .env.example .env
 ```
 
-Điền các thông tin bắt buộc:
+Fill in mandatory information:
 
-| Biến | Mô tả | Bắt buộc |
+| Variable | Description | Mandatory |
 |------|--------|----------|
-| `JIRA_BASE_URL` | URL Jira instance (VD: `https://domain.atlassian.net`) | ✅ |
-| `JIRA_EMAIL` | Email tài khoản Jira (Cloud) | ✅ (Cloud) |
+| `JIRA_BASE_URL` | Jira instance URL (e.g., `https://domain.atlassian.net`) | ✅ |
+| `JIRA_EMAIL` | Jira account email (Cloud) | ✅ (Cloud) |
 | `JIRA_API_TOKEN` | API Token (Cloud) | ✅ (Cloud) |
 | `JIRA_PAT` | Personal Access Token (Server/DC) | ✅ (Server) |
-| `JIRA_PROJECT_KEY` | Project key mặc định | Khuyến nghị |
-| `XRAY_PLATFORM` | `cloud` hoặc `server` | Mặc định: cloud |
-| `XRAY_CLIENT_ID` | Xray API Client ID | Khi dùng Xray Cloud |
-| `XRAY_CLIENT_SECRET` | Xray API Client Secret | Khi dùng Xray Cloud |
+| `JIRA_PROJECT_KEY` | Default project key | Recommended |
+| `XRAY_PLATFORM` | `cloud` or `server` | Default: cloud |
+| `XRAY_CLIENT_ID` | Xray API Client ID | When using Xray Cloud |
+| `XRAY_CLIENT_SECRET` | Xray API Client Secret | When using Xray Cloud |
 
-### 3. Cách lấy Jira API Token (Cloud)
+### 3. How to get Jira API Token (Cloud)
 
-1. Đăng nhập vào [https://id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-2. Nhấn **Create API token**
-3. Đặt label (VD: "Antigravity Automation")
-4. Copy token → dán vào `JIRA_API_TOKEN` trong file `.env`
+1. Log in to [https://id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Click **Create API token**.
+3. Set a label (e.g., "Antigravity Automation").
+4. Copy token → paste into `JIRA_API_TOKEN` in the `.env` file.
 
-### 4. Cách lấy Xray Cloud API Key
+### 4. How to get Xray Cloud API Key
 
-1. Truy cập [https://app.getxray.app](https://app.getxray.app) → Settings → API Keys
-2. Hoặc trong Jira: Apps → Xray → Settings → API Keys
-3. Tạo API Key mới → Copy **Client ID** và **Client Secret**
+1. Visit [https://app.getxray.app](https://app.getxray.app) → Settings → API Keys.
+2. Or in Jira: Apps → Xray → Settings → API Keys.
+3. Create a new API Key → Copy **Client ID** and **Client Secret**.
 
 ---
 
-## Hướng dẫn sử dụng
+## Usage Instructions
 
-### Lấy 1 issue cụ thể
+### Fetch a specific issue
 
 ```bash
 node scripts/integrations/jira/jira_fetcher.js --issue PROJ-123
 ```
 
-### Lấy issues theo project
+### Fetch issues by project
 
 ```bash
 node scripts/integrations/jira/jira_fetcher.js --project PROJ --type Story --max 20
 ```
 
-### Tìm theo JQL
+### Find via JQL
 
 ```bash
 node scripts/integrations/jira/jira_fetcher.js --jql "project = PROJ AND status = 'To Do'"
 ```
 
-### Xuất thành Markdown requirement
+### Export as Markdown requirement
 
 ```bash
 node scripts/integrations/jira/jira_fetcher.js --issue PROJ-123 --format md
 ```
 
-### Lấy children của Epic
+### Fetch children of an Epic
 
 ```bash
 node scripts/integrations/jira/jira_fetcher.js --epic PROJ-10 --format md
@@ -131,13 +131,13 @@ node scripts/integrations/jira/xray_auth.js
 node scripts/integrations/jira/xray_auth.js --verify
 ```
 
-### Import kết quả Playwright lên Xray
+### Import Playwright results to Xray
 
 ```bash
 node scripts/integrations/jira/xray_importer.js --format playwright --file ./test-results.json --project PROJ
 ```
 
-### Import JUnit XML lên Xray
+### Import JUnit XML to Xray
 
 ```bash
 node scripts/integrations/jira/xray_importer.js --format junit --file ./junit-results.xml --project PROJ
@@ -145,31 +145,31 @@ node scripts/integrations/jira/xray_importer.js --format junit --file ./junit-re
 
 ---
 
-## Workflow liên quan
+## Related Workflows
 
-| Workflow | Mô tả |
+| Workflow | Description |
 |----------|--------|
-| `/fetch_jira_requirements` | Lấy requirements từ Jira ticket và lưu thành file |
-| `/import_test_results_xray` | Đẩy kết quả test lên Xray |
+| `/fetch_jira_requirements` | Fetch requirements from Jira ticket and save as file |
+| `/import_test_results_xray` | Push test results to Xray |
 
 ---
 
-## Lưu ý quan trọng
+## Important Notes
 
-- **Bảo mật**: KHÔNG bao giờ commit file `.env` lên Git. File `.gitignore` đã được cấu hình bỏ qua `.env`.
-- **Rate Limiting**: Jira Cloud có giới hạn API calls. Script đã hỗ trợ phân trang (pagination) để tránh vượt limit.
-- **Atlassian Document Format (ADF)**: Jira Cloud sử dụng ADF cho description. Script tự động chuyển đổi ADF → plain text.
-- **Test Key Convention**: Khi import Playwright results, nên đặt test key trong title: `test('[PROJ-123] Login should work', ...)` để Xray mapping đúng test case.
+- **Security**: NEVER commit the `.env` file to Git. The `.gitignore` file is already configured to ignore `.env`.
+- **Rate Limiting**: Jira Cloud has limits on API calls. The script supports pagination to avoid exceeding limits.
+- **Atlassian Document Format (ADF)**: Jira Cloud uses ADF for descriptions. The script automatically converts ADF → plain text.
+- **Test Key Convention**: When importing Playwright results, include the test key in the title: `test('[PROJ-123] Login should work', ...)` for proper Xray mapping.
 
 ---
 
 ## Troubleshooting
 
-| Lỗi | Nguyên nhân | Giải pháp |
+| Error | Cause | Solution |
 |------|-------------|-----------|
-| HTTP 401 | Token/password sai | Kiểm tra JIRA_API_TOKEN hoặc JIRA_PAT |
-| HTTP 403 | Không có quyền | Kiểm tra permission trên Jira project |
-| HTTP 404 | URL sai hoặc issue không tồn tại | Kiểm tra JIRA_BASE_URL và issue key |
-| `ENOTFOUND` | DNS không resolve | Kiểm tra JIRA_BASE_URL có đúng domain không |
-| `ECONNREFUSED` | Server không chạy | Kiểm tra Jira Server có online không |
-| File .env not found | Chưa tạo .env | Copy `.env.example` → `.env` |
+| HTTP 401 | Incorrect token/password | Check JIRA_API_TOKEN or JIRA_PAT |
+| HTTP 403 | No permission | Check permissions on the Jira project |
+| HTTP 404 | Wrong URL or issue does not exist | Check JIRA_BASE_URL and issue key |
+| `ENOTFOUND` | DNS does not resolve | Check if JIRA_BASE_URL domain is correct |
+| `ECONNREFUSED` | Server not running | Check if Jira Server is online |
+| File .env not found | .env not created | Copy `.env.example` → `.env` |

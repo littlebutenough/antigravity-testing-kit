@@ -1,5 +1,5 @@
 ---
-description: Phân tích tính năng phức tạp có nhiều modules liên kết, xây dựng Data Flow Map và ma trận kết hợp điều kiện (Combinatorial Matrix). Hỗ trợ Pairwise, Business-critical, Full Cartesian.
+description: Analyze complex features with multiple linked modules, build Data Flow Maps and conditional Combinatorial Matrices. Supports Pairwise, Business-critical, Full Cartesian.
 skills:
   - qa_automation_engineer
   - requirements_analyzer
@@ -7,284 +7,284 @@ skills:
   - test_data_generator
 ---
 
-# /generate_cross_module_test_plan — Phân Tích Cross-Module & Sinh Ma Trận Kết Hợp
+# /generate_cross_module_test_plan — Cross-Module Analysis & Combinatorial Matrix Generation
 
-> **Dùng khi:** Tính năng cần test đi qua **nhiều modules nối tiếp nhau**, mỗi module có nhiều lựa chọn (dimensions), và bộ kết hợp các lựa chọn quyết định output cuối cùng (template, công thức, business rules khác nhau).
+> **Use case:** When a feature requires testing across **multiple sequential modules**, each with multiple options (dimensions), and the combination of these options determines the final output (different templates, formulas, business rules).
 
-> **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.agent/skills/qa_automation_engineer/SKILL.md` — Workflow routing + automation rules
-> - **Skill:** `.agent/skills/requirements_analyzer/SKILL.md` — Phân tích requirements từ UI
-> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Inspect DOM thực tế
-> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Sinh test data (xem phần Multi-Step Pipeline)
+> **MANDATORY:** Before starting, you MUST load and carefully read:
+> - **Skill:** `.agent/skills/qa_automation_engineer/SKILL.md` — Workflow routing + automation rules.
+> - **Skill:** `.agent/skills/requirements_analyzer/SKILL.md` — Requirement analysis from UI.
+> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Inspect actual DOM.
+> - **Skill:** `.agent/skills/test_data_generator/SKILL.md` — Test data generation (see Multi-Step Pipeline section).
 
 ---
 
-## Khi nào dùng workflow này?
+## When to Use This Workflow?
 
-| Tình huống | Dùng workflow này? |
+| Situation | Use this workflow? |
 |------------|-------------------|
-| Tính năng đi qua **1 module/form** | ❌ Dùng `/generate_manual_testcases_rbt` |
-| Tính năng đi qua **nhiều modules**, mỗi module **độc lập** | ⚠️ Có thể — nhưng `/generate_application_test_plan` đủ |
-| Tính năng đi qua **nhiều modules NỐI TIẾP**, output phụ thuộc **bộ kết hợp điều kiện** | ✅ **Đúng workflow này** |
-| Cần **ma trận kết hợp** (Pairwise / Decision Table đa chiều) | ✅ **Đúng workflow này** |
+| Feature goes through **1 module/form** | ❌ Use `/generate_manual_testcases_rbt` |
+| Feature goes through **multiple modules**, each **independent** | ⚠️ Maybe — but `/generate_application_test_plan` is usually sufficient |
+| Feature goes through **multiple SEQUENTIAL modules**, output depends on **combination set** | ✅ **This is the correct workflow** |
+| Need a **combinatorial matrix** (Pairwise / Multi-dimensional Decision Table) | ✅ **This is the correct workflow** |
 
-**Ví dụ thực tế:**
-- Biên bản thanh toán đối tác (loại đối tác × loại thanh toán × thuế × công nợ × nguồn tài sản)
-- Hợp đồng bảo hiểm (loại BH × đối tượng × gói × kỳ hạn × phương thức thanh toán)
-- Đơn hàng xuất khẩu (thị trường × loại hàng × vận chuyển × thanh toán × chứng từ)
-- Quy trình phê duyệt (loại yêu cầu × phòng ban × cấp × số tiền → flow phê duyệt khác nhau)
+**Real-world Examples:**
+- Partner Payment Report (partner type × payment type × tax × debt × asset source).
+- Insurance Contract (insurance type × object × package × term × payment method).
+- Export Order (market × commodity type × shipping × payment × documents).
+- Approval Process (request type × department × level × amount → different approval flows).
 
 ---
 
-## Input cần từ User
+## Required User Input
 
-| Input | Bắt buộc | Mô tả |
+| Input | Mandatory | Description |
 |-------|----------|-------|
-| **Tên tính năng / luồng** | ✅ | VD: "Biên bản thanh toán cho đối tác" |
-| **URL ứng dụng** | ⚠️ Nên có | Để agent inspect DOM thực tế |
-| **Danh sách modules tham gia** | ⚠️ Nên có | Nếu không có → agent tự khám phá |
-| **Danh sách dimensions (chiều kết hợp)** | ⚠️ Nên có | VD: loại đối tác, loại thuế... Nếu không có → agent tự extract |
-| **Business rules / công thức** | ❌ | Nếu có → agent map vào ma trận; nếu không → agent phát hiện qua UI |
-| **Credentials** | ❌ | Nếu app cần đăng nhập |
-| **Chiến lược ma trận** | ❌ | `pairwise` (mặc định), `business-critical`, hoặc `full-cartesian` |
+| **Feature / Flow Name** | ✅ | e.g., "Partner Payment Report". |
+| **Application URL** | ⚠️ Recommended | For agent to inspect actual DOM. |
+| **Participating Modules List** | ⚠️ Recommended | If none, agent explores autonomously. |
+| **Dimensions List (Combinatorial axes)** | ⚠️ Recommended | e.g., partner type, tax type... If none, agent extracts autonomously. |
+| **Business Rules / Formulas** | ❌ | If available, agent maps to the matrix; otherwise, detects via UI. |
+| **Credentials** | ❌ | If app requires login. |
+| **Matrix Strategy** | ❌ | `pairwise` (default), `business-critical`, or `full-cartesian`. |
 
 ---
 
-## Các bước thực hiện
+## Execution Steps
 
-### Bước 1: Multi-Module Recon — Khám phá từng Module (MANDATORY BROWSER)
+### Step 1: Multi-Module Recon — Explore Each Module (MANDATORY BROWSER)
 
-> ⚡ Agent PHẢI dùng MCP browser để inspect DOM thực tế, KHÔNG ĐOÁN.
+> ⚡ The agent MUST use MCP browser tools to inspect the actual DOM, DO NOT GUESS.
 
-1. **Nhận danh sách modules** từ user hoặc tự khám phá qua navigation
-2. **Với mỗi module** trong chuỗi, thực hiện:
+1. **Receive the module list** from the user or explore autonomously via navigation.
+2. **For each module** in the chain, perform:
    ```
-   browser_navigate → URL module
+   browser_navigate → Module URL
    browser_resize → 1920 × 1080
    browser_wait_for → page load
-   browser_snapshot → thu thập DOM
+   browser_snapshot → collect DOM
    ```
-3. **Thu thập cho mỗi module:**
+3. **Data Collection Per Module:**
 
-   | Thông tin | Cách lấy | Ví dụ |
+   | Information | How to Obtain | Example |
    |-----------|----------|-------|
-   | **Tên module** | Tiêu đề trang / breadcrumb | "Quản lý Đối tác" |
-   | **Fields / Controls** | Snapshot → phân tích input, select, radio... | Dropdown "Loại đối tác": [Tổ chức, Cá nhân, HKD] |
-   | **Giá trị có thể chọn** | Mở dropdown → đọc options | `["Tổ chức", "Cá nhân", "Hộ kinh doanh"]` |
-   | **Validation rules** | Kiểm tra required, format, min/max | "Mã số thuế: required, 10-13 số" |
-   | **Output / Kết quả** | Data module này tạo ra | "ID đối tác, Tên, Loại, MST" |
-   | **Trigger / Điều kiện sang module tiếp** | Button, link, auto-redirect | "Click 'Tạo thanh toán' → sang Module 2" |
+   | **Module Name** | Page title / breadcrumb | "Partner Management" |
+   | **Fields / Controls** | Snapshot → analyze inputs, selects, radios... | "Partner Type" dropdown: [Org, Individual, Biz] |
+   | **Selectable Values** | Open dropdown → read options | `["Organization", "Individual", "Business Household"]` |
+   | **Validation Rules** | Check required, format, min/max | "Tax ID: required, 10-13 digits" |
+   | **Output / Result** | Data generated by this module | "Partner ID, Name, Type, Tax ID" |
+   | **Trigger / Condition for Next Module** | Button, link, auto-redirect | "Click 'Create Payment' → Proceed to Module 2" |
 
-4. **Ghi nhận vào bảng Module Inventory:**
+4. **Record in Module Inventory Table:**
 
    ```markdown
    | # | Module | URL / Path | Inputs | Key Dimensions | Output | → Next Module |
    |---|--------|-----------|--------|---------------|--------|---------------|
-   | 1 | Quản lý Đối tác | /partners | Tên, MST, Loại | **Loại đối tác** (3 values) | Partner ID | → Thanh toán |
-   | 2 | Tạo Thanh toán | /payments/new | Số tiền, Loại | **Loại TT** (2 values) | Payment ID | → Thuế |
-   | 3 | Cấu hình Thuế | /tax-config | Loại thuế, % | **Loại thuế** (4 values) | Tax Config ID | → Công nợ |
+   | 1 | Partner Management | /partners | Name, Tax ID, Type | **Partner Type** (3 values) | Partner ID | → Payment |
+   | 2 | Create Payment | /payments/new | Amount, Type | **Payment Type** (2 values) | Payment ID | → Tax |
+   | 3 | Tax Configuration | /tax-config | Tax Type, % | **Tax Type** (4 values) | Tax Config ID | → Debt |
    | ...| ... | ... | ... | ... | ... | ... |
    ```
 
 ---
 
-### Bước 2: Data Flow Mapping — Vẽ bản đồ luồng dữ liệu (CHECKPOINT ⏸️)
+### Step 2: Data Flow Mapping — Visualize Data Flow (CHECKPOINT ⏸️)
 
-1. **Xác định Data Flow** giữa các modules:
-   - Module A **output** gì?
-   - Output đó trở thành **input/điều kiện** module B như thế nào?
-   - Có transform/mapping nào giữa chúng không?
+1. **Identify Data Flow** between modules:
+   - What is the **output** of Module A?
+   - How does that output become the **input/condition** for Module B?
+   - Are there any transformations/mappings between them?
 
-2. **Vẽ Data Flow Diagram** dạng Mermaid:
+2. **Draw Data Flow Diagram using Mermaid:**
 
    ```markdown
    ```mermaid
    graph LR
-       M1["Module 1: Đối tác<br/>Output: Partner{type, id, tax_id}"]
-       M2["Module 2: Thanh toán<br/>Input: Partner.type<br/>Output: Payment{type, currency, amount}"]
-       M3["Module 3: Thuế<br/>Input: Partner.type + Payment.currency<br/>Output: TaxConfig{type, rate}"]
-       M4["Module 4: Biên bản<br/>Input: ALL above<br/>Output: Template + Formula"]
+       M1["Module 1: Partner<br/>Output: Partner{type, id, tax_id}"]
+       M2["Module 2: Payment<br/>Input: Partner.type<br/>Output: Payment{type, currency, amount}"]
+       M3["Module 3: Tax<br/>Input: Partner.type + Payment.currency<br/>Output: TaxConfig{type, rate}"]
+       M4["Module 4: Report<br/>Input: ALL above<br/>Output: Template + Formula"]
        
        M1 -->|"Partner.type<br/>Partner.id"| M2
        M2 -->|"Payment.currency<br/>Payment.amount"| M3
        M1 -->|"Partner.type"| M3
-       M1 & M2 & M3 -->|"Bộ kết hợp đầy đủ"| M4
+       M1 & M2 & M3 -->|"Full combination set"| M4
    ```
 
-3. **Xác định Dependencies Matrix:**
+3. **Define Dependencies Matrix:**
 
    ```markdown
-   | Module đích | Phụ thuộc vào | Trường phụ thuộc | Loại phụ thuộc |
+   | Target Module | Depends On | Dependent Field | Dependency Type |
    |-------------|--------------|-----------------|----------------|
-   | Thanh toán | Đối tác | Partner.type | Lọc options thanh toán |
-   | Thuế | Đối tác + Thanh toán | Partner.type, Payment.currency | Quyết định loại thuế áp dụng |
-   | Biên bản | Tất cả | ALL | Quyết định template + công thức |
+   | Payment | Partner | Partner.type | Filter payment options |
+   | Tax | Partner + Payment | Partner.type, Payment.currency | Determines applicable tax type |
+   | Report | All | ALL | Determines template + formula |
    ```
 
-4. **⏸️ DỪNG LẠI — Trình bày cho user:**
-   - Data Flow Diagram
-   - Dependencies Matrix
-   - Hỏi: "Bản đồ này đã đúng chưa? Có dependency nào thiếu?"
-   - **Chờ user xác nhận** trước khi sang Bước 3
+4. **⏸️ STOP — Present to user:**
+   - Data Flow Diagram.
+   - Dependencies Matrix.
+   - Ask: "Is this map correct? Are there any missing dependencies?"
+   - **Wait for user confirmation** before proceeding to Step 3.
 
 ---
 
-### Bước 3: Dimension Extraction — Liệt kê tất cả chiều kết hợp
+### Step 3: Dimension Extraction — List All Combinatorial Axes
 
-1. **Extract "Dimensions"** — các biến số quyết định output:
+1. **Extract "Dimensions"** — variables that determine the output:
 
    ```markdown
-   | # | Dimension (Chiều) | Module nguồn | Giá trị có thể | Số values |
+   | # | Dimension | Source Module | Possible Values | Number of Values |
    |---|------------------|-------------|----------------|-----------|
-   | D1 | Loại đối tác | Đối tác | Tổ chức, Cá nhân, Hộ KD | 3 |
-   | D2 | Loại thanh toán | Thanh toán | VND, USD | 2 |
-   | D3 | Loại thuế | Thuế | PIT, VAT, Nhà thầu, Miễn thuế | 4 |
-   | D4 | Loại công nợ | Công nợ | Thường, Tạm ứng, Điều chỉnh | 3 |
-   | D5 | Nguồn tài sản | Tài sản | Quỹ A, Quỹ B, Quỹ C | 3 |
+   | D1 | Partner Type | Partner | Organization, Individual, Business Household | 3 |
+   | D2 | Payment Type | Payment | VND, USD | 2 |
+   | D3 | Tax Type | Tax | PIT, VAT, Contractor, Exempt | 4 |
+   | D4 | Debt Type | Debt | Normal, Advance, Adjustment | 3 |
+   | D5 | Asset Source | Assets | Fund A, Fund B, Fund C | 3 |
    ```
 
-2. **Tính tổng tổ hợp tiềm năng:**
+2. **Calculate Total Potential Combinations:**
    ```
-   Full Cartesian: D1 × D2 × D3 × D4 × D5 = 3 × 2 × 4 × 3 × 3 = 216 bộ kết hợp
+   Full Cartesian: D1 × D2 × D3 × D4 × D5 = 3 × 2 × 4 × 3 × 3 = 216 combinations
    ```
 
-3. **Xác định constraints** (bộ kết hợp không hợp lệ):
+3. **Identify Constraints (Invalid Combinations):**
    ```markdown
-   | Constraint | Mô tả | Loại bỏ |
+   | Constraint | Description | Exclusion |
    |-----------|-------|---------|
-   | C1 | Cá nhân + USD → không áp dụng Nhà thầu | 1 bộ |
-   | C2 | Hộ KD + Miễn thuế → không tồn tại | 3 bộ |
+   | C1 | Individual + USD → Contractor tax not applicable | 1 set |
+   | C2 | Business Household + Tax Exempt → Non-existent | 3 sets |
    | ... | | |
    ```
-   → Sau loại bỏ: **216 - 4 = 212 bộ hợp lệ**
+   → After exclusions: **216 - 4 = 212 valid combinations**.
 
 ---
 
-### Bước 4: Sinh Ma Trận Kết Hợp (CORE OUTPUT ⭐)
+### Step 4: Generate Combinatorial Matrix (CORE OUTPUT ⭐)
 
-Agent hỗ trợ **3 chiến lược** — user chọn hoặc agent đề xuất:
+Agent supports **3 strategies** — user chooses or agent recommends:
 
-#### 4A. Pairwise Testing (Mặc định — KHUYẾN NGHỊ)
+#### 4A. Pairwise Testing (Default — RECOMMENDED)
 
-> Đảm bảo mọi **cặp 2 giá trị** từ 2 dimensions bất kỳ đều được test ít nhất 1 lần.
-> Giảm 216 bộ → ~15-25 bộ mà vẫn cover 100% pairs.
+> Ensures every **pair of two values** from any two dimensions is tested at least once.
+> Reduces 216 combinations → ~15-25 sets while maintaining 100% pair coverage.
 
-**Thuật toán Pairwise:**
-1. Liệt kê tất cả **pairs** cần cover: C(k,2) × average(|Di| × |Dj|) pairs
-2. Chọn bộ kết hợp sao cho mỗi bộ cover nhiều pairs nhất (greedy algorithm)
-3. Lặp cho đến khi tất cả pairs được cover
-4. Loại bỏ bộ vi phạm constraints
+**Pairwise Algorithm:**
+1. List all **pairs** to cover: C(k,2) × average(|Di| × |Dj|) pairs.
+2. Select combinations such that each set covers the most uncovered pairs (greedy algorithm).
+3. Repeat until all pairs are covered.
+4. Remove sets that violate constraints.
 
-**Tài liệu tham chiếu cho Pairwise:**
-- Kỹ thuật IPOG (In-Parameter-Order-General) — mở rộng từng dimension
-- Hoặc dùng công cụ: PICT (Microsoft), AllPairs
+**Pairwise Reference Material:**
+- IPOG (In-Parameter-Order-General) technique — extends dimension by dimension.
+- Or use tools: PICT (Microsoft), AllPairs.
 
-**Agent thực hiện:**
-- Sinh bảng pairwise thủ công bằng greedy approach
-- Hoặc nếu số dimensions ≤ 6 → agent tự tính
+**Agent execution:**
+- Generate pairwise tables manually using a greedy approach.
+- If dimensions ≤ 6, the agent calculates automatically.
 
 #### 4B. Business-Critical Only
 
-> Chỉ chọn các bộ kết hợp **quan trọng nhất** theo business risk.
+> Only select the **most critical** combinations according to business risk.
 
-**Tiêu chí chọn:**
-- Bộ kết hợp hay gặp nhất trong thực tế (theo user confirm)
-- Bộ kết hợp liên quan đến tiền, thuế, quyết định tài chính → High Risk
-- Bộ kết hợp biên (edge cases giữa các loại)
+**Selection Criteria:**
+- Most common combinations in practice (per user confirmation).
+- Combinations involving money, tax, financial decisions → High Risk.
+- Boundary combinations (edge cases between types).
 
-**Số lượng:** Thường 8-15 bộ.
+**Quantity:** Typically 8-15 sets.
 
-#### 4C. Full Cartesian (Đầy đủ)
+#### 4C. Full Cartesian (Complete)
 
-> Test TẤT CẢ bộ kết hợp hợp lệ. Dùng khi hệ thống critical (tài chính, y tế).
+> Test ALL valid combinations. Used for critical systems (finance, healthcare).
 
-**Khi nào dùng:** Tổng bộ ≤ 50 hoặc user yêu cầu coverage 100%.
+**When to use:** Total sets ≤ 50 or user requests 100% coverage.
 
-#### Output Bước 4 — Bảng Ma Trận:
+#### Output Step 4 — Matrix Table:
 
 ```markdown
-## Ma Trận Kết Hợp (Pairwise — 20 bộ)
+## Combinatorial Matrix (Pairwise — 20 sets)
 
-| # | D1: Đối tác | D2: Thanh toán | D3: Thuế | D4: Công nợ | D5: Nguồn TS | → Expected Template | → Expected Formula | Risk |
+| # | D1: Partner | D2: Payment | D3: Tax | D4: Debt | D5: Asset Source | → Expected Template | → Expected Formula | Risk |
 |---|------------|---------------|---------|------------|-------------|--------------------|--------------------|------|
-| 1 | Tổ chức | VND | VAT 10% | Thường | Quỹ A | BB_TC_VND_VAT | Amount × 1.10 | High |
-| 2 | Tổ chức | USD | PIT 10% | Tạm ứng | Quỹ B | BB_TC_USD_PIT | (Amount × Rate) × 0.90 - Advance | High |
-| 3 | Cá nhân | VND | PIT 10% | Thường | Quỹ A | BB_CN_VND_PIT | Amount × 0.90 | High |
-| 4 | Cá nhân | USD | VAT 10% | Điều chỉnh | Quỹ C | BB_CN_USD_VAT | (Amount × Rate) × 1.10 + Adj | Medium |
-| 5 | Hộ KD | VND | Nhà thầu 2% | Thường | Quỹ B | BB_HKD_VND_NT | Amount × 0.98 | Medium |
+| 1 | Org | VND | VAT 10% | Normal | Fund A | BB_TC_VND_VAT | Amount × 1.10 | High |
+| 2 | Org | USD | PIT 10% | Advance | Fund B | BB_TC_USD_PIT | (Amount × Rate) × 0.90 - Advance | High |
+| 3 | Individual | VND | PIT 10% | Normal | Fund A | BB_CN_VND_PIT | Amount × 0.90 | High |
+| 4 | Individual | USD | VAT 10% | Adjustment | Fund C | BB_CN_USD_VAT | (Amount × Rate) × 1.10 + Adj | Medium |
+| 5 | Business Household | VND | Contractor 2% | Normal | Fund B | BB_HKD_VND_NT | Amount × 0.98 | Medium |
 | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 ```
 
-> **Cột "Expected Template" và "Expected Formula":**
-> - Nếu user cung cấp business rules → agent map từ rules
-> - Nếu không → agent ghi `[Cần user xác nhận]` và hỏi user
+> **"Expected Template" and "Expected Formula" Columns:**
+> - If the user provides business rules → agent maps from rules.
+> - Otherwise → agent labels as `[User Confirmation Required]` and asks the user.
 
 ---
 
-### Bước 5: Expected Output Mapping & Delivery (CHECKPOINT ⏸️)
+### Step 5: Expected Output Mapping & Delivery (CHECKPOINT ⏸️)
 
-1. **Với mỗi bộ kết hợp trong ma trận**, xác định:
+1. **For each combination in the matrix**, define:
 
-   | Thuộc tính | Mô tả | Nguồn |
+   | Attribute | Description | Source |
    |-----------|-------|-------|
-   | **Expected Template** | Biên bản dùng template nào | User / business rules doc |
-   | **Expected Formula** | Công thức tính toán | User / business rules doc |
-   | **Expected Fields** | Biên bản hiển thị fields nào | DOM inspection |
-   | **Expected Behavior** | Hành vi đặc biệt (approval flow, notification...) | User input |
-   | **Test Priority** | P1-P4 (dựa trên risk + tần suất sử dụng) | Agent đánh giá |
+   | **Expected Template** | Which template the report uses | User / business rules doc |
+   | **Expected Formula** | Calculation formula | User / business rules doc |
+   | **Expected Fields** | Which fields are displayed in the report | DOM inspection |
+   | **Expected Behavior** | Special behaviors (approval flow, notification...) | User input |
+   | **Test Priority** | P1-P4 (based on risk + usage frequency) | Agent assessment |
 
-2. **Sinh artifact output:**
+2. **Generate Output Artifacts:**
 
    **File 1: `cross_module_test_plan_<feature>.md`**
-   - Module Inventory (Bước 1)
-   - Data Flow Diagram (Bước 2)
-   - Dimension Catalog (Bước 3)
-   - **Ma Trận Kết Hợp** (Bước 4) — ĐÂY LÀ OUTPUT CHÍNH
-   - Expected Output Mapping (Bước 5)
-   - Constraints & Invalid Combinations
+   - Module Inventory (Step 1).
+   - Data Flow Diagram (Step 2).
+   - Dimension Catalog (Step 3).
+   - **Combinatorial Matrix** (Step 4) — THIS IS THE PRIMARY OUTPUT.
+   - Expected Output Mapping (Step 5).
+   - Constraints & Invalid Combinations.
 
-   **File 2: `combinatorial_matrix_<feature>.md`** (hoặc `.json` / `.csv`)
-   - Chỉ bảng ma trận — dễ import vào Excel/Jira
+   **File 2: `combinatorial_matrix_<feature>.md`** (or `.json` / `.csv`)
+   - Just the matrix table — easy to import into Excel/Jira.
 
-3. **⏸️ DỪNG LẠI — Trình bày cho user:**
-   - Ma trận kết hợp hoàn chỉnh
-   - Hỏi: "Có bộ kết hợp nào thiếu? Expected template/formula đã đúng chưa?"
-   - **Chờ user xác nhận** trước khi chuyển sang automation
+3. **⏸️ STOP — Present to User:**
+   - Complete combinatorial matrix.
+   - Ask: "Are there any missing combinations? Are the expected templates/formulas correct?"
+   - **Wait for user confirmation** before moving to automation.
 
 ---
 
-## Bước tiếp theo sau workflow này
+## Next Steps After This Workflow
 
-Sau khi user xác nhận ma trận, có thể chuyển tiếp:
+After user confirms the matrix, proceed to:
 
-| Mục tiêu | Workflow tiếp theo |
+| Objective | Next Workflow |
 |----------|-------------------|
-| Sinh **test cases chi tiết** cho từng bộ kết hợp | `/generate_manual_testcases_rbt` — input = ma trận |
-| Sinh **test data** bằng pipeline chạy thật qua modules | `/generate_combinatorial_test_data` — input = ma trận |
-| Sinh **automation scripts** cho từng bộ | `/generate_automation_from_testcases` — input = test cases |
+| Generate **detailed test cases** for each combination | `/generate_manual_testcases_rbt` — input = matrix |
+| Generate **test data** via live pipeline through modules | `/generate_combinatorial_test_data` — input = matrix |
+| Generate **automation scripts** for each set | `/generate_automation_from_testcases` — input = test cases |
 
 ---
 
-## NGHIÊM CẤM
+## FORBIDDEN
 
-| ❌ Không được làm | ✅ Thay thế đúng |
+| ❌ Forbidden Action | ✅ Correct Alternative |
 |-------------------|-----------------|
-| Đoán giá trị dimensions không inspect DOM | Inspect thật qua MCP browser |
-| Tự quyết expected template/formula không hỏi user | Hỏi user xác nhận business rules |
-| Sinh Full Cartesian mặc định khi dimensions lớn | Dùng Pairwise — giảm 80-90% bộ kết hợp |
-| Bỏ qua constraints (bộ kết hợp không hợp lệ) | Phải xác định và loại bỏ invalid combinations |
-| Gộp nhiều bước, không có checkpoint | PHẢI dừng ở Bước 2 và Bước 5 chờ user |
+| Guessing dimension values without inspecting DOM | Inspect actual DOM via MCP browser. |
+| Deciding expected templates/formulas without user input | Ask user to confirm business rules. |
+| Generating Full Cartesian by default for many dimensions | Use Pairwise — reduces sets by 80-90%. |
+| Ignoring constraints (invalid combinations) | Must identify and exclude invalid combinations. |
+| Combining multiple steps without checkpoints | MUST stop at Step 2 and Step 5 to wait for the user. |
 
 ---
 
-## Checklist cuối
+## Final Checklist
 
-- [ ] Đã inspect DOM thực tế cho TỪNG module trong chuỗi
-- [ ] Đã vẽ Data Flow Diagram + Dependencies Matrix
-- [ ] User đã xác nhận Data Flow ở Bước 2
-- [ ] Đã extract đầy đủ dimensions + values
-- [ ] Đã xác định constraints (invalid combinations)
-- [ ] Đã chọn chiến lược ma trận phù hợp (pairwise / business-critical / full)
-- [ ] Ma trận có cột Expected Template + Formula
-- [ ] User đã xác nhận ma trận cuối ở Bước 5
-- [ ] Artifact output đã lưu vào đúng vị trí project
+- [ ] Inspected the actual DOM for EACH module in the sequence.
+- [ ] Drew Data Flow Diagram + Dependencies Matrix.
+- [ ] User confirmed Data Flow at Step 2.
+- [ ] Extracted all dimensions + values.
+- [ ] Identified constraints (invalid combinations).
+- [ ] Selected appropriate matrix strategy (pairwise / business-critical / full).
+- [ ] Matrix includes Expected Template + Formula columns.
+- [ ] User confirmed final matrix at Step 5.
+- [ ] Output artifacts saved in correct project locations.

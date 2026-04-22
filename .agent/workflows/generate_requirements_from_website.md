@@ -6,36 +6,36 @@ skills:
 
 # Workflow: Generate Requirements from Website Module
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`requirements_analyzer`** (tại `.agent/skills/requirements_analyzer/SKILL.md`) để biết định dạng chuẩn của tài liệu Requirements trước khi bắt đầu thực hiện tác vụ này.
+> **MANDATORY SKILL:** You MUST load and carefully read the **`requirements_analyzer`** skill (at `.agent/skills/requirements_analyzer/SKILL.md`) to understand the standard formatting for Requirement documents before starting this task.
 
-Workflow này giúp bạn phân tích một module hoặc trang web được cung cấp và sinh ra tài liệu Yêu cầu (Requirements) chi tiết, chuẩn xác, phục vụ cho quá trình kiểm thử hoặc phát triển. 
+This workflow helps you analyze a provided module or website and generate detailed, accurate Requirement documents for testing or development purposes.
 
-## Các bước thực hiện:
+## Execution Steps:
 
-1. **Tiếp nhận thông tin (Information Gathering):**
-   - Đọc kỹ hướng dẫn từ kỹ năng (skill) **`requirements_analyzer`** để nắm bắt chuẩn đầu ra.
-   - Lấy thông tin URL của trang web, tên module, hoặc mô tả/hình ảnh mà người dùng cung cấp.
-   - Nếu cần thiết, hỏi người dùng về thông tin đăng nhập hoặc các trạng thái đặc biệt cần lưu ý.
+1. **Information Gathering:**
+   - Read the instructions from the `requirements_analyzer` skill to understand the required output standard.
+   - Obtain the website URL, module name, or descriptions/images provided by the user.
+   - If necessary, ask the user for login information or special states to note.
 
-2. **Khảo sát hệ thống (Recon & Investigation):**
-   - Sử dụng các công cụ duyệt web (Browser tools/MCP) hoặc `read_url_content` để truy cập vào module trang web được yêu cầu.
-   - Inspect kỹ lưỡi cấu trúc HTML, DOM, các form nhập liệu, các nút tương tác (buttons, links), và các thông báo lỗi (validation messages).
-   - *Lưu ý: Không tự đoán các trường thông tin nếu không nhìn thấy trên giao diện thực tế.*
+2. **Recon & Investigation:**
+   - Use web browsing tools (Browser tools/MCP) or `read_url_content` to access the requested website module.
+   - Thoroughly inspect the HTML structure, DOM, input forms, interactive elements (buttons, links), and error messages (validation messages).
+   - *Note: Do not guess field information if it is not visible on the actual interface.*
 
-3. **Phân tích chức năng và tương tác (Analyze UI & Interactions):**
-   - Phân tích luồng thao tác (User Flows).
-   - Ghi nhận các trường dữ liệu tĩnh và động (Ví dụ: TextBox, Dropdown, Checkbox).
-   - Ghi nhận các quy tắc nghiệp vụ hiển thị ở giao diện (Business Rules) như: trường bắt buộc (mandatory fields), định dạng hợp lệ (email, số điện thoại), hoặc giới hạn ký tự.
+3. **Analyze UI & Interactions:**
+   - Analyze operation flows (User Flows).
+   - Record static and dynamic data fields (e.g., TextBox, Dropdown, Checkbox).
+   - Record business rules visible on the interface, such as: mandatory fields, valid formats (email, phone number), or character limits.
 
-4. **Biên soạn tài liệu Yêu cầu (Draft Requirements):**
-   - Dựa trên dữ liệu thu thập được, tạo một tài liệu mô tả bao gồm:
-     * **Tổng quan (Overview):** Mục đích của module/trang.
-     * **Yêu cầu chức năng (Functional Requirements):** Danh sách các tính năng người dùng có thể thực hiện (vd: Đăng nhập, Thêm mới, Xóa...).
-     * **Quy tắc trường dữ liệu (Field Specifications):** Bảng chi tiết về từng thành phần UI (Tên trường, Loại, Bắt buộc/Không, Ràng buộc dữ liệu).
-     * **Luồng xử lý (Business/User Flows):** Các bước để hoàn thành một chức năng chính.
-     * **Yêu cầu phi chức năng (Non-functional Requirements - Nếu có thể quan sát):** Tính tương thích, hiệu năng tĩnh.
+4. **Draft Requirements:**
+   - Based on the collected data, create a descriptive document including:
+     * **Overview:** Purpose of the module/page.
+     * **Functional Requirements:** List of features users can perform (e.g., Login, Add New, Delete...).
+     * **Field Specifications:** Detailed table of each UI component (Field Name, Type, Mandatory/Optional, Data Constraints).
+     * **Business/User Flows:** Steps to complete a primary function.
+     * **Non-functional Requirements (if observable):** Compatibility, static performance.
 
-5. **Trình bày và Cung cấp (Review & Delivery):**
-   - Định dạng tài liệu bằng Markdown rõ ràng.
-   - Trình bày toàn bộ nội dung bằng **Tiếng Việt** có dấu rõ ràng, chuyên nghiệp và dễ hiểu.
-   - Sử dụng tính năng Artifact nếu tài liệu dài để người dùng tiện lưu trữ hoặc xuất file.
+5. **Review & Delivery:**
+   - Format the document using clear Markdown.
+   - Present all content in clear, professional, and easy-to-understand **English**.
+   - Use the Artifact feature for lengthy documents for convenient storage or export.

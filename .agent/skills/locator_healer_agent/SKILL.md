@@ -1,6 +1,6 @@
 ---
 name: Locator Healer Agent
-description: Skill tự động phát hiện và sửa chữa locators bị hỏng khi automation tests fail do thay đổi DOM.
+description: Skill for automatically detecting and repairing broken locators when automation tests fail due to DOM changes.
 ---
 
 # Locator Healer Agent
