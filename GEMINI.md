@@ -1,19 +1,19 @@
 # GEMINI AI - GLOBAL AUTOMATION AGENT RULES
 
-> **Scope:** Áp dụng cho mọi tác vụ Test Automation do Gemini (Antigravity) hoạt động trong dự án này.
-> **Mục tiêu:** Sinh ra test scripts hiệu quả, ổn định – dễ debug – dễ scale – CI friendly.
+> **Scope:** Applies to all Test Automation tasks performed by Gemini (Antigravity) within this project.
+> **Objective:** Generate test scripts that are efficient, stable – easy to debug – easy to scale – CI friendly.
 
 ---
 
-## 🔐 Security & Credentials (ƯU TIÊN CAO NHẤT — ĐỌC TRƯỚC)
+## 🔐 Security & Credentials (HIGHEST PRIORITY — READ FIRST)
 
-> ⚠️ **Quy tắc này có hiệu lực ngay khi bắt đầu task. AI PHẢI đọc và tuân thủ trước khi làm bất kỳ hành động nào liên quan đến xác thực.**
+> ⚠️ **This rule takes effect immediately upon task start. AI MUST read and comply before performing any actions related to authentication.**
 
-### ❌ CẤM đọc file `.env` trực tiếp
+### ❌ PROHIBITED: Reading `.env` file directly
 
-AI **KHÔNG ĐƯỢC** sử dụng bất kỳ công cụ nào (`view_file`, `read_url_content`, `run_command`, `grep`, v.v.) để đọc nội dung file `.env` nhằm mục đích lấy thông tin đăng nhập (username, password, token, API key...).
+AI **MUST NOT** use any tools (`view_file`, `read_url_content`, `run_command`, `grep`, etc.) to read the contents of the `.env` file for the purpose of obtaining login information (username, password, token, API key...).
 
-> **Lý do:** File `.env` chứa credentials nhạy cảm. Việc đọc trực tiếp có nguy cơ lộ thông tin trong log, chat history hoặc artifact AI.
+> **Reason:** The `.env` file contains sensitive credentials. Reading it directly risks exposing information in logs, chat history, or AI artifacts.
 
 ---
 
@@ -21,172 +21,169 @@ AI **KHÔNG ĐƯỢC** sử dụng bất kỳ công cụ nào (`view_file`, `rea
 
 ### 🖥️ Viewport & Mode
 
-* Tất cả **UI debugging** phải chạy với **desktop viewport**: **`1920x1080`**
-* Bắt buộc **mở browser thật** khi debug (headed mode)
-* **Headless mode** chỉ được sử dụng **sau khi test đã debug PASS trên UI**
-* CI/CD pipeline **được phép chạy headless mặc định**
+* All **UI debugging** must run with **desktop viewport**: **`1920x1080`**
+* **Real browser must be opened** during debug (headed mode)
+* **Headless mode** may only be used **after the test has PASSED debugging on UI**
+* CI/CD pipeline **is permitted to run headless by default**
 
-### 🔄 Thứ Tự Debug Bắt Buộc (Playwright MCP)
+### 🔄 Mandatory Debug Sequence (Playwright MCP)
 
-Khi dùng Playwright MCP để debug UI, **LUÔN** tuân theo thứ tự:
+When using Playwright MCP for UI debugging, **ALWAYS** follow this order:
 
 ```
 navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interact → screenshot(on_fail)
 ```
 
-* **KHÔNG** gọi `browser_navigate` lại nếu đã đang ở đúng trang — tránh reload ngoài ý muốn
-* **LUÔN** gọi `browser_resize(width=1920, height=1080)` ngay sau `browser_navigate`
-* **LUÔN** verify page đã load xong trước khi lấy snapshot hoặc tương tác
+* **DO NOT** call `browser_navigate` again if already on the correct page — avoid unintended reloads
+* **ALWAYS** call `browser_resize(width=1920, height=1080)` immediately after `browser_navigate`
+* **ALWAYS** verify the page has finished loading before taking a snapshot or interacting
 
 ### 📸 Screenshot & Snapshot
 
-* Dùng **`snapshot`** để phân tích DOM và xác định locator
-* Dùng **`screenshot`** để lưu bằng chứng khi test fail hoặc để báo cáo
-* Chụp **screenshot ngay khi assertion fail** để hỗ trợ truy vết lỗi
-* **KHÔNG** chụp screenshot tràn lan — chỉ khi cần thiết (fail / milestone quan trọng)
+* Use **`snapshot`** to analyze DOM and identify locators
+* Use **`screenshot`** to save evidence when a test fails or for reporting
+* Take a **screenshot immediately when an assertion fails** to support error tracing
+* **DO NOT** take screenshots excessively — only when necessary (fail / key milestone)
 
 ---
 
 ## Tools
 
-### 🛠️ Ưu Tiên Sử Dụng
+### 🛠️ Usage Priority
 
-* Ưu tiên sử dụng **Playwright MCP** cho tất cả tác vụ debug UI
-* Tham chiếu rule chi tiết: [Quy tắc Playwright](.agent/rules/playwright_rules.md)
+* Prioritize using **Playwright MCP** for all UI debugging tasks
+* Refer to detailed rule: [Playwright Rules](.agent/rules/playwright_rules.md)
 
 ### 🔍 Inspect & Debug
 
-* Mở browser thật để debug (headed mode)
-* Inspect **DOM / HTML thực tế** trên trình duyệt — **KHÔNG đoán locator**
-* Execute và debug test trực tiếp trên UI trước khi sinh code
-* **KHÔNG** generate code khi chưa inspect DOM
+* Open real browser for debugging (headed mode)
+* Inspect **actual DOM / HTML** on the browser — **DO NOT guess locators**
+* Execute and debug tests directly on UI before generating code
+* **DO NOT** generate code without inspecting the DOM
 
-### ⚡ Nguyên Tắc
+### ⚡ Principles
 
-* Một locator phải được **verify chạy được** trên browser hiện tại trước khi đưa vào code
-* Nếu locator lấy từ code cũ → **bắt buộc verify lại** trước khi dùng
+* A locator must be **verified as functional** on the current browser before being added to code
+* If a locator is taken from old code → **must re-verify** before use
 
 ---
 
 ## Cleanup & Delivery
 
-### ✅ Điều kiện bàn giao (Definition of Done)
+### ✅ Definition of Done
 
-Test chỉ được coi là **hoàn thành** khi đáp ứng **toàn bộ** các tiêu chí sau:
+A test is only considered **complete** when it meets **all** of the following criteria:
 
 #### 🧹 Code Cleanup
 
-- [ ] Xoá toàn bộ `print()`, `console.log()`, debug log tạm thời
-- [ ] Xoá locator không còn sử dụng
-- [ ] Không để lại commented-out code
-- [ ] Không có `waitForTimeout` / `Thread.sleep` hardcoded
-- [ ] Không có test data hardcoded (email, username, ID phải random/traceable)
+- [ ] Remove all `print()`, `console.log()`, temporary debug logs
+- [ ] Remove unused locators
+- [ ] Do not leave commented-out code
+- [ ] No hardcoded `waitForTimeout` / `Thread.sleep`
+- [ ] No hardcoded test data (email, username, ID must be random/traceable)
 
-#### 🏗️ Cấu trúc & POM
+#### 🏗️ Structure & POM
 
-- [ ] Tuân thủ mô hình **Page Object Model** — tách biệt Page class, Test class, Utils
-- [ ] Locator được định nghĩa trong Page class, không viết inline trong test
-- [ ] Tên file, class, method đặt theo convention rõ ràng và nhất quán
-- [ ] Import không còn thừa (unused imports)
+- [ ] Adhere to **Page Object Model** — separate Page class, Test class, Utils
+- [ ] Locators are defined in Page class, not written inline in tests
+- [ ] File, class, method names follow clear and consistent conventions
+- [ ] No unused imports
 
-#### ✔️ Chất lượng Test
+#### ✔️ Test Quality
 
-- [ ] Test **PASS ổn định** ít nhất **2 lần liên tiếp** trên UI (headed mode)
-- [ ] Assertion có message rõ ràng, dễ debug khi fail
-- [ ] Mỗi test case độc lập — không phụ thuộc thứ tự chạy
-- [ ] Test data được sinh động (timestamp/random) và traceable
+- [ ] Test **PASSES stably** at least **2 consecutive times** on UI (headed mode)
+- [ ] Assertions have clear messages, easy to debug on failure
+- [ ] Each test case is independent — does not rely on execution order
+- [ ] Test data is generated dynamically (timestamp/random) and traceable
 
 #### 📁 File Output
 
-- [ ] Source code được lưu đúng vị trí trong project structure
-- [ ] Không có file tạm, file test thừa trong thư mục source
-- [ ] File cấu hình (config, .env) không chứa credentials thật
+- [ ] Source code is saved in the correct location within the project structure
+- [ ] No temporary files, redundant test files in the source directory
+- [ ] Configuration files (config, .env) do not contain real credentials
 
-#### 📋 Báo Cáo Kết Quả
+#### 📋 Result Report
 
-- [ ] Tóm tắt kết quả: số test PASS / FAIL / SKIP
-- [ ] Nêu rõ các TC đã implement và TC nào bị skip (kèm lý do)
-- [ ] Ghi chú các known issues hoặc limitation nếu có
+- [ ] Summary of results: number of tests PASS / FAIL / SKIP
+- [ ] Clearly state which TCs were implemented and which were skipped (with reason)
+- [ ] Note any known issues or limitations if applicable
 
 ---
 
-## 1. Ngôn Ngữ & Giao Tiếp
+## 1. Language & Communication
 
-- Luôn giao tiếp, giải thích ý tưởng và báo cáo bằng **Tiếng Việt**.
-- Diễn giải **ngắn gọn, rõ ràng, dễ hiểu**.
-- Tránh suy đoán lập trình hoặc giải thích mơ hồ về lỗi mà cần có căn cứ trực tiếp.
+- Always communicate, explain ideas, and report in **English**.
+- Explain **concisely, clearly, and understandably**.
+- Avoid programming speculation or vague error explanations; base conclusions on direct evidence.
 
-## 2. Quy Trình Làm Việc (Workflow)
+## 2. Workflow
 
-- **Recon (Điều tra):** Luôn inspect giao diện thực tế hoặc DOM/HTML/XML trước khi viết automation. Tuyệt đối KHÔNG ĐOÁN locator.
-- **Implementation:** Giữ vững mô hình **Page Object Model (POM)**. Phân tách rõ Page objects, Test execution và Utils/Test data.
-- **Execution & Self-fix:** Chạy test ngay sau khi code xong. Nếu test FAIL → tự đọc log → phân tích root cause → sửa code → chạy lại → đến khi PASS ổn định. Chỉ hỏi User khi gặp business rule mâu thuẫn.
-- **Cleanup:** Gỡ bỏ debug logs, code thừa, locator không dùng trước khi deliver.
+- **Recon:** Always inspect the actual interface or DOM/HTML/XML before writing automation. Absolutely **DO NOT GUESS** locators.
+- **Implementation:** Maintain **Page Object Model (POM)** . Clearly separate Page objects, Test execution, and Utils/Test data.
+- **Execution & Self-fix:** Run test immediately after coding. If test FAILS → read logs → analyze root cause → fix code → rerun → until it PASSES stably. Only ask User when encountering conflicting business rules.
+- **Cleanup:** Remove debug logs, redundant code, unused locators before delivering.
 
-## 3. Tech Stack Hỗ Trợ
+## 3. Supported Tech Stack
 
-| Loại             | Công nghệ                                     |
+| Type              | Technology                                      |
 | ----------------- | ----------------------------------------------- |
-| Ngôn ngữ        | Java, TypeScript                                |
+| Language          | Java, TypeScript                                |
 | Web Automation    | Playwright (TS/Java), Selenium WebDriver (Java) |
 | Mobile Automation | Appium (Java)                                   |
 | API Automation    | REST Assured                                    |
 | Test Framework    | TestNG, Playwright Test                         |
 | Build Tool        | Maven, npm                                      |
 
-## 4. Tham Chiếu Rules Chi Tiết
+## 4. Detailed Rule References
 
-Agent phải tham chiếu quy tắc chi tiết trong `.agent/rules/`:
+Agent must reference detailed rules in `.agent/rules/`:
 
-- [Quy tắc chung Automation](.agent/rules/automation_rules.md) — POM, Test Data, Naming, Assertions
-- [Chiến lược chọn Locator](.agent/rules/locator_strategy.md) — Thứ tự ưu tiên locator
-- [Quy tắc Playwright](.agent/rules/playwright_rules.md) — Browser setup, locator semantic, wait strategy
-- [Quy tắc Selenium](.agent/rules/selenium_rules.md) — WebDriverWait, TestNG structure
-- [Quy tắc Appium](.agent/rules/appium_rules.md) — Mobile locator, scroll, permission
+- [General Automation Rules](.agent/rules/automation_rules.md) — POM, Test Data, Naming, Assertions
+- [Locator Strategy](.agent/rules/locator_strategy.md) — Locator priority order
+- [Playwright Rules](.agent/rules/playwright_rules.md) — Browser setup, locator semantic, wait strategy
+- [Selenium Rules](.agent/rules/selenium_rules.md) — WebDriverWait, TestNG structure
+- [Appium Rules](.agent/rules/appium_rules.md) — Mobile locator, scroll, permission
 
-## 5. Tham Chiếu Skills
+## 5. Skill References
 
-Agent sử dụng skills trong `.agent/skills/` tùy theo nhiệm vụ:
+Agent uses skills in `.agent/skills/` depending on the task:
 
-| Skill                      | Vai trò                                                                                  |
-| -------------------------- | ----------------------------------------------------------------------------------------- |
-| `qa_automation_engineer` | Master skill cho automation — điều phối toàn bộ quy trình                          |
-| `rbt_manual_testing`     | Master skill cho manual testing — 2 modes: QUICK (sinh TC nhanh) và FULL RBT (6 bước) |
-| `requirements_analyzer`  | Phân tích requirements từ website/tài liệu                                           |
-| `ui_debug_agent`         | Inspect UI/DOM, thu thập locators                                                        |
-| `smart_locator_agent`    | Sinh locator mới ổn định                                                              |
-| `locator_healer_agent`   | Sửa locator hỏng                                                                        |
-| `test_data_generator`    | Sinh test data unique, traceable — hỗ trợ multi-step pipeline & combinatorial data       |
-| `flaky_test_analyzer`    | Phân tích và khắc phục flaky tests                                                   |
-| `jira_integration`       | Tích hợp Jira/Xray — lấy requirements, đẩy test results                             |
+| Skill                      | Role                                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------------------- |
+| `qa_automation_engineer`   | Master skill for automation — coordinates the entire process                                  |
+| `rbt_manual_testing`       | Master skill for manual testing — 2 modes: QUICK (generate TCs fast) and FULL RBT (6 steps) |
+| `requirements_analyzer`    | Analyzes requirements from website/document                                                   |
+| `ui_debug_agent`           | Inspects UI/DOM, collects locators                                                           |
+| `smart_locator_agent`      | Generates new stable locators                                                                |
+| `locator_healer_agent`     | Fixes broken locators                                                                        |
+| `test_data_generator`      | Generates unique, traceable test data — supports multi-step pipeline & combinatorial data    |
+| `flaky_test_analyzer`      | Analyzes and resolves flaky tests                                                            |
+| `jira_integration`         | Integrates Jira/Xray — fetches requirements, pushes test results                              |
 
-## 6. Kế Hoạch Kiểm Thử (Plan Templates)
+## 6. Test Plan Templates
 
-Các bộ prompt template sẵn dùng trong `plans/`:
+Ready-to-use prompt templates available in `plans/`:
 
-- **`plans/manual/`** — Quy trình sinh Manual Test Cases (2 modes: QUICK + FULL RBT)
-
-  - Xem `plans/manual/QUICK_START.md` để bắt đầu nhanh
-  - Workflow QUICK: `/generate_testcases_from_requirements`
-  - Workflow FULL RBT: `/generate_manual_testcases_rbt`
-- **`plans/automation/`** — Quy trình 6 bước sinh Automation Scripts
-
-  - Xem `plans/automation/QUICK_START.md` để bắt đầu nhanh
+- **`plans/manual/`** — Process for generating Manual Test Cases (2 modes: QUICK + FULL RBT)
+  - See `plans/manual/QUICK_START.md` for quick start
+  - QUICK Workflow: `/generate_testcases_from_requirements`
+  - FULL RBT Workflow: `/generate_manual_testcases_rbt`
+- **`plans/automation/`** — 6-step process for generating Automation Scripts
+  - See `plans/automation/QUICK_START.md` for quick start
   - One-click: Copy `plans/automation/prompt_automation.txt`
   - Workflow: `/generate_automation_from_testcases`
-- **`plans/cross-module/`** — Quy trình phân tích Cross-Module & Ma trận kết hợp
-
-  - Xem `plans/cross-module/QUICK_START.md` để bắt đầu nhanh
-  - Workflow phân tích: `/generate_cross_module_test_plan`
-  - Workflow sinh data: `/generate_combinatorial_test_data`
+- **`plans/cross-module/`** — Process for Cross-Module analysis & Combination Matrix
+  - See `plans/cross-module/QUICK_START.md` for quick start
+  - Analysis Workflow: `/generate_cross_module_test_plan`
+  - Data Generation Workflow: `/generate_combinatorial_test_data`
 
 ## 7. Test Data
 
-- Tất cả field yêu cầu **unique** (Email, Username, Code/ID): **BẮT BUỘC** dùng dữ liệu random.
-- Dữ liệu random phải **traceable / deterministic** — có thể truy ngược test gây lỗi.
-- Format khuyến nghị: kết hợp `test name + timestamp + prefix`.
+- All fields requiring **unique** values (Email, Username, Code/ID): **MUST** use random data.
+- Random data must be **traceable / deterministic** — able to trace back to the failing test.
+- Recommended format: combine `test name + timestamp + prefix`.
 
-Ví dụ:
+Example:
 
 ```
 email:    test_login_1712049200@auto.test
@@ -196,8 +193,8 @@ code:     TC_LOGIN_1712049200
 
 ## 8. Code Quality (Smart Waits)
 
-- **KHÔNG** dùng hard sleep (`waitForTimeout`, `Thread.sleep`, fixed delay).
-- Chỉ sử dụng **smart waits** / auto-waiting:
+- **DO NOT** use hard sleep (`waitForTimeout`, `Thread.sleep`, fixed delay).
+- Only use **smart waits** / auto-waiting:
 
 | Framework  | Smart Wait                                                           |
 | ---------- | -------------------------------------------------------------------- |
@@ -205,40 +202,40 @@ code:     TC_LOGIN_1712049200
 | Selenium   | `WebDriverWait` + `ExpectedConditions`                           |
 | Appium     | `WebDriverWait` + custom conditions                                |
 
-- Hạn chế `waitForSelector` nếu `expect()` đáp ứng được.
-- Mọi assertion phải có **timeout rõ ràng** hoặc dùng default timeout hợp lý.
+- Limit `waitForSelector` if `expect()` suffices.
+- Every assertion must have a **clear timeout** or use a reasonable default timeout.
 
 ## 9. Anti-Patterns (FORBIDDEN)
 
-| ❌ Anti-Pattern                                   | ✅ Thay thế đúng                            |
+| ❌ Anti-Pattern                                   | ✅ Correct Replacement                        |
 | ------------------------------------------------- | ---------------------------------------------- |
-| Guess selector / đoán locator                   | Inspect DOM thực tế trước khi code         |
+| Guess selector                                    | Inspect actual DOM before coding             |
 | Hard sleep (`waitForTimeout`, `Thread.sleep`) | Smart waits (`expect()`, `WebDriverWait`)  |
-| Copy selector từ code cũ không verify          | Luôn verify selector trên browser hiện tại |
-| Viết test không chạy ngay                      | Chạy test ngay sau khi implement              |
-| Commit test FAIL                                  | Chỉ commit khi test PASS ổn định           |
-| Để debug log / commented code khi deliver       | Cleanup trước khi deliver                    |
-| Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
+| Copy selector from old code without verification  | Always verify selector on current browser   |
+| Write test without running it                     | Run test immediately after implementation      |
+| Commit FAIL test                                  | Only commit when test PASSES stably          |
+| Leave debug log / commented code on delivery      | Cleanup before delivery                        |
+| Use hardcoded duplicate test data                 | Generate random + traceable data               |
 
-## 10. Tham Chiếu Workflows
+## 10. Workflow References
 
-Agent sử dụng workflows trong `.agent/workflows/` qua slash commands:
+Agent uses workflows in `.agent/workflows/` via slash commands:
 
-| Workflow                                  | Mô tả                                                     |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| `/generate_requirements_from_website`   | Sinh requirements từ website/module                        |
-| `/analyze_requirement_document`         | Phân tích requirement document (Jira/.doc) — sinh tài liệu phân tích, KHÔNG sinh TC |
-| `/generate_manual_testcases_rbt`        | Sinh manual test cases theo AI-RBT 6 bước (FULL RBT mode) |
-| `/generate_testcases_from_requirements` | Sinh test cases nhanh từ requirements (QUICK mode)         |
-| `/generate_automation_from_testcases`   | Chuyển manual test cases → automation scripts             |
-| `/generate_automation_from_ui_flow`     | Sinh automation từ UI flow trực tiếp                     |
-| `/generate_application_test_plan`       | Khám phá app, sinh test plan (Mode PLAN) hoặc full suite (Mode FULL) |
-| `/generate_automation_framework`        | Thiết kế automation framework                             |
-| `/generate_locator`                     | Sinh locator ổn định cho UI element                      |
-| `/generate_test_data`                   | Sinh test data có cấu trúc                               |
-| `/generate_cross_module_test_plan`    | Phân tích cross-module, sinh Data Flow Map + ma trận kết hợp (Pairwise/Cartesian) |
-| `/generate_combinatorial_test_data`   | Sinh test data cho ma trận kết hợp — offline hoặc pipeline qua browser          |
-| `/generate_api_tests_from_swagger`      | Sinh API tests từ Swagger spec                             |
-| `/analyze_flaky_tests`                  | Phân tích và khắc phục flaky tests                     |
-| `/fetch_jira_requirements`              | Lấy requirements/user stories từ Jira                     |
-| `/import_test_results_xray`             | Đẩy kết quả test lên Xray                              |
+| Workflow                                  | Description                                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------- |
+| `/generate_requirements_from_website`     | Generate requirements from website/module                                    |
+| `/analyze_requirement_document`           | Analyze requirement document (Jira/.doc) — generate analysis doc, NOT TCs  |
+| `/generate_manual_testcases_rbt`          | Generate manual test cases via AI-RBT 6 steps (FULL RBT mode)              |
+| `/generate_testcases_from_requirements`   | Generate test cases quickly from requirements (QUICK mode)                   |
+| `/generate_automation_from_testcases`     | Convert manual test cases → automation scripts                             |
+| `/generate_automation_from_ui_flow`       | Generate automation directly from UI flow                                    |
+| `/generate_application_test_plan`         | Explore app, generate test plan (Mode PLAN) or full suite (Mode FULL)       |
+| `/generate_automation_framework`          | Design automation framework                                                  |
+| `/generate_locator`                       | Generate stable locator for UI element                                       |
+| `/generate_test_data`                     | Generate structured test data                                                |
+| `/generate_cross_module_test_plan`        | Analyze cross-module, generate Data Flow Map + combination matrix (Pairwise/Cartesian) |
+| `/generate_combinatorial_test_data`       | Generate test data for combination matrix — offline or pipeline via browser  |
+| `/generate_api_tests_from_swagger`        | Generate API tests from Swagger spec                                         |
+| `/analyze_flaky_tests`                    | Analyze and resolve flaky tests                                              |
+| `/fetch_jira_requirements`                | Fetch requirements/user stories from Jira                                    |
+| `/import_test_results_xray`               | Push test results to Xray                                                    |

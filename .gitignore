@@ -104,3 +104,9 @@ node_modules/
 # Google Service Account (ignore both naming conventions)
 service_account.json
 service-account.json
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
