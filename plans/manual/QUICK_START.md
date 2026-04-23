@@ -1,86 +1,86 @@
-# 📋 Hướng Dẫn Nhanh: Sử Dụng AI-RBT 6 Bước
+# 📋 Quick Start Guide: Using AI-RBT 6 Steps
 
-## 🔀 Chọn Luồng Sử Dụng
+## 🔀 Choose Your Workflow
 
-Có **2 luồng** riêng biệt, tuỳ tool AI bạn đang dùng:
+There are **2 separate workflows**, depending on the AI tool you're using:
 
-### Luồng 1: Antigravity (Slash Command) — Tự động
-
-```
-Gõ: /generate_manual_testcases_rbt + dán requirements
-→ AI tự chạy 6 bước theo skill, dừng ở checkpoint chờ bạn
-→ KHÔNG cần copy-paste prompt templates
-```
-
-**Ưu điểm:** Nhanh, tự động, agent nhớ context xuyên suốt.
-**Nhược điểm:** Hướng dẫn ở mức tổng quát (không chi tiết bằng prompt templates).
-
-### Luồng 2: Copy-Paste Prompt — Thủ công (ChatGPT / Claude / AI bất kỳ)
+### Workflow 1: Antigravity (Slash Command) — Automated
 
 ```
-Copy prompt Bước 1 → paste vào chat → AI xử lý
-→ Copy prompt Bước 2 → paste → AI xử lý
-→ ... lặp lại đến Bước 6
+Type: /generate_manual_testcases_rbt + paste requirements
+→ AI automatically runs 6 steps using the skill, stops at checkpoints waiting for you
+→ NO need to copy-paste prompt templates
 ```
 
-**Ưu điểm:** Prompt chi tiết hơn, có ví dụ cụ thể, gợi ý sâu hơn.
-**Nhược điểm:** Phải copy-paste thủ công 6 lần.
+**Pros:** Fast, automated, agent retains context throughout.
+**Cons:** Instructions are at a general level (not as detailed as prompt templates).
+
+### Workflow 2: Copy-Paste Prompt — Manual (ChatGPT / Claude / Any AI)
+
+```
+Copy Step 1 prompt → paste into chat → AI processes it
+→ Copy Step 2 prompt → paste → AI processes it
+→ ... repeat through Step 6
+```
+
+**Pros:** More detailed prompts with specific examples and deeper suggestions.
+**Cons:** Must manually copy-paste 6 times.
 
 ---
 
-## Luồng 1: Antigravity — Prompt nhanh
+## Workflow 1: Antigravity — Quick Prompt
 
 ```
 /generate_manual_testcases_rbt
 
-Dự án: [Tên dự án]
-Tính năng: [Tên tính năng]
-Mục tiêu: [Mô tả ngắn]
+Project: [Project Name]
+Feature: [Feature Name]
+Goal: [Short Description]
 
-[Dán requirements/user stories vào đây]
+[Paste requirements/user stories here]
 ```
 
-Khi AI dừng ở checkpoint, chỉ cần trả lời câu hỏi hoặc gõ:
+When AI stops at a checkpoint, simply answer the question or type:
 ```
-Tiếp tục sang Bước [X]
-```
-
----
-
-## Luồng 2: Copy-Paste — Hướng dẫn từng bước
-
-| Bước | Tên | Prompt file | Chờ User? |
-|------|-----|-------------|-----------|
-| **1** | Context & Role-play | Copy `plans/manual/01_context_and_roleplay/prompt.txt` + điền `[...]` | ✅ Chờ xác nhận |
-| **2** | Analysis & QnA | Copy `plans/manual/02_analysis_and_qna/prompt.txt` | ✅ **Chờ trả lời Q&A** |
-| **3** | Decomposition | Copy `plans/manual/03_decomposition/prompt.txt` | Review nhanh |
-| **4** | Traceability | Copy `plans/manual/04_traceability/prompt.txt` | ✅ **Chờ review scenarios** |
-| **5** | RBT & TC Generation | Copy `plans/manual/05_rbt_and_tc_generation/prompt.txt` | Review kết quả |
-| **6** | Template Mapping | Copy `plans/manual/06_template_mapping/prompt.txt` | Copy bảng → Excel |
-
-### Sơ đồ luồng:
-
-```
-[Bước 1] Copy prompt + dán tài liệu requirements
-    ↓  AI xác nhận hiểu → User xác nhận OK
-[Bước 2] Copy prompt phân tích
-    ↓  AI đặt câu hỏi → ⏸️ User trả lời từng câu
-[Bước 3] Copy prompt phân rã
-    ↓  AI sinh Module list → User review nhanh
-[Bước 4] Copy prompt traceability
-    ↓  AI sinh scenarios → ⏸️ User review + bổ sung
-[Bước 5] Copy prompt sinh TC
-    ↓  AI sinh test cases chi tiết → User review
-[Bước 6] Copy prompt chuẩn hóa
-    ↓  AI sinh bảng Markdown → Copy vào Excel/Jira ✅
+Continue to Step [X]
 ```
 
 ---
 
-## Mẹo Tối Ưu
+## Workflow 2: Copy-Paste — Step-by-Step Guide
 
-1. **Bước 2 là quan trọng nhất** — Đừng vội, trả lời kỹ từng câu hỏi AI đặt ra
-2. **Chia module khi nhiều** — Ở Bước 5, nếu có >5 modules, yêu cầu AI sinh từng module
-3. **Review trước khi format** — Ở Bước 5, review test cases trước khi sang Bước 6
-4. **Dùng cùng conversation** — Chạy tất cả 6 bước trong **cùng 1 conversation** để AI giữ context
-5. **Luồng Copy-Paste chi tiết hơn** — Nếu cần chất lượng cao nhất, dùng Luồng 2 (kể cả khi đang dùng Antigravity)
+| Step | Name | Prompt file | Wait for User? |
+|------|------|-------------|-----------|
+| **1** | Context & Role-play | Copy `plans/manual/01_context_and_roleplay/prompt.txt` + fill in `[...]` | ✅ Wait for confirmation |
+| **2** | Analysis & QnA | Copy `plans/manual/02_analysis_and_qna/prompt.txt` | ✅ **Wait for Q&A answers** |
+| **3** | Decomposition | Copy `plans/manual/03_decomposition/prompt.txt` | Quick review |
+| **4** | Traceability | Copy `plans/manual/04_traceability/prompt.txt` | ✅ **Wait for scenario review** |
+| **5** | RBT & TC Generation | Copy `plans/manual/05_rbt_and_tc_generation/prompt.txt` | Review results |
+| **6** | Template Mapping | Copy `plans/manual/06_template_mapping/prompt.txt` | Copy table → Excel |
+
+### Flow Diagram:
+
+```
+[Step 1] Copy prompt + paste requirements document
+    ↓  AI confirms understanding → User confirms OK
+[Step 2] Copy analysis prompt
+    ↓  AI asks questions → ⏸️ User answers each question
+[Step 3] Copy decomposition prompt
+    ↓  AI generates Module list → User quick review
+[Step 4] Copy traceability prompt
+    ↓  AI generates scenarios → ⏸️ User reviews + adds more
+[Step 5] Copy TC generation prompt
+    ↓  AI generates detailed test cases → User reviews
+[Step 6] Copy standardization prompt
+    ↓  AI generates Markdown table → Copy to Excel/Jira ✅
+```
+
+---
+
+## Optimization Tips
+
+1. **Step 2 is the most important** — Don't rush, answer each question the AI asks thoroughly
+2. **Split modules when there are many** — In Step 5, if there are >5 modules, ask AI to generate one module at a time
+3. **Review before formatting** — In Step 5, review test cases before moving to Step 6
+4. **Use the same conversation** — Run all 6 steps in **the same conversation** so AI retains context
+5. **Copy-Paste workflow is more detailed** — If you need the highest quality, use Workflow 2 (even when using Antigravity)

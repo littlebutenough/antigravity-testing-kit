@@ -1,50 +1,49 @@
-# Bước 5: Sinh Test Case chi tiết (RBT & Test Case Generation)
-
+# Step 5: Detailed Test Case Generation (RBT & Test Case Generation)
 
 ---
 
-## Mục đích
+## Purpose
 
-Sinh Test Case chi tiết dựa trên chiến lược **Risk-Based Testing (RBT)**: rủi ro cao → test kỹ, rủi ro thấp → test cơ bản.
+Generate detailed Test Cases based on **Risk-Based Testing (RBT)** strategy: high risk → thorough testing, low risk → basic testing.
 
-## Cách sử dụng
+## How to Use
 
-1. Đảm bảo đã review và xác nhận scenarios ở Bước 4.
-2. Gửi file `prompt.txt` cho AI, tùy chỉnh phần `[Gợi ý]` nếu cần.
-3. AI sẽ sinh test cases đầy đủ: Title, Pre-condition, Steps, Expected Result, Test Data, Risk Level, Priority.
-4. Review kết quả → sang Bước 6.
+1. Ensure you have reviewed and confirmed the scenarios from Step 4.
+2. Send the `prompt.txt` file to the AI, customize the `[Hint]` section if needed.
+3. The AI will generate complete test cases including: Title, Pre-condition, Steps, Expected Result, Test Data, Risk Level, Priority.
+4. Review the results → proceed to Step 6.
 
-## Mẹo quan trọng
+## Important Tips
 
-### Chia nhỏ khi nhiều module
-Nếu Bước 4 có >5 modules, **đừng bảo AI sinh hết 1 lần**. Thay vào đó:
+### Split When There Are Many Modules
+If Step 4 has more than 5 modules, **don't ask the AI to generate all at once**. Instead:
 ```
-Hãy sinh Test Case cho Module 1 và Module 2 trước tiên.
+Please generate Test Cases for Module 1 and Module 2 first.
 ```
-Sau khi review xong, tiếp tục:
+After reviewing, continue with:
 ```
-Tiếp tục sinh Test Case cho Module 3 và Module 4.
+Continue generating Test Cases for Module 3 and Module 4.
 ```
 
-### Test Data phải cụ thể
-AI sẽ sinh test data giả lập sát thực tế thay vì placeholder:
-- ✅ `test_customer_01@domain.com` thay vì ❌ `email hợp lệ`
-- ✅ `KH-2026-0012` thay vì ❌ `mã số hợp lệ`
+### Test Data Must Be Specific
+The AI will generate realistic test data instead of placeholders:
+- ✅ `test_customer_01@domain.com` instead of ❌ `valid email`
+- ✅ `CUST-2026-0012` instead of ❌ `valid ID`
 
-### Risk Level quyết định độ sâu
-| Risk Level | Số TC dự kiến | Bao phủ |
-|------------|--------------|---------|
+### Risk Level Determines Depth
+| Risk Level | Expected TC Count | Coverage |
+|------------|------------------|----------|
 | **High** | 8-15+ TC/module | Happy + Negative + Boundary + Edge |
-| **Medium** | 4-8 TC/module | Happy + Negative chính |
-| **Low** | 2-4 TC/module | Happy path cơ bản |
+| **Medium** | 4-8 TC/module | Happy + Key Negative |
+| **Low** | 2-4 TC/module | Basic Happy Path |
 
-### Kỹ thuật thiết kế Test Case
+### Test Case Design Techniques
 
-Prompt đã tích hợp 4 kỹ thuật kinh điển để AI sinh test case có hệ thống:
+The prompt integrates 4 classic techniques to help the AI generate systematic test cases:
 
-| Kỹ thuật | Khi nào dùng | Ví dụ |
-|----------|-------------|-------|
-| **Equivalence Partitioning** | Trường có nhiều loại input | Tuổi: <18, 18-60, >60 |
-| **Boundary Value Analysis** | Trường có min/max | Password 6-20 ký tự: test 5,6,20,21 |
-| **Decision Table** | Logic nhiều điều kiện kết hợp | Login: email + password + active status |
-| **State Transition** | Đối tượng có workflow/trạng thái | Đơn hàng: Mới → Xử lý → Giao → Hoàn thành |
+| Technique | When to Use | Example |
+|----------|-------------|---------|
+| **Equivalence Partitioning** | Fields with multiple input types | Age: <18, 18-60, >60 |
+| **Boundary Value Analysis** | Fields with min/max limits | Password 6-20 chars: test 5,6,20,21 |
+| **Decision Table** | Logic with multiple combined conditions | Login: email + password + active status |
+| **State Transition** | Objects with workflow/states | Order: New → Processing → Delivered → Completed |

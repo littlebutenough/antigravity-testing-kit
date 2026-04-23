@@ -1,29 +1,28 @@
-# Bước 3: Phân rã hệ thống (Decomposition Strategy)
-
+# Step 3: System Decomposition (Decomposition Strategy)
 
 ---
 
-## Mục đích
+## Purpose
 
-Hướng dẫn AI chia nhỏ hệ thống / tính năng phức tạp thành nhiều **Module** hoặc **Sub-module** dễ quản lý. Tránh tình trạng AI bị "ngợp" thông tin → viết test case thiếu sót.
+Guide the AI to break down a complex system/feature into smaller, manageable **Modules** or **Sub-modules**. This prevents the AI from being overwhelmed by information and missing test scenarios.
 
-## Cách sử dụng
+## How to Use
 
-1. Đảm bảo các câu hỏi ở Bước 2 đã được trả lời đầy đủ.
-2. Gửi file `prompt.txt` cho AI.
-3. AI sẽ trả về:
-   - Danh sách **Modules / Sub-modules** với mô tả chức năng
-   - **Dependencies** (mối quan hệ phụ thuộc giữa các module)
-4. Review nhanh kết quả → sang Bước 4.
+1. Ensure all questions from Step 2 have been fully answered.
+2. Send the `prompt.txt` file to the AI.
+3. The AI will return:
+   - A list of **Modules / Sub-modules** with functional descriptions
+   - **Dependencies** (relationships between modules)
+4. Quickly review the results → proceed to Step 4.
 
-## Chiến lược phân rã
+## Decomposition Strategies
 
-Có 3 cách phân rã, tùy theo dự án:
+There are 3 approaches, depending on the project:
 
-| Cách | Phù hợp khi | Ví dụ |
-|------|-------------|-------|
-| **Theo UI** | Trang có nhiều section rõ ràng | Header, Sidebar, Data Table, Form Popup |
-| **Theo luồng** | Tính năng có nhiều CRUD operations | Flow Tạo mới, Flow Chỉnh sửa, Flow Xóa |
-| **Theo đối tượng** | Hệ thống có nhiều entity | Quản lý User, Quản lý Product, Quản lý Order |
+| Approach | Best suited when | Example |
+|----------|-----------------|---------|
+| **By UI** | The page has clearly distinct sections | Header, Sidebar, Data Table, Form Popup |
+| **By Flow** | The feature involves multiple CRUD operations | Create Flow, Edit Flow, Delete Flow |
+| **By Entity** | The system has multiple entities | User Management, Product Management, Order Management |
 
-Tùy chỉnh phần `[Gợi ý]` trong prompt.txt để AI phân rã theo cách phù hợp nhất.
+Customize the `[Hint]` section in `prompt.txt` to guide the AI toward the most suitable decomposition approach.

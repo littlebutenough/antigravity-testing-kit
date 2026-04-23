@@ -1,35 +1,35 @@
-# Bước 3: Thiết kế cấu trúc POM (POM Design)
+# Step 3: POM Structure Design (POM Design)
 
-**Workflow:** `/generate_automation_from_testcases` (tiếp tục)
+**Workflow:** `/generate_automation_from_testcases` (continued)
 **Skill:** `qa_automation_engineer`
 
 ---
 
-## Mục đích
+## Purpose
 
-Sau khi AI đã thu thập locators từ DOM thật ở Bước 2, bước này hướng dẫn AI định hình các **Class Page** theo chuẩn POM. Mục tiêu là phân bổ đúng file, tên hàm có ý nghĩa rõ ràng **trước khi** cài logic test.
+After AI has collected locators from real DOM in Step 2, this step guides AI to define **Page Classes** according to POM standard. The goal is to properly allocate files, have meaningful method names **before** implementing test logic.
 
-## Cách sử dụng
+## Usage
 
-1. Đảm bảo đã review và xác nhận locators từ Bước 2.
-2. Gửi file `prompt.txt` cho AI.
-3. AI sẽ phác thảo:
-   - Tên class Page + file path
-   - Locator declarations (từ Bước 2)
+1. Ensure you have reviewed and confirmed locators from Step 2.
+2. Send the `prompt.txt` file to AI.
+3. AI will outline:
+   - Page class name + file path
+   - Locator declarations (from Step 2)
    - Method signatures + body
-4. Review kiến trúc POM → sang Bước 4.
+4. Review POM architecture → proceed to Step 4.
 
-## Quy tắc đặt tên
+## Naming Rules
 
-| Thành phần | Quy tắc | Ví dụ |
+| Component | Rule | Example |
 |---|---|---|
-| **Class name** | PascalCase + hậu tố `Page` | `LoginPage`, `CustomerFormPage` |
-| **Locator** | camelCase, mô tả element | `emailInput`, `submitButton` |
-| **Method** | camelCase, mô tả hành động nghiệp vụ | `fillLoginForm()`, `verifySuccessToast()` |
-| **File** | Theo convention framework | `LoginPage.ts` / `LoginPage.java` |
+| **Class name** | PascalCase + suffix `Page` | `LoginPage`, `CustomerFormPage` |
+| **Locator** | camelCase, describes element | `emailInput`, `submitButton` |
+| **Method** | camelCase, describes business action | `fillLoginForm()`, `verifySuccessToast()` |
+| **File** | Follow framework convention | `LoginPage.ts` / `LoginPage.java` |
 
-## Lưu ý
+## Notes
 
-- Bước này chỉ thiết kế **Page classes**, CHƯA sinh test script.
-- Method nên return `this` hoặc target Page (fluent pattern) để chain được.
-- Tuân thủ quy tắc trong `.agent/rules/automation_rules.md`.
+- This step only designs **Page classes**, NOT generating test script yet.
+- Methods should return `this` or target Page (fluent pattern) for chaining.
+- Adhere to rules in `.agent/rules/automation_rules.md`.

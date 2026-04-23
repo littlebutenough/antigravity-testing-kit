@@ -1,59 +1,59 @@
-# 📋 Hướng Dẫn Nhanh: Automation Testing 6 Bước
+# 📋 Quick Start Guide: Automation Testing 6 Steps
 
-## Hai cách sử dụng
+## Two Usage Methods
 
-### Cách 1: One-Click (Tự động hoàn toàn — Đề xuất)
+### Method 1: One-Click (Fully Automated — Recommended)
 
 ```
 /generate_automation_from_testcases
 
 URL: [https://your-app.com/login]
-Tài khoản: [admin@test.com / Test@123]
+Account: [admin@test.com / Test@123]
 Framework: [Playwright TypeScript / Selenium Java]
 
 Manual Test Cases:
-[Paste test cases vào đây]
+[Paste test cases here]
 ```
 
-→ Agent tự chạy hết 6 bước, tự fix đến khi test PASS.
+→ Agent automatically runs all 6 steps, auto-fixes until test PASS.
 
 ---
 
-### Cách 2: Tuần Tự (Từng bước)
+### Method 2: Sequential (Step-by-Step)
 
-| Bước | Prompt gửi Antigravity | Chờ User? |
-|------|------------------------|-----------|
-| **0** | Xem `project_architecture/README.md` | Setup 1 lần |
-| **1** | Copy `01.../prompt.txt` + điền `[...]` | ✅ Chờ xác nhận |
-| **2** | Copy `02.../prompt.txt` + điền URL & TCs | ✅ Review locators |
+| Step | Prompt to send to Antigravity | Wait for User? |
+|------|-------------------------------|----------------|
+| **0** | View `project_architecture/README.md` | Setup once |
+| **1** | Copy `01.../prompt.txt` + fill in `[...]` | ✅ Wait for confirmation |
+| **2** | Copy `02.../prompt.txt` + fill in URL & TCs | ✅ Review locators |
 | **3** | Copy `03.../prompt.txt` | Review POM |
-| **4** | Copy `04.../prompt.txt` | Review nhanh |
-| **5** | Copy `05.../prompt.txt` | Chờ test PASS |
-| **6** | Copy `06.../prompt.txt` | Nhận clean code |
+| **4** | Copy `04.../prompt.txt` | Quick review |
+| **5** | Copy `05.../prompt.txt` | Wait for test PASS |
+| **6** | Copy `06.../prompt.txt` | Receive clean code |
 
-### Luồng thực hiện:
+### Execution Flow:
 
 ```
-[Bước 1] Thiết lập role + tech stack
-    ↓  AI xác nhận → OK
-[Bước 2] Cung cấp URL + Test Cases
-    ↓  AI tự mở browser, thu thập locators
-    ↓  ⏸️ User review bảng locators
-[Bước 3] AI thiết kế POM classes
-    ↓  User review kiến trúc
-[Bước 4] AI sinh Data Generator class
-    ↓  User review nhanh
-[Bước 5] AI sinh test script + tự chạy
-    ↓  Tự fix loop đến khi PASS ✅
-[Bước 6] AI cleanup code
-    ↓  User nhận clean code → commit ✅
+[Step 1] Establish role + tech stack
+    ↓  AI confirms → OK
+[Step 2] Provide URL + Test Cases
+    ↓  AI opens browser, collects locators
+    ↓  ⏸️ User reviews locator table
+[Step 3] AI designs POM classes
+    ↓  User reviews architecture
+[Step 4] AI generates Data Generator class
+    ↓  User quick review
+[Step 5] AI generates test script + auto-runs
+    ↓  Auto-fix loop until PASS ✅
+[Step 6] AI cleans up code
+    ↓  User receives clean code → commit ✅
 ```
 
 ---
 
-## Mẹo Tối Ưu
+## Optimization Tips
 
-1. **Dùng Cách 1** cho 80% trường hợp — nhanh và hiệu quả nhất
-2. **Dùng Cách 2** khi project lớn hoặc cần kiểm soát chi tiết từng module
-3. **Luôn chạy trong cùng 1 conversation** để AI giữ context
-4. **Cung cấp tài khoản test** nếu app yêu cầu login
+1. **Use Method 1** for 80% of cases — fastest and most efficient
+2. **Use Method 2** when project is large or need detailed control over each module
+3. **Always run in the same conversation** so AI maintains context
+4. **Provide test account** if app requires login

@@ -1,24 +1,23 @@
-# Bước 2: Phân tích yêu cầu và Q&A (Requirement Analysis)
+# Step 2: Requirement Analysis & Q&A
 
 ---
 
-## Mục đích
+## Purpose
 
-Yêu cầu AI phân tích tài liệu từ Bước 1 để tìm ra các điểm thiếu sót, mâu thuẫn, chưa rõ ràng (Ambiguities) **trước khi** viết kịch bản. Bước này mô phỏng tư duy Tester đọc tài liệu và đặt câu hỏi cho BA/PO.
+Ask the AI to analyze the document from Step 1 to identify missing points, contradictions, and ambiguities **before** writing test scenarios. This step simulates a Tester's mindset when reading documentation and asking questions to the BA/PO.
 
-## Cách sử dụng
+## How to Use
 
-1. Copy nội dung `prompt.txt` và gửi ngay sau khi AI đã xác nhận ở Bước 1.
-2. AI sẽ trả về:
-   - Danh sách **luồng** (Happy / Alternate / Exception Paths)
-   - Danh sách **Ambiguities** (điểm mờ phát hiện)
-   - Danh sách **câu hỏi Q&A** có đánh số
-3. **Đọc kỹ** từng câu hỏi và trả lời cho AI.
-4. Khi đã giải đáp hết → sang Bước 3.
+1. Copy the content of `prompt.txt` and send it right after the AI has confirmed in Step 1.
+2. The AI will return:
+   - A list of **Flows** (Happy / Alternate / Exception Paths)
+   - A list of **Ambiguities** (unclear points detected)
+   - A list of **numbered Q&A questions**
+3. **Read carefully** through each question and provide answers to the AI.
+4. Once all questions are answered → proceed to Step 3.
 
-## ⚠️ Lưu ý quan trọng
+## ⚠️ Important Notes
 
-- **Đây là bước quan trọng nhất** trong quy trình. Nếu bỏ qua, AI sẽ tự đoán logic → test case sai nghiêm trọng.
-- Trả lời **càng cụ thể càng tốt**. Nếu chưa biết, nói rõ "Chưa xác định, giả định là..." để AI ghi nhận.
-- Có thể bổ sung thêm gợi ý vào phần `[...]` trong prompt.txt để AI tập trung vào mảng bạn quan tâm.
-
+- **This is the most critical step** in the process. Skipping it will cause the AI to guess the logic → severely incorrect test cases.
+- Answer **as specifically as possible**. If you don't know, clearly state "Not determined, assuming..." so the AI acknowledges it.
+- You can add extra hints in the `[...]` section of `prompt.txt` to steer the AI toward areas you care about.

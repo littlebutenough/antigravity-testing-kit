@@ -1,38 +1,38 @@
-# Bước 6: Kiểm duyệt & Tối ưu (Review & Refactoring)
+# Step 6: Review & Optimization (Review & Refactoring)
 
-**Workflow:** `/generate_automation_from_testcases` (tiếp tục)
+**Workflow:** `/generate_automation_from_testcases` (continued)
 **Skill:** `qa_automation_engineer`
 
 ---
 
-## Mục đích
+## Purpose
 
-Sau khi test chạy PASS, "dọn dẹp" code để đạt chuẩn **Clean Code** trước khi merge vào repository. Tránh code rác làm bẩn project.
+After test runs PASS, "clean up" code to achieve **Clean Code** standard before merging into repository. Avoid dirty code polluting the project.
 
-## Cách sử dụng
+## Usage
 
-1. Gửi file `prompt.txt` sau khi test đã PASS ở Bước 5.
-2. AI sẽ thực hiện:
-   - Xóa debug logs, commented code, unused variables
+1. Send the `prompt.txt` file after test has PASSED in Step 5.
+2. AI will perform:
+   - Delete debug logs, commented code, unused variables
    - Review code quality
-   - Gắn CI/CD tags (smoke, regression...)
-3. Nhận code final → commit/merge.
+   - Attach CI/CD tags (smoke, regression...)
+3. Receive final code → commit/merge.
 
-## Checklist Review
+## Review Checklist
 
-| # | Kiểm tra | Trạng thái |
+| # | Check | Status |
 |---|---|---|
-| 1 | Không còn `console.log` / `System.out.println` | ☐ |
-| 2 | Không còn commented code | ☐ |
-| 3 | Không có unused variables/locators | ☐ |
-| 4 | Không có hard sleep | ☐ |
-| 5 | Assertions đầy đủ và chính xác | ☐ |
+| 1 | No more `console.log` / `System.out.println` | ☐ |
+| 2 | No more commented code | ☐ |
+| 3 | No unused variables/locators | ☐ |
+| 4 | No hard sleep | ☐ |
+| 5 | Assertions complete and accurate | ☐ |
 | 6 | Test data unique, traceable | ☐ |
-| 7 | Mỗi test case độc lập | ☐ |
-| 8 | CI/CD tags đã gắn | ☐ |
+| 7 | Each test case independent | ☐ |
+| 8 | CI/CD tags attached | ☐ |
 
-## Lưu ý
+## Notes
 
-- Bước này có thể chạy tự động trong workflow One-Click (AI tự cleanup sau khi test PASS).
-- Nếu chạy thủ công, paste source code vào để AI review.
-- Code phải đạt tiêu chuẩn `.agent/rules/automation_rules.md` trước khi commit.
+- This step can run automatically in One-Click workflow (AI auto-cleans up after test PASS).
+- If running manually, paste source code for AI to review.
+- Code must meet standards in `.agent/rules/automation_rules.md` before commit.

@@ -1,35 +1,35 @@
 # ============================================================
-# BƯỚC 4: CHIẾN LƯỢC DỮ LIỆU (Test Data Strategy)
+# STEP 4: DATA STRATEGY (Test Data Strategy)
 # ============================================================
-# Workflow: /generate_automation_from_testcases (tiếp tục)
+# Workflow: /generate_automation_from_testcases (continued)
 # Skill:    qa_automation_engineer + test_data_generator
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI đã review POM ở Bước 3
-# 2. AI sẽ sinh class Utils/DataProvider
-# 3. Review → sang Bước 5
+# USAGE:
+# 1. Send this prompt AFTER reviewing POM in Step 3
+# 2. AI will generate Utils/DataProvider class
+# 3. Review → proceed to Step 5
 # ============================================================
 
 ---START---
 
-Test automation bị flaky nếu dùng dữ liệu cứng (hardcode) cho các trường unique (Email, Username, Mã KH...).
+Test automation becomes flaky if using hardcoded data for unique fields (Email, Username, Customer Code...).
 
-Hãy thiết kế **Test Data Strategy** theo yêu cầu sau:
+Please design **Test Data Strategy** according to the following requirements:
 
-## 1. Class sinh dữ liệu (Data Generator)
+## 1. Data Generator Class
 
-Viết class Utils/Helper để generate dữ liệu tự động:
-- Sử dụng thư viện phù hợp: **Faker** (JS/TS), **JavaFaker** (Java), hoặc UUID
-- Mỗi hàm sinh 1 loại data cụ thể
+Write a Utils/Helper class to automatically generate data:
+- Use appropriate library: **Faker** (JS/TS), **JavaFaker** (Java), or UUID
+- Each function generates one specific type of data
 
-## 2. Format traceable (truy vết được)
+## 2. Traceable Format
 
-Dữ liệu phải theo format:
+Data must follow format:
 ```
 [Prefix]_[TestName]_[Timestamp]_[Random]
 ```
 
-Ví dụ cụ thể:
+Specific examples:
 ```
 Email:    auto_createCustomer_20260402_A3F2@test.com
 Username: auto_login_20260402_7B4D
@@ -37,19 +37,19 @@ Code:     KH-20260402-A3F2
 Phone:    09[random 8 digits]
 ```
 
-> Nhìn vào database hoặc log → biết ngay data này do test nào sinh ra.
+> Looking at database or log → immediately know which test generated this data.
 
-## 3. Data cho từng loại test
+## 3. Data for Each Test Type
 
-| Loại Test | Yêu cầu Data | Ví dụ |
-|-----------|-------------|-------|
-| **Happy Path** | Data hợp lệ, format đúng | `valid_email@test.com`, `Test@12345` |
-| **Negative** | Data sai format, thiếu field | `invalid-email`, `""`, `null` |
-| **Boundary** | Data tại ranh giới min/max | `"A"` (1 char), `"A"*256` (vượt max) |
+| Test Type | Data Requirement | Example |
+|-----------|-----------------|---------|
+| **Happy Path** | Valid data, correct format | `valid_email@test.com`, `Test@12345` |
+| **Negative** | Wrong format, missing field | `invalid-email`, `""`, `null` |
+| **Boundary** | Data at min/max boundaries | `"A"` (1 char), `"A"*256` (exceeds max) |
 
-## 4. Tích hợp vào project
+## 4. Integration into Project
 
-Hướng dẫn cách sử dụng bộ data này trong Test Cases:
+Guide on how to use this data set in Test Cases:
 
 Playwright:
 ```typescript
@@ -63,10 +63,10 @@ import utils.DataGenerator;
 String email = DataGenerator.generateEmail("createCustomer");
 ```
 
-## 5. Quy tắc bắt buộc (tham khảo `.agent/rules/automation_rules.md`)
+## 5. Mandatory Rules (refer to `.agent/rules/automation_rules.md`)
 
-- ❌ KHÔNG hardcode data cho trường unique
-- ❌ KHÔNG dùng data trùng lặp giữa các test
-- ✅ Data phải unique mỗi lần chạy
-- ✅ Data phải traceable (biết test nào sinh ra)
-- ✅ Hỗ trợ chạy parallel không conflict
+- ❌ DO NOT hardcode data for unique fields
+- ❌ DO NOT use duplicate data between tests
+- ✅ Data must be unique each run
+- ✅ Data must be traceable (know which test generated it)
+- ✅ Support parallel execution without conflict

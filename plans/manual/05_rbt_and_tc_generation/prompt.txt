@@ -1,125 +1,125 @@
 # ============================================================
-# BƯỚC 5: SINH TEST CASE CHI TIẾT (RBT & TC Generation)
+# STEP 5: DETAILED TEST CASE GENERATION (RBT & TC Generation)
 # ============================================================
-# Đây là prompt độc lập — copy & paste vào bất kỳ AI nào
+# This is a standalone prompt — copy & paste into any AI
+# (ChatGPT, Claude, Gemini, Antigravity...)
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI đã review và xác nhận scenarios ở Bước 4
-# 2. Tùy chỉnh phần [Gợi ý] nếu cần focus vào module cụ thể
-# 3. Nếu nhiều modules → yêu cầu AI sinh từng module một
-# 4. Review test cases → sang Bước 6
+# HOW TO USE:
+# 1. Send this prompt AFTER reviewing and confirming scenarios in Step 4
+# 2. Customize the [Hint] section if you need to focus on specific modules
+# 3. If there are many modules → ask AI to generate one module at a time
+# 4. Review test cases → proceed to Step 6
 # ============================================================
 
 ---START---
 
-Áp dụng chiến lược **Risk-Based Testing (RBT)**, hãy sinh ra danh sách Test Case chi tiết từ các High-Level Scenarios đã được review ở Bước 4.
+Applying the **Risk-Based Testing (RBT)** strategy, please generate a detailed list of Test Cases from the High-Level Scenarios reviewed in Step 4.
 
-## Yêu cầu cho mỗi Test Case:
+## Requirements for each Test Case:
 
-### 1. Đánh giá rủi ro (Risk Assessment)
+### 1. Risk Assessment
 
-Đánh giá **Risk Level** cho mỗi Module/Tính năng:
-- **High Risk:** Nghiệp vụ cốt lõi, liên quan tiền/bảo mật, nhiều user phụ thuộc → Sinh nhiều test cases, test kỹ
-- **Medium Risk:** Tính năng quan trọng nhưng không critical → Test vừa phải
-- **Low Risk:** Tính năng phụ, ít ảnh hưởng → Test cơ bản, happy path
+Assess the **Risk Level** for each Module/Feature:
+- **High Risk:** Core business logic, involving money/security, many dependent users → Generate many test cases, test thoroughly
+- **Medium Risk:** Important feature but not critical → Moderate testing
+- **Low Risk:** Secondary feature, low impact → Basic testing, happy path only
 
-### 2. Cấu trúc Test Case
+### 2. Test Case Structure
 
-Mỗi Test Case phải có đầy đủ:
+Each Test Case must include all fields:
 
-| Field | Yêu cầu |
-|-------|---------|
-| **Module / Sub-module** | Tên module đã phân rã ở Bước 3 |
-| **Test Case Title** | Tiêu đề ngắn gọn, rõ mục đích |
-| **Pre-conditions** | Điều kiện tiên quyết trước khi test |
-| **Test Steps** | Các bước thực hiện, **đánh số thứ tự** |
-| **Expected Results** | Kết quả mong đợi tương ứng từng bước, **đánh số** |
-| **Test Data** | Dữ liệu cụ thể (xem quy tắc bên dưới) |
+| Field | Requirement |
+|-------|------------|
+| **Module / Sub-module** | Module name as decomposed in Step 3 |
+| **Test Case Title** | Concise title, clearly stating the purpose |
+| **Pre-conditions** | Prerequisites before executing the test |
+| **Test Steps** | Execution steps, **numbered sequentially** |
+| **Expected Results** | Expected outcomes corresponding to each step, **numbered** |
+| **Test Data** | Concrete data (see rules below) |
 | **Priority** | High / Medium / Low |
 | **Risk Level** | High / Medium / Low |
 
-### 3. Quy tắc Test Data
+### 3. Test Data Rules
 
-Test Data **PHẢI CỤ THỂ**, không được dùng mô tả chung chung:
+Test Data **MUST BE CONCRETE**, do not use generic descriptions:
 
 ```
-❌ SAI: "Nhập email hợp lệ"
-✅ ĐÚNG: "Nhập email: test_customer_01@domain.com"
+❌ WRONG: "Enter a valid email"
+✅ CORRECT: "Enter email: test_customer_01@domain.com"
 
-❌ SAI: "Nhập mã số hợp lệ"
-✅ ĐÚNG: "Nhập mã: KH-2026-0012"
+❌ WRONG: "Enter a valid code"
+✅ CORRECT: "Enter code: CUST-2026-0012"
 
-❌ SAI: "Nhập số điện thoại sai định dạng"
-✅ ĐÚNG: "Nhập SĐT: abc123xyz (chữ cái thay vì số)"
+❌ WRONG: "Enter an invalid phone number"
+✅ CORRECT: "Enter phone: abc123xyz (letters instead of digits)"
 
-❌ SAI: "Nhập tên quá dài"
-✅ ĐÚNG: "Nhập tên: [chuỗi 256 ký tự 'A' liên tiếp] (vượt giới hạn 255)"
+❌ WRONG: "Enter a name that is too long"
+✅ CORRECT: "Enter name: [string of 256 consecutive 'A' characters] (exceeds 255 limit)"
 ```
 
-### 4. Phạm vi bao phủ
+### 4. Coverage Scope
 
-Đảm bảo các Test Cases bao phủ đa dạng:
-- **Happy Path:** Luồng chính đi trơn tru
-- **Negative Path:** Nhập sai, thiếu dữ liệu, sai định dạng
-- **Boundary Values:** Giá trị biên (min, max, min-1, max+1)
-- **Edge Cases:** Timeout, mất kết nối, concurrent access
+Ensure Test Cases cover a diverse range:
+- **Happy Path:** Main flow runs smoothly
+- **Negative Path:** Invalid input, missing data, wrong format
+- **Boundary Values:** Boundary values (min, max, min-1, max+1)
+- **Edge Cases:** Timeout, connection loss, concurrent access
 
-[Gợi ý bổ sung (tùy chỉnh theo dự án):
-- Phân quyền: User role A có quyền gì, không có quyền gì
-- Tương thích: Responsive design, multi-browser
-- Performance: Xử lý danh sách lớn (1000+ records)
+[Additional hints (customize per project):
+- Authorization: What User role A can/cannot do
+- Compatibility: Responsive design, multi-browser
+- Performance: Handling large datasets (1000+ records)
 - ...]
 
-### 5. Kỹ thuật thiết kế Test Case (Test Design Techniques)
+### 5. Test Design Techniques
 
-Áp dụng các kỹ thuật kinh điển sau để sinh test case có hệ thống:
+Apply the following classic techniques to generate systematic test cases:
 
-**a) Equivalence Partitioning (Phân lớp tương đương)**
-Chia dữ liệu đầu vào thành các nhóm tương đương, chỉ cần test 1 giá trị đại diện mỗi nhóm.
+**a) Equivalence Partitioning**
+Divide input data into equivalent classes; only one representative value per class needs testing.
 ```
-Ví dụ với trường "Tuổi" (hợp lệ: 18-60):
-- Lớp hợp lệ: 25 (đại diện 18-60)
-- Lớp không hợp lệ dưới: 10 (đại diện <18)
-- Lớp không hợp lệ trên: 70 (đại diện >60)
-```
-
-**b) Boundary Value Analysis — BVA (Phân tích giá trị biên)**
-Test các giá trị tại ranh giới: min, min+1, max-1, max, min-1, max+1.
-```
-Ví dụ với trường "Mật khẩu" (6-20 ký tự):
-- 5 ký tự (biên dưới -1) → Báo lỗi
-- 6 ký tự (biên dưới)    → Hợp lệ
-- 7 ký tự (biên dưới +1) → Hợp lệ
-- 19 ký tự (biên trên -1) → Hợp lệ
-- 20 ký tự (biên trên)    → Hợp lệ
-- 21 ký tự (biên trên +1) → Báo lỗi
+Example for the "Age" field (valid: 18-60):
+- Valid class: 25 (representative of 18-60)
+- Invalid lower class: 10 (representative of <18)
+- Invalid upper class: 70 (representative of >60)
 ```
 
-**c) Decision Table (Bảng quyết định)**
-Dùng khi logic có nhiều điều kiện kết hợp (AND/OR). Liệt kê tổ hợp điều kiện → kết quả.
+**b) Boundary Value Analysis (BVA)**
+Test values at the boundaries: min, min+1, max-1, max, min-1, max+1.
 ```
-Ví dụ với chức năng "Đăng nhập":
-| Email hợp lệ | Password đúng | Tài khoản active | Kết quả         |
+Example for the "Password" field (6-20 characters):
+- 5 characters (lower boundary -1) → Error expected
+- 6 characters (lower boundary)    → Valid
+- 7 characters (lower boundary +1) → Valid
+- 19 characters (upper boundary -1) → Valid
+- 20 characters (upper boundary)    → Valid
+- 21 characters (upper boundary +1) → Error expected
+```
+
+**c) Decision Table**
+Use when logic involves multiple combined conditions (AND/OR). List condition combinations → outcomes.
+```
+Example for the "Login" function:
+| Valid Email | Correct Password | Active Account | Result            |
 |:---:|:---:|:---:|---|
-| ✅ | ✅ | ✅ | Đăng nhập thành công |
-| ✅ | ❌ | ✅ | Báo sai mật khẩu |
-| ❌ | ✅ | ✅ | Báo email không tồn tại |
-| ✅ | ✅ | ❌ | Báo tài khoản bị khóa |
+| ✅ | ✅ | ✅ | Login successful     |
+| ✅ | ❌ | ✅ | Wrong password error |
+| ❌ | ✅ | ✅ | Email not found error |
+| ✅ | ✅ | ❌ | Account locked error |
 ```
 
-**d) State Transition (Chuyển đổi trạng thái)**
-Dùng cho đối tượng có nhiều trạng thái chuyển đổi (workflow, order status...).
+**d) State Transition**
+Use for objects with multiple state changes (workflow, order status...).
 ```
-Ví dụ với trạng thái Đơn hàng:
-Mới tạo → Đang xử lý → Đang giao → Hoàn thành
-                      → Hủy đơn
-Test: Mỗi transition hợp lệ + các transition KHÔNG hợp lệ (VD: Hoàn thành → Mới tạo)
+Example for Order status:
+New → Processing → Shipping → Completed
+                  → Cancelled
+Test: Every valid transition + INVALID transitions (e.g., Completed → New)
 ```
 
-> Hãy chọn kỹ thuật phù hợp cho từng Module/Field dựa trên đặc tính dữ liệu và logic nghiệp vụ.
+> Choose the appropriate technique for each Module/Field based on data characteristics and business logic.
 
 ---
 
-> 💡 **Lưu ý:** Nếu số lượng scenarios ở Bước 4 quá nhiều, hãy sinh Test Case **từng Module một**.
-> Ví dụ: "Hãy sinh TC cho Module 1 và Module 2 trước tiên. Tôi sẽ yêu cầu tiếp cho các module còn lại."
-
+> 💡 **Note:** If the number of scenarios in Step 4 is too large, generate Test Cases **one Module at a time**.
+> Example: "Please generate TCs for Module 1 and Module 2 first. I will request the remaining modules afterward."

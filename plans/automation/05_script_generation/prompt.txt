@@ -1,44 +1,44 @@
 # ============================================================
-# BƯỚC 5: SINH MÃ AUTOMATION (Script Generation)
+# STEP 5: AUTOMATION SCRIPT GENERATION (Script Generation)
 # ============================================================
-# Workflow: /generate_automation_from_testcases (tiếp tục)
+# Workflow: /generate_automation_from_testcases (continued)
 # Skill:    qa_automation_engineer
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI đã review POM (Bước 3) và Data (Bước 4)
-# 2. AI sẽ sinh file Test script hoàn chỉnh
-# 3. Chạy test → nếu fail → AI tự fix → lặp đến khi PASS
+# USAGE:
+# 1. Send this prompt AFTER reviewing POM (Step 3) and Data (Step 4)
+# 2. AI will generate complete Test script file
+# 3. Run test → if fail → AI auto-fixes → loop until PASS
 # ============================================================
 
 ---START---
 
-Mọi cấu trúc POM (Bước 3) và Test Data Strategy (Bước 4) đã sẵn sàng.
+All POM structure (Step 3) and Test Data Strategy (Step 4) are ready.
 
-Hãy viết **file Test script** hoàn chỉnh.
+Please write **complete Test script file**.
 
-## Yêu cầu bắt buộc:
+## Mandatory Requirements:
 
-### 1. Cấu trúc code
+### 1. Code Structure
 
-- Import và khởi tạo các Page classes đã viết ở Bước 3
-- Sử dụng Data Generator từ Bước 4
-- Chia code theo pattern **Arrange → Act → Assert**
+- Import and initialize Page classes written in Step 3
+- Use Data Generator from Step 4
+- Divide code according to **Arrange → Act → Assert** pattern
 
 ```
-Arrange: Setup data, khởi tạo pages
-Act:     Thực hiện hành động (navigate, fill, click)
-Assert:  Kiểm tra kết quả (verify, expect)
+Arrange: Setup data, initialize pages
+Act:     Perform actions (navigate, fill, click)
+Assert:  Verify results (verify, expect)
 ```
 
-### 2. Assertions (Kiểm tra)
+### 2. Assertions (Verification)
 
-- **BẮT BUỘC** có assertion ở cuối mỗi test case
-- Nên có assertion xen kẽ ở các bước quan trọng
-- Assert phải rõ ràng, mô tả đúng expected behavior
+- **MANDATORY** to have assertion at the end of each test case
+- Should have assertions interspersed at important steps
+- Assertions must be clear, correctly describe expected behavior
 
 Playwright:
 ```typescript
-await expect(page.getByText('Đăng nhập thành công')).toBeVisible();
+await expect(page.getByText('Login successful')).toBeVisible();
 await expect(page).toHaveURL(/dashboard/);
 ```
 
@@ -50,28 +50,28 @@ Assert.assertEquals(driver.getTitle(), "Dashboard");
 
 ### 3. Smart Waits
 
-- ⛔ **TUYỆT ĐỐI** không dùng: `Thread.sleep()`, `page.waitForTimeout()`, `time.sleep()`
-- ✅ Playwright: Tận dụng auto-waiting + `expect().toBeVisible()`
-- ✅ Selenium: Dùng `WebDriverWait` + `ExpectedConditions`
+- ⛔ **ABSOLUTELY** do not use: `Thread.sleep()`, `page.waitForTimeout()`, `time.sleep()`
+- ✅ Playwright: Utilize auto-waiting + `expect().toBeVisible()`
+- ✅ Selenium: Use `WebDriverWait` + `ExpectedConditions`
 
 ### 4. Test Independence
 
-- Mỗi test case **độc lập** (không phụ thuộc test khác)
-- Setup/teardown rõ ràng (`beforeEach`, `afterEach` / `@BeforeMethod`, `@AfterMethod`)
-- Test data unique mỗi lần chạy
+- Each test case **independent** (does not depend on other tests)
+- Clear setup/teardown (`beforeEach`, `afterEach` / `@BeforeMethod`, `@AfterMethod`)
+- Test data unique each run
 
-### 5. Self-fix Loop (Chế độ tự sửa)
+### 5. Self-fix Loop (Auto-fix Mode)
 
-Sau khi sinh code, AI **phải tự chạy test**:
-1. Execute test bằng terminal
-2. Nếu **PASS** → DONE, sang Bước 6
-3. Nếu **FAIL** → Đọc error log → Phân tích root cause → Sửa code → Chạy lại
-4. Lặp lại cho đến khi PASS ổn định
-5. **KHÔNG hỏi user** trong quá trình self-fix (trừ khi phát hiện business rule không rõ)
+After generating code, AI **must automatically run test**:
+1. Execute test via terminal
+2. If **PASS** → DONE, proceed to Step 6
+3. If **FAIL** → Read error log → Analyze root cause → Fix code → Rerun
+4. Repeat until stable PASS
+5. **DO NOT ask user** during self-fix process (unless discovering unclear business rule)
 
 ---
 
-> ⚠️ Tham khảo framework-specific rules:
+> ⚠️ Refer to framework-specific rules:
 > - Playwright: `.agent/rules/playwright_rules.md`
 > - Selenium: `.agent/rules/selenium_rules.md`
 > - Appium: `.agent/rules/appium_rules.md`

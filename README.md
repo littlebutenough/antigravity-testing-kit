@@ -1,147 +1,151 @@
 # Antigravity Testing Kit 🚀
 
-👋 Chào mừng bạn đến với **Antigravity Testing Kit**!
+> 🌐 **English Translation Fork**
+> This repository is an English-translated fork of the original [Antigravity Testing Kit](https://github.com/anhtester/antigravity-testing-kit) by **Anh Tester**. The original content was written in Vietnamese; this fork provides an English version of all documentation, prompts, and instructions for the international community.
 
-Đây là bộ Kit được xây dựng và phát triển bởi **Anh Tester**, dành riêng cho **Cộng đồng Tester Việt Nam**. Mục tiêu của repo này là cung cấp sẵn các thiết lập, quy tắc hành vi (Rules), kỹ năng (Skills), và quy trình (Workflows) chuẩn theo docs của Antigravity để hỗ trợ sử dụng AI Agent trên phần mềm **Antigravity**.
+👋 Welcome to the **Antigravity Testing Kit**!
 
-Bộ Kit này **không chỉ dành riêng cho Automation** — mà được thiết kế toàn diện cho cả **Manual Testing** lẫn **Automation Testing**, bao phủ toàn bộ vòng đời kiểm thử phần mềm từ phân tích yêu cầu, thiết kế test cases cho đến thực thi và báo cáo kết quả.
+This Kit was built and developed by **Anh Tester**, dedicated to the **Vietnamese Tester Community**. The goal of this repo is to provide ready-made configurations, behavioral rules, skills, and standard workflows based on Antigravity's documentation to support using AI Agents on the **Antigravity** software.
 
-Đặc biệt, mọi công đoạn đều được **tích hợp AI một cách có hệ thống**, tạo thành một **quy trình ứng dụng AI hoàn thiện (End-to-End AI Testing Workflow)** — giúp Tester làm việc thông minh hơn, nhanh hơn và hiệu quả hơn trong kỷ nguyên AI.
+This Kit is **not just for Automation** — it is comprehensively designed for both **Manual Testing** and **Automation Testing**, covering the entire software testing lifecycle from requirements analysis and test case design to execution and result reporting.
 
----
-
-## 🌟 Tính Năng Nổi Bật
-
-- **🔁 Quy Trình AI Hoàn Thiện (End-to-End):** Được xây dựng thành một quy trình ứng dụng AI khép kín — từ phân tích yêu cầu (Requirements), thiết kế test cases (Manual), đến viết script tự động (Automation), tích hợp CI/CD và báo cáo kết quả — tất cả đều có AI hỗ trợ.
-- **📋 Hỗ Trợ Cả Manual & Automation Testing:** Không chỉ dừng lại ở Automation, Kit còn trang bị đầy đủ quy trình, skill và prompt cho **Manual Tester** — bao gồm phân tích rủi ro (RBT), thiết kế test cases chất lượng cao và quản lý kết quả kiểm thử.
-- **🧠 Tối ưu cho QA/Tester:** Tất cả các prompt, rule và workflow đều được tinh chỉnh dựa trên tư duy và quy trình làm việc thực tế của cả **Manual Tester** lẫn **Automation Engineer**.
-- **🌐 Hỗ trợ Đa Nền Tảng:** Tương thích với các framework phổ biến như Web (Playwright, Selenium), Mobile (Appium), và API (Playwright, REST Assured).
-- **🛡️ Tuân thủ Tiêu Chuẩn Cao (Strict Rules):** Đảm bảo AI luôn đi theo cấu trúc Page Object Model (POM), viết code rõ ràng, không đoán bừa locator và tự động sửa lỗi (Self-fix).
-- **🇻🇳 Giao Tiếp Bằng Tiếng Việt:** AI được cấu hình để trao đổi, giải thích và báo cáo hoàn toàn bằng Tiếng Việt, thân thiện với người dùng Việt Nam.
+Notably, every stage is **systematically integrated with AI**, forming a **complete End-to-End AI Testing Workflow** — helping Testers work smarter, faster, and more effectively in the AI era.
 
 ---
 
-## 📂 Cấu Trúc Thư Mục Chính
+## 🌟 Key Features
+
+- **🔁 End-to-End AI Process:** Built as a closed-loop AI application process — from requirements analysis, manual test case design, to automated script writing, CI/CD integration, and result reporting — all AI-assisted.
+- **📋 Supports Both Manual & Automation Testing:** Beyond Automation, the Kit fully equips processes, skills, and prompts for **Manual Testers** — including Risk-Based Testing (RBT) analysis, high-quality test case design, and test result management.
+- **🧠 Optimized for QA/Testers:** All prompts, rules, and workflows are fine-tuned based on the real-world thinking and working processes of both **Manual Testers** and **Automation Engineers**.
+- **🌐 Multi-Platform Support:** Compatible with popular frameworks such as Web (Playwright, Selenium), Mobile (Appium), and API (Playwright, REST Assured).
+- **🛡️ High Standard Compliance (Strict Rules):** Ensures AI always follows the Page Object Model (POM) structure, writes clean code, never guesses locators, and performs automatic self-fixing.
+- **🇻🇳 Originally Vietnamese Communication:** The original AI was configured to communicate, explain, and report entirely in Vietnamese, friendly to Vietnamese users. *(This fork provides English translations.)*
+
+---
+
+## 📂 Main Directory Structure
 
 ```
 antigravity-testing-kit/
 ├── .agent/
-│   ├── rules/           # Quy tắc bắt buộc AI phải tuân theo
-│   ├── skills/          # 10 kỹ năng chuyên biệt cho AI
-│   └── workflows/       # 15 kịch bản thực thi step-by-step (slash commands)
+│   ├── rules/           # Mandatory rules AI must follow
+│   ├── skills/          # 10 specialized skills for AI
+│   └── workflows/       # 15 step-by-step execution scripts (slash commands)
 ├── plans/
-│   ├── manual/          # Quy trình 6 bước sinh Manual Test Cases (AI-RBT)
-│   ├── automation/      # Quy trình 6 bước sinh Automation Scripts
-│   └── cross-module/    # Quy trình phân tích Cross-Module & Ma trận kết hợp
+│   ├── manual/          # 6-step process for Manual Test Cases (AI-RBT)
+│   ├── automation/      # 6-step process for Automation Scripts
+│   └── cross-module/    # Cross-Module analysis & Combination Matrix process
 ├── practices/
-│   ├── requirements/    # Lưu trữ requirements đã sinh
-│   └── testcases/       # Lưu trữ testcases đã sinh (hoặc testcases mẫu)
-├── prompt_templates/    # Prompt mẫu dùng nhanh (copy → paste → gửi)
+│   ├── requirements/    # Stores generated requirements
+│   └── testcases/       # Stores generated test cases (or sample test cases)
+├── prompt_templates/    # Quick-use prompt templates (copy → paste → send)
 ├── scripts/
-│   ├── convert_excel/   # Chuyển đổi Markdown Test Cases sang Excel
-│   └── integrations/    # Tích hợp công cụ bên ngoài
+│   ├── convert_excel/   # Convert Markdown Test Cases to Excel
+│   └── integrations/    # External tool integrations
 │       ├── jira/        # Jira & Xray integration (self-contained)
-│       └── google_sheet/# Đọc/ghi dữ liệu với Google Sheets
-├── GEMINI.md            # Rule chung cho AI Agent
-├── RULE_GLOBAL.md       # Quy tắc toàn cục cho toàn bộ tác vụ
-└── TIPS_QUOTA.md        # Cẩm nang tối ưu quota token
+│       └── google_sheet/# Read/write data with Google Sheets
+├── GEMINI.md            # General AI Agent rules
+├── RULE_GLOBAL.md       # Global rules for all tasks
+└── TIPS_QUOTA.md        # Token quota optimization guide
 ```
 
-### `.agent/` — Bộ não của AI Agent
+### `.agent/` — The Brain of the AI Agent
 
-| Thư mục | Vai trò |
-|---------|--------|
-| `rules/` | Quy tắc bắt buộc: POM, locator strategy, smart waits, Playwright/Selenium/Appium rules |
-| `skills/` | 10 kỹ năng chuyên biệt: automation engineer, manual testing, UI debug, locator healer, test data generator, framework architect, jira integration... |
+| Directory | Role |
+|-----------|------|
+| `rules/` | Mandatory rules: POM, locator strategy, smart waits, Playwright/Selenium/Appium rules |
+| `skills/` | 10 specialized skills: automation engineer, manual testing, UI debug, locator healer, test data generator, framework architect, jira integration... |
 | `workflows/` | 15 slash commands: `/generate_automation_from_testcases`, `/generate_manual_testcases_rbt`, `/generate_cross_module_test_plan`, `/generate_combinatorial_test_data`... |
+
 ---
 
-### `scripts/` — Công Cụ Bổ Trợ & Tích Hợp
+### `scripts/` — Utility Tools & Integrations
 
-Chứa các công cụ tiện ích và kịch bản kết nối hệ thống. Mỗi công cụ/integration là một **thư mục độc lập** (tự quản dependencies, config, README riêng).
+Contains utility tools and system connection scripts. Each tool/integration is an **independent directory** (with its own dependencies, config, and README).
 
-| Công cụ / Tích hợp | Chức năng | Docs |
-|--------------------|-----------|------|
-| `convert_excel/` | Chuyển đổi file Markdown Test Cases sang Excel có layout tối ưu | [README](scripts/convert_excel/README.md) |
-| `integrations/jira/` | Lấy Requirements từ Jira, xác thực Xray, đẩy kết quả test lên Xray | [README](scripts/integrations/jira/README.md) |
-| `integrations/google_sheet/` | Đồng bộ, đọc/ghi dữ liệu test từ Google Sheets qua API | [README](scripts/integrations/google_sheet/README.md) |
+| Tool / Integration | Function | Docs |
+|--------------------|----------|------|
+| `convert_excel/` | Convert Markdown Test Cases to Excel with optimized layout | [README](scripts/convert_excel/README.md) |
+| `integrations/jira/` | Fetch Requirements from Jira, authenticate Xray, push test results to Xray | [README](scripts/integrations/jira/README.md) |
+| `integrations/google_sheet/` | Sync, read/write test data from Google Sheets via API | [README](scripts/integrations/google_sheet/README.md) |
 
 ```bash
-# Cài đặt nhanh (ví dụ Jira)
+# Quick setup (e.g., Jira)
 cd scripts/integrations/jira
 npm install
-cp .env.example .env    # Điền credentials
+cp .env.example .env    # Fill in credentials
 ```
 
 ---
 
-### `plans/` — Quy Trình 6 Bước Chuyên Sâu
+### `plans/` — 6-Step In-Depth Processes
 
-Dành cho các tác vụ phức tạp, cần thực hiện **tuần tự trong cùng 1 conversation**.
+For complex tasks that need to be executed **sequentially within the same conversation**.
 
-| Plan | Mô tả | Bắt đầu nhanh |
-|------|-------|---------------|
-| `plans/manual/` | Sinh Manual Test Cases theo quy trình **AI-RBT 6 bước** (Risk-Based Testing) | Xem `plans/manual/QUICK_START.md` |
-| `plans/automation/` | Sinh Automation Scripts theo **6 bước** từ context → review | Xem `plans/automation/QUICK_START.md` |
-| `plans/cross-module/` | Phân tích tính năng **đa module** & sinh **ma trận kết hợp** (Pairwise/Cartesian) | Xem `plans/cross-module/QUICK_START.md` |
+| Plan | Description | Quick Start |
+|------|-------------|-------------|
+| `plans/manual/` | Generate Manual Test Cases using the **AI-RBT 6-step process** (Risk-Based Testing) | See `plans/manual/QUICK_START.md` |
+| `plans/automation/` | Generate Automation Scripts in **6 steps** from context → review | See `plans/automation/QUICK_START.md` |
+| `plans/cross-module/` | Analyze **multi-module** features & generate **combination matrices** (Pairwise/Cartesian) | See `plans/cross-module/QUICK_START.md` |
 
-**Cách dùng:** Mở `QUICK_START.md` → Làm theo từng bước → Gửi prompt mỗi bước vào Antigravity.
+**How to use:** Open `QUICK_START.md` → Follow each step → Send each step's prompt to Antigravity.
 
-### `prompt_templates/` — Prompt Mẫu Dùng Nhanh
+### `prompt_templates/` — Quick-Use Prompt Templates
 
-Dành cho tác vụ **đơn lẻ**, chỉ cần copy → thay `[...]` bằng dữ liệu thực → paste → gửi.
+For **single** tasks, just copy → replace `[...]` with actual data → paste → send.
 
-| # | Prompt | Mục đích |
-|---|--------|----------|
-| 01 | `prompt_01_generate_requirements.txt` | Phân tích website sinh Requirements |
-| 02 | `prompt_02_create_test_cases.txt` | Sinh test cases từ requirements |
-| 03 | `prompt_03_create_framework_playwright.txt` | Dựng framework Playwright TS |
-| 03 | `prompt_03_create_framework_selenium.txt` | Dựng framework Selenium Java |
-| 04 | `prompt_04_create_script_playwright.txt` | Viết test script Playwright TS |
-| 04 | `prompt_04_create_script_selenium.txt` | Viết test script Selenium Java |
-| 05 | `prompt_05_convert_manual_to_automation.txt` | Chuyển manual TC sang automation |
-| 06 | `prompt_06_review_automation_code.txt` | Review code automation |
-| 07 | `prompt_07_generate_test_data.txt` | Sinh test data có cấu trúc |
-| 08 | `prompt_08_analyze_flaky_tests.txt` | Phân tích test không ổn định |
-| 09 | `prompt_09_create_api_tests.txt` | Viết test API từ Swagger |
+| # | Prompt | Purpose |
+|---|--------|---------|
+| 01 | `prompt_01_generate_requirements.txt` | Analyze website to generate Requirements |
+| 02 | `prompt_02_create_test_cases.txt` | Generate test cases from requirements |
+| 03 | `prompt_03_create_framework_playwright.txt` | Set up Playwright TS framework |
+| 03 | `prompt_03_create_framework_selenium.txt` | Set up Selenium Java framework |
+| 04 | `prompt_04_create_script_playwright.txt` | Write Playwright TS test scripts |
+| 04 | `prompt_04_create_script_selenium.txt` | Write Selenium Java test scripts |
+| 05 | `prompt_05_convert_manual_to_automation.txt` | Convert manual TCs to automation |
+| 06 | `prompt_06_review_automation_code.txt` | Review automation code |
+| 07 | `prompt_07_generate_test_data.txt` | Generate structured test data |
+| 08 | `prompt_08_analyze_flaky_tests.txt` | Analyze unstable tests |
+| 09 | `prompt_09_create_api_tests.txt` | Write API tests from Swagger |
 
-> 💡 Thư mục `prompt_templates/prompt_workflow_template/` chứa phiên bản prompt ngắn gọn hơn, tối ưu cho workflow.
-
----
-
-## ✳️ Hướng Dẫn Sử Dụng Trong Antigravity
-
-1. **Clone Repo này về máy:**
-   Hoặc bạn có thể copy trực tiếp thư mục `.agent` từ repo này.
-   
-2. **Tích hợp vào dự án của bạn:**
-   Copy thư mục `.agent` vào thư mục gốc (root directory) của dự án Automation hoặc Manual Test mà bạn đang làm việc.
-
-3. **Bắt đầu trò chuyện với AI trên Antigravity:**
-   Khi mở dự án lên Antigravity, AI tự động nhận diện thư mục `.agent` và sẽ áp dụng ngay các Rule, Skill, Workflow của **Anh Tester** đã thiết lập sẵn.
-
-4. **(Tùy chọn) Sử dụng Plan hoặc Prompt Template:**
-   - Tác vụ phức tạp (1 module) → Mở `plans/manual/QUICK_START.md` hoặc `plans/automation/QUICK_START.md`
-   - Tác vụ đa module (ma trận kết hợp) → Mở `plans/cross-module/QUICK_START.md`
-   - Tác vụ nhanh → Copy prompt từ `prompt_templates/` → paste vào chat
+> 💡 The `prompt_templates/prompt_workflow_template/` directory contains shorter, workflow-optimized prompt versions.
 
 ---
 
-## 🤝 Hỗ Trợ & Đóng Góp
+## ✳️ How to Use in Antigravity
 
-- Nếu bạn gặp khó khăn trong quá trình sử dụng hoặc muốn đóng góp để bộ công cụ này hoàn thiện hơn, đừng ngần ngại tạo **Issue** hoặc **Pull Request**.
-- Tham gia cộng đồng **Anh Tester** để cùng trao đổi, học hỏi thêm nhiều kiến thức bổ ích về Automation Testing!
-  - 📘 **Fanpage Facebook:** [Anh Tester](https://www.facebook.com/anhtester)
-  - 👥 **Group Facebook Automation:** [Cộng đồng Automation Testing](https://www.facebook.com/groups/automationtest)
-  - 👥 **Group Facebook Manual:** [Cộng đồng Manual Testing](https://www.facebook.com/groups/manualtest)
-  - ✈️ **Telegram Automation:** [Cộng đồng Automation Testing](https://t.me/+kSUGJ3pVvxkyZWU1)
-  - ✈️ **Telegram Manual:** [Cộng đồng Manual Testing](https://t.me/+8eChRz7OVqliZWRl)
+1. **Clone this repo to your machine:**
+   Or you can directly copy the `.agent` directory from this repo.
+
+2. **Integrate into your project:**
+   Copy the `.agent` directory into the root directory of your Automation or Manual Test project.
+
+3. **Start chatting with AI on Antigravity:**
+   When you open the project in Antigravity, the AI will automatically detect the `.agent` directory and immediately apply all the Rules, Skills, and Workflows set up by **Anh Tester**.
+
+4. **(Optional) Use Plans or Prompt Templates:**
+   - Complex tasks (1 module) → Open `plans/manual/QUICK_START.md` or `plans/automation/QUICK_START.md`
+   - Multi-module tasks (combination matrix) → Open `plans/cross-module/QUICK_START.md`
+   - Quick tasks → Copy a prompt from `prompt_templates/` → paste into chat
+
+---
+
+## 🤝 Support & Contribution
+
+- If you encounter difficulties while using this kit or want to contribute to make it better, feel free to create an **Issue** or **Pull Request**.
+- Join the **Anh Tester** community to exchange ideas and learn more about Automation Testing!
+  - 📘 **Facebook Fanpage:** [Anh Tester](https://www.facebook.com/anhtester)
+  - 👥 **Facebook Automation Group:** [Automation Testing Community](https://www.facebook.com/groups/automationtest)
+  - 👥 **Facebook Manual Group:** [Manual Testing Community](https://www.facebook.com/groups/manualtest)
+  - ✈️ **Telegram Automation:** [Automation Testing Community](https://t.me/+kSUGJ3pVvxkyZWU1)
+  - ✈️ **Telegram Manual:** [Manual Testing Community](https://t.me/+8eChRz7OVqliZWRl)
 
 ---
 
 ## 📄 License
 
-Dự án này được phân phối dưới giấy phép nguồn mở **[MIT License](LICENSE)**.
+This project is distributed under the open-source **[MIT License](LICENSE)**.
 
 ---
 Anh Tester Automation Testing 🎯

@@ -1,19 +1,19 @@
 # Master Framework for E2E Automation (Generalized)
 
-**Workflow:** `/generate_automation_from_testcases` hoặc `/generate_automation_from_ui_flow`
+**Workflow:** `/generate_automation_from_testcases` or `/generate_automation_from_ui_flow`
 **Skill:** `qa_automation_engineer` + `framework_architect`
 
 ---
 
-## Mục tiêu
+## Objective
 
-Xây dựng hệ thống Automation có khả năng mở rộng, dễ bảo trì và báo cáo chuyên nghiệp. Thay vì "viết test đơn lẻ", chúng ta xây dựng **Framework gốc** vững chãi từ đầu.
+Build an Automation system that is scalable, maintainable, and provides professional reporting. Instead of "writing isolated tests", we build a **solid core Framework** from the beginning.
 
-## Cách sử dụng
+## Usage
 
-Cung cấp kiến trúc phù hợp cho AI **ở Bước 0/1** để AI biết nơi chứa file mã nguồn.
-- **Project mới:** AI sử dụng template bên dưới để scaffold.
-- **Project có sẵn:** Mô tả cấu trúc hiện tại, AI sẽ tuân theo.
+Provide appropriate architecture for AI **in Step 0/1** so AI knows where to place source code files.
+- **New project:** AI uses the template below to scaffold.
+- **Existing project:** Describe current structure, AI will follow accordingly.
 
 ---
 
@@ -21,7 +21,7 @@ Cung cấp kiến trúc phù hợp cho AI **ở Bước 0/1** để AI biết n�
 
 ### 🌐 Web Automation
 
-| Stack | Ngôn ngữ | Runner | Report | Build Tool |
+| Stack | Language | Runner | Report | Build Tool |
 |---|---|---|---|---|
 | **Playwright + TypeScript** | TypeScript | Playwright Test | HTML Report, Allure | npm |
 | **Playwright + Python** | Python | Pytest | Allure, pytest-html | pip |
@@ -30,14 +30,14 @@ Cung cấp kiến trúc phù hợp cho AI **ở Bước 0/1** để AI biết n�
 
 ### 📱 Mobile Automation
 
-| Stack | Ngôn ngữ | Runner | Report | Build Tool |
+| Stack | Language | Runner | Report | Build Tool |
 |---|---|---|---|---|
 | **Appium + Java** | Java | TestNG | Allure, ExtentReports | Maven / Gradle |
 | **Appium + Python** | Python | Pytest | Allure, pytest-html | pip |
 
 ### 🔌 API Automation
 
-| Stack | Ngôn ngữ | Runner | Report |
+| Stack | Language | Runner | Report |
 |---|---|---|---|
 | **REST Assured** | Java | TestNG | Allure |
 | **Playwright API** | TypeScript | Playwright Test | HTML Report |
@@ -45,7 +45,7 @@ Cung cấp kiến trúc phù hợp cho AI **ở Bước 0/1** để AI biết n�
 
 ---
 
-## Kiến Trúc Chuẩn
+## Standard Architecture
 
 ### 1. Playwright + TypeScript
 
@@ -53,7 +53,7 @@ Cung cấp kiến trúc phù hợp cho AI **ở Bước 0/1** để AI biết n�
 project-root/
 ├── playwright.config.ts          # Playwright configuration
 ├── package.json                  # Dependencies + npm scripts
-├── .env.example                  # Environment template (KHÔNG chứa credentials thật)
+├── .env.example                  # Environment template (DO NOT contain real credentials)
 ├── .gitignore
 ├── README.md
 ├── src/
@@ -193,7 +193,7 @@ project-root/
 ├── src/
 │   ├── main/java/
 │   │   └── com/project/
-│   │       ├── screens/          # Screen Objects (tương đương Page Objects)
+│   │       ├── screens/          # Screen Objects (equivalent to Page Objects)
 │   │       │   ├── BaseScreen.java       # Base screen — common mobile methods
 │   │       │   ├── LoginScreen.java
 │   │       │   └── HomeScreen.java
@@ -301,50 +301,50 @@ project-root/
 
 ---
 
-## Component Checklist (Bắt Buộc)
+## Component Checklist (Mandatory)
 
-Mỗi framework PHẢI bao gồm các thành phần sau:
+Each framework MUST include the following components:
 
-| # | Component | Bắt buộc | Mô tả |
-|---|-----------|----------|--------|
-| 1 | **Project Structure** | ✅ | Thư mục rõ ràng, phân tách pages/tests/utils/config |
-| 2 | **Config Management** | ✅ | Environment qua `.env` + config file — KHÔNG hardcode |
-| 3 | **Browser / Driver Management** | ✅ | Factory pattern cho browser/driver setup |
-| 4 | **Base Classes** | ✅ | BasePage/BaseScreen chứa common methods |
-| 5 | **Page Object Model** | ✅ | Mỗi page → 1 class, locators khai báo ở đầu class |
+| # | Component | Mandatory | Description |
+|---|-----------|-----------|-------------|
+| 1 | **Project Structure** | ✅ | Clear directories, separation of pages/tests/utils/config |
+| 2 | **Config Management** | ✅ | Environment via `.env` + config file — NO hardcoding |
+| 3 | **Browser / Driver Management** | ✅ | Factory pattern for browser/driver setup |
+| 4 | **Base Classes** | ✅ | BasePage/BaseScreen containing common methods |
+| 5 | **Page Object Model** | ✅ | Each page → 1 class, locators declared at class top |
 | 6 | **Test Data Management** | ✅ | Data factory + external data (JSON/YAML) + unique/traceable |
 | 7 | **Utilities** | ✅ | Wait helpers, screenshot utils, logger, string generators |
-| 8 | **Reporting** | ✅ | Ít nhất 1 report tool + screenshot on failure |
-| 9 | **CI/CD Pipeline** | 🟡 Khuyến khích | GitHub Actions / GitLab CI / Jenkins template |
+| 8 | **Reporting** | ✅ | At least 1 report tool + screenshot on failure |
+| 9 | **CI/CD Pipeline** | 🟡 Recommended | GitHub Actions / GitLab CI / Jenkins template |
 
 ---
 
 ## Design Principles
 
-1. **DRY** — Mỗi logic chỉ viết 1 lần, tái sử dụng qua Base classes và Utils
-2. **Single Responsibility** — Page chỉ chứa UI interaction, Test chỉ chứa test logic
-3. **Open/Closed** — Dễ mở rộng (thêm page, thêm test) mà không sửa core
-4. **Configuration over Code** — Env, browser, timeout quản lý qua config, không hardcode
+1. **DRY** — Each logic written only once, reused via Base classes and Utils
+2. **Single Responsibility** — Page only contains UI interaction, Test only contains test logic
+3. **Open/Closed** — Easy to extend (add page, add test) without modifying core
+4. **Configuration over Code** — Env, browser, timeout managed via config, not hardcoded
 5. **Fail Fast, Log Rich** — Screenshot on failure, structured logging, clear assertion messages
 
 ---
 
-## Anti-Patterns (CẤM)
+## Anti-Patterns (FORBIDDEN)
 
-| ❌ Anti-Pattern | ✅ Đúng cách |
+| ❌ Anti-Pattern | ✅ Correct Way |
 |---|---|
-| Hardcode URL/credentials trong code | Đọc từ `.env` hoặc config file |
-| Locator inline trong test | Khai báo trong Page class |
+| Hardcode URL/credentials in code | Read from `.env` or config file |
+| Locator inline in test | Declare in Page class |
 | `Thread.sleep()` / `waitForTimeout()` | Smart waits (`expect()`, `WebDriverWait`) |
 | Global mutable state | Isolated fixtures/setup per test |
-| Monolithic test file (1 file 500+ dòng) | Tách theo module/feature |
+| Monolithic test file (1 file 500+ lines) | Split by module/feature |
 | `System.out.println()` / `console.log()` | Logger framework (Log4j, winston, logging) |
-| Đoán locator không inspect DOM | Mở browser inspect DOM thực tế |
+| Guess locator without inspecting DOM | Open browser inspect real DOM |
 
 ---
 
-## Tham chiếu
+## References
 
-- **Skill chi tiết:** `.agent/skills/framework_architect/SKILL.md`
+- **Detailed Skill:** `.agent/skills/framework_architect/SKILL.md`
 - **Rules:** `.agent/rules/automation_rules.md`, `.agent/rules/locator_strategy.md`
 - **Workflow scaffold:** `/generate_automation_framework`

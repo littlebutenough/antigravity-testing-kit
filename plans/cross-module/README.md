@@ -1,116 +1,116 @@
 # AI-DRIVEN CROSS-MODULE TESTING FRAMEWORK
 
-**Mục tiêu:**
-Phân tích và kiểm thử các tính năng phức tạp đi qua **nhiều modules nối tiếp nhau**, trong đó output phụ thuộc vào **bộ kết hợp điều kiện đa chiều** (Combinatorial Testing).
+**Objective:**
+Analyze and test complex features that span **multiple sequential modules**, where the output depends on **multi-dimensional combination conditions** (Combinatorial Testing).
 
-## 📌 Bài Toán Giải Quyết
+## 📌 Problem Statement
 
-Khi một tính năng **KHÔNG nằm gọn trong 1 module** mà phải đi qua chuỗi modules, với mỗi module có nhiều lựa chọn — và bộ kết hợp các lựa chọn quyết định output cuối cùng (template, công thức, business rules khác nhau).
+When a feature is **NOT contained within a single module** but must pass through a chain of modules, with each module having multiple choices — and the combination of those choices determines the final output (different templates, formulas, business rules).
 
-**Ví dụ thực tế:**
+**Real-world examples:**
 
-| Tính năng | Các chiều kết hợp (dimensions) |
+| Feature | Combination Dimensions |
 |-----------|------|
-| Biên bản thanh toán đối tác | Loại đối tác × Loại thanh toán × Thuế × Công nợ × Nguồn tài sản |
-| Hợp đồng bảo hiểm | Loại BH × Đối tượng × Gói × Kỳ hạn × Phương thức TT |
-| Đơn hàng xuất khẩu | Thị trường × Loại hàng × Vận chuyển × Thanh toán × Chứng từ |
-| Quy trình phê duyệt | Loại yêu cầu × Phòng ban × Cấp × Số tiền → Flow phê duyệt khác nhau |
+| Partner Payment Statement | Partner Type × Payment Type × Tax × Debt × Asset Source |
+| Insurance Contract | Insurance Type × Subject × Package × Term × Payment Method |
+| Export Order | Market × Product Type × Shipping × Payment × Documents |
+| Approval Process | Request Type × Department × Level × Amount → Different approval flow |
 
-**Nếu mỗi chiều có 3-5 giá trị →** Tổ hợp Full Cartesian dễ dàng lên **hàng trăm bộ kết hợp**.
+**If each dimension has 3-5 values →** Full Cartesian combination can easily reach **hundreds of test combinations**.
 
 ---
 
-## 🚀 Quy Trình 2 Giai Đoạn
+## 🚀 2-Phase Process
 
-### Giai đoạn 1: Phân Tích & Sinh Ma Trận (`/generate_cross_module_test_plan`)
+### Phase 1: Analysis & Matrix Generation (`/generate_cross_module_test_plan`)
 
-| Bước | Tên | Mô tả | Chờ User? |
-|------|-----|-------|-----------|
-| **1** | Multi-Module Recon | AI mở browser khám phá từng module, thu thập fields + values | ❌ |
-| **2** | Data Flow Mapping | Xác định module A output gì → input module B | ✅ **Checkpoint** |
-| **3** | Dimension Extraction | Liệt kê tất cả "chiều" kết hợp + values + constraints | ❌ |
-| **4** | Combinatorial Matrix | Sinh ma trận kết hợp (Pairwise / Business-critical / Full) | ❌ |
-| **5** | Expected Output Mapping | Map expected template + công thức cho mỗi bộ | ✅ **Checkpoint** |
+| Step | Name | Description | Awaiting User? |
+|------|-----|-----------|-----------|
+| **1** | Multi-Module Recon | AI opens browser to explore each module, collects fields + values | ❌ |
+| **2** | Data Flow Mapping | Determine what module A outputs → module B inputs | ✅ **Checkpoint** |
+| **3** | Dimension Extraction | List all combination "dimensions" + values + constraints | ❌ |
+| **4** | Combinatorial Matrix | Generate combination matrix (Pairwise / Business-critical / Full) | ❌ |
+| **5** | Expected Output Mapping | Map expected template + formula for each combination | ✅ **Checkpoint** |
 
-**Output chính:** Bảng ma trận kết hợp — sẵn sàng import Excel/Jira.
+**Main output:** Combination matrix table — ready for import into Excel/Jira.
 
-### Giai đoạn 2: Sinh Test Data (`/generate_combinatorial_test_data`)
+### Phase 2: Test Data Generation (`/generate_combinatorial_test_data`)
 
-| Mode | Khi nào dùng | Output |
+| Mode | When to use | Output |
 |------|-------------|--------|
-| **GENERATE** | Sinh data offline (JSON/CSV/Code) | File test data có cấu trúc |
-| **PIPELINE** | Chạy thật qua browser tạo data trên hệ thống | Data thật + IDs + screenshots |
+| **GENERATE** | Generate data offline (JSON/CSV/Code) | Structured test data file |
+| **PIPELINE** | Run through the actual browser to create data on the system | Real data + IDs + screenshots |
 
 ---
 
-## 3 Chiến Lược Ma Trận
+## 3 Matrix Strategies
 
-| Chiến lược | Mô tả | Khi nào dùng | Ví dụ |
+| Strategy | Description | When to use | Example |
 |-----------|-------|-------------|-------|
-| **Pairwise** (Mặc định) | Cover 100% cặp giữa 2 dimensions bất kỳ | Tổ hợp lớn (>50) | 216 bộ → ~20 bộ |
-| **Business-Critical** | Chỉ chọn bộ quan trọng nhất theo risk | Cần focus, thời gian hạn chế | 216 bộ → ~10 bộ |
-| **Full Cartesian** | Test TẤT CẢ tổ hợp hợp lệ | Hệ thống critical (tài chính, y tế) | 216 bộ → 216 bộ |
+| **Pairwise** (Default) | Cover 100% of pairs between any 2 dimensions | Large combinations (>50) | 216 combos → ~20 combos |
+| **Business-Critical** | Select only the most important combinations based on risk | Need focus, limited time | 216 combos → ~10 combos |
+| **Full Cartesian** | Test ALL valid combinations | Critical systems (finance, healthcare) | 216 combos → 216 combos |
 
-> 💡 **Pairwise Testing** giảm 80-90% số bộ kết hợp mà vẫn phát hiện phần lớn lỗi.
+> 💡 **Pairwise Testing** reduces 80-90% of test combinations while still catching the majority of bugs.
 
 ---
 
-## 🔗 Luồng End-to-End Hoàn Chỉnh
+## 🔗 Complete End-to-End Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    CROSS-MODULE TESTING FLOW                     │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  📋 Bước 0: Phân tích Requirements từng Module                  │
-│      Workflow: /generate_requirements_from_website (chạy N lần) │
+│  📋 Step 0: Analyze Requirements for Each Module                │
+│      Workflow: /generate_requirements_from_website (run N times)│
 │                          ↓                                       │
-│  📊 Bước 1: Phân Tích Cross-Module & Sinh Ma Trận              │
-│      Workflow: /generate_cross_module_test_plan    ← MỚI        │
-│      Output: Data Flow Map + Ma trận kết hợp                    │
+│  📊 Step 1: Cross-Module Analysis & Matrix Generation           │
+│      Workflow: /generate_cross_module_test_plan    ← NEW        │
+│      Output: Data Flow Map + Combination Matrix                 │
 │                          ↓                                       │
-│  🗃️ Bước 2: Sinh Test Data Cho Ma Trận                         │
-│      Workflow: /generate_combinatorial_test_data   ← MỚI        │
-│      Output: Bộ test data (offline hoặc trên hệ thống)         │
+│  🗃️ Step 2: Generate Test Data for Matrix                      │
+│      Workflow: /generate_combinatorial_test_data   ← NEW        │
+│      Output: Test data set (offline or on the system)          │
 │                          ↓                                       │
-│  📝 Bước 3: Sinh Test Cases Chi Tiết                            │
+│  📝 Step 3: Generate Detailed Test Cases                        │
 │      Workflow: /generate_manual_testcases_rbt (FULL RBT)        │
-│      Input: Ma trận + Requirements                              │
-│      Output: Test cases đầy đủ                                  │
+│      Input: Matrix + Requirements                               │
+│      Output: Complete test cases                                │
 │                          ↓                                       │
-│  🤖 Bước 4: Sinh Automation Scripts                             │
+│  🤖 Step 4: Generate Automation Scripts                         │
 │      Workflow: /generate_automation_from_testcases              │
-│      Output: Scripts PASS stable                                │
+│      Output: Stable PASS scripts                                │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📁 Cấu trúc thư mục
+## 📁 Directory Structure
 
 ```
 plans/cross-module/
-├── README.md              ← Giới thiệu + Tổng quan (bạn đang đọc file này)
-└── QUICK_START.md         ← Hướng dẫn sử dụng nhanh (prompt mẫu + luồng chạy)
+├── README.md              ← Introduction + Overview (you are reading this file)
+└── QUICK_START.md         ← Quick start guide (sample prompts + execution flow)
 ```
 
-**Workflows tham chiếu:**
+**Referenced Workflows:**
 
 ```
 .agent/workflows/
-├── generate_cross_module_test_plan.md       ← Workflow mới: Phân tích + Ma trận
-└── generate_combinatorial_test_data.md      ← Workflow mới: Sinh test data
+├── generate_cross_module_test_plan.md       ← New workflow: Analysis + Matrix
+└── generate_combinatorial_test_data.md      ← New workflow: Generate test data
 ```
 
-**Skill mở rộng:**
+**Extended Skill:**
 
 ```
-.agent/skills/test_data_generator/SKILL.md   ← Thêm: Multi-Step Pipeline + Combinatorial Data
+.agent/skills/test_data_generator/SKILL.md   ← Added: Multi-Step Pipeline + Combinatorial Data
 ```
 
 ---
 
-## 📋 Hướng dẫn nhanh
+## 📋 Quick Start
 
-Xem file `QUICK_START.md` trong thư mục này để bắt đầu nhanh.
+See `QUICK_START.md` in this directory to get started quickly.

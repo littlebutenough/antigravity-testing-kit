@@ -1,28 +1,28 @@
-# Bước 2: Phân tích & Điều tra UI (Analysis & UI Recon)
+# Step 2: Analysis & UI Investigation (Analysis & UI Recon)
 
-**Workflow:** `/generate_automation_from_testcases` (tiếp tục)
+**Workflow:** `/generate_automation_from_testcases` (continued)
 **Skill:** `qa_automation_engineer` + `ui_debug_agent`
 
 ---
 
-## Mục đích
+## Purpose
 
-Thay vì con người phải thủ công Inspect DOM, bước này giao nhiệm vụ cho AI **tự mở trình duyệt**, điều hướng web và trích xuất locators thật từ DOM. Đây là bước phân biệt chất lượng giữa automation "đoán mò" và automation "inspect thật".
+Instead of humans manually inspecting DOM, this step delegates the task to AI to **automatically open the browser**, navigate the web, and extract real locators from DOM. This is the step that distinguishes quality between "guessing" automation and "real inspection" automation.
 
-## Cách sử dụng
+## Usage
 
-1. Điền URL, tài khoản test và Test Cases vào file `prompt.txt`.
-2. Gửi cho AI — AI sẽ sử dụng Playwright/Selenium MCP để:
-   - Tự khởi động browser
-   - Điều hướng theo test steps
-   - Thu thập locators từ DOM thật
-3. Review bảng locators AI trả về.
-4. Nếu locator nào chưa đúng → yêu cầu AI re-inspect element đó.
-5. Xác nhận → sang Bước 3.
+1. Fill in URL, test account, and Test Cases in the `prompt.txt` file.
+2. Send to AI — AI will use Playwright/Selenium MCP to:
+   - Automatically launch browser
+   - Navigate according to test steps
+   - Collect locators from real DOM
+3. Review the locator table returned by AI.
+4. If any locator is not correct → request AI to re-inspect that element.
+5. Confirm → proceed to Step 3.
 
-## Lưu ý quan trọng
+## Important Notes
 
-- AI sẽ dùng **Accessibility Tree** và **DOM inspection** để tìm locator — không đoán.
-- Nếu cần đăng nhập, cung cấp tài khoản test trong prompt.
-- Viewport mặc định **1920x1080** (desktop) theo quy tắc trong rules.
-- AI ưu tiên locator theo thứ tự trong `.agent/rules/locator_strategy.md`.
+- AI will use **Accessibility Tree** and **DOM inspection** to find locators — no guessing.
+- If login is required, provide test account in the prompt.
+- Default viewport **1920x1080** (desktop) according to rules.
+- AI prioritizes locators according to the order in `.agent/rules/locator_strategy.md`.

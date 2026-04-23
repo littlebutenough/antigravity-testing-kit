@@ -1,28 +1,27 @@
-# Bước 4: Đảm bảo độ bao phủ (Traceability & Gap Analysis)
-
+# Step 4: Ensuring Coverage (Traceability & Gap Analysis)
 
 ---
 
-## Mục đích
+## Purpose
 
-Kiểm tra chéo (Cross-check) và thiết lập **Ma trận truy vết (Traceability Matrix)** để đảm bảo 100% yêu cầu gốc đều được phủ kịch bản kiểm thử (Test Scenarios).
+Cross-check and establish a **Traceability Matrix** to ensure 100% of the original requirements are covered by Test Scenarios.
 
-## Cách sử dụng
+## How to Use
 
-1. Gửi file `prompt.txt` sau khi đã review kết quả phân rã ở Bước 3.
-2. AI sẽ trả về:
-   - **Traceability Matrix:** Bảng map REQ ID ↔ Module ↔ Scenario
-   - **Gap Analysis:** Báo cáo thiếu sót (nếu có)
-   - **High-Level Scenarios:** Danh sách kịch bản cấp cao
-3. **Review kỹ** danh sách scenarios:
-   - Có scenario nào bị thiếu không?
-   - Có scenario nào thừa / trùng lặp không?
-   - Bổ sung thêm nếu cần → Xác nhận → sang Bước 5.
+1. Send the `prompt.txt` file after reviewing the decomposition results from Step 3.
+2. AI will return:
+   - **Traceability Matrix:** A mapping table of REQ ID ↔ Module ↔ Scenario
+   - **Gap Analysis:** A report of any missing coverage (if any)
+   - **High-Level Scenarios:** A list of high-level scenarios
+3. **Review carefully** the scenario list:
+   - Are there any missing scenarios?
+   - Are there any redundant / duplicate scenarios?
+   - Add more if needed → Confirm → proceed to Step 5.
 
 ## ⚠️ Human Checkpoint
 
-**Đây là điểm chốt chặn nhân sự.** Lý do:
+**This is a human checkpoint.** Reasons:
 
-- AI có thể bỏ sót các edge case đặc thù của dự án.
-- Tester (con người) cần tự đánh giá **mức độ rủi ro** cho từng module **trước khi** cho AI sinh test case chi tiết ở Bước 5.
-- Nếu phát hiện thiếu, yêu cầu AI bổ sung: *"Hãy thêm scenarios cho trường hợp [X]"*.
+- AI may miss project-specific edge cases.
+- The Tester (human) must assess the **risk level** for each module **before** letting AI generate detailed test cases in Step 5.
+- If gaps are found, ask AI to add more: *"Please add scenarios for the case [X]"*.

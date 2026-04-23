@@ -1,30 +1,30 @@
-# Bước 1: Khởi tạo ngữ cảnh (Context & Role-play)
+# Step 1: Context Initialization (Context & Role-play)
 
 **Workflow:** `/generate_automation_from_testcases`
 **Skill:** `qa_automation_engineer`
 
 ---
 
-## Mục đích
+## Purpose
 
-Định hình cho AI vai trò **Senior Automation Engineer** và nạp bối cảnh kỹ thuật. Bước này giúp AI biết chính xác:
-- Framework nào (Playwright / Selenium / Appium)
-- Ngôn ngữ nào (TypeScript / Java)
-- Kiến trúc project ra sao
-- Các nguyên tắc code phải tuân thủ
+Define the role of **Senior Automation Engineer** for AI and load technical context. This step helps AI know precisely:
+- Which framework (Playwright / Selenium / Appium)
+- Which language (TypeScript / Java)
+- What the project architecture looks like
+- Which coding principles must be followed
 
-## Cách sử dụng
+## Usage
 
-1. Mở file `prompt.txt`.
-2. Thay thế các phần trong `[...]`:
-   - **Tech Stack:** Chọn framework, ngôn ngữ, build tool
-   - **Mục tiêu:** Hệ thống/tính năng cần tự động hóa
-   - **Bối cảnh:** Kiến trúc web, công nghệ frontend, đặc thù element
-   - **Kiến trúc:** Copy từ `0_project_architecture/README.md` hoặc mô tả project hiện có
-3. Gửi cho AI và chờ xác nhận → sang Bước 2.
+1. Open the `prompt.txt` file.
+2. Replace the parts in `[...]`:
+   - **Tech Stack:** Choose framework, language, build tool
+   - **Objective:** System/feature to be automated
+   - **Context:** Web architecture, frontend technology, element specifics
+   - **Architecture:** Copy from `0_project_architecture/README.md` or describe existing project
+3. Send to AI and wait for confirmation → proceed to Step 2.
 
-## Lưu ý
+## Notes
 
-- Chọn đúng framework từ đầu — AI sẽ sinh code theo cú pháp framework đó xuyên suốt.
-- Nếu project đã tồn tại, mô tả cấu trúc hiện có để AI sinh code vào đúng thư mục.
-- Bước này chỉ cần chạy **1 lần** đầu conversation.
+- Choose the correct framework from the start — AI will generate code using that framework's syntax throughout.
+- If the project already exists, describe the current structure so AI generates code into the correct directories.
+- This step only needs to run **once** at the beginning of the conversation.

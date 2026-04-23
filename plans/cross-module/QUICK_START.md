@@ -1,177 +1,177 @@
-# 📋 Hướng Dẫn Nhanh: Cross-Module Testing & Ma Trận Kết Hợp
+# 📋 Quick Start Guide: Cross-Module Testing & Combination Matrix
 
-## 🔀 Chọn Luồng Sử Dụng
+## 🔀 Choose Your Workflow
 
-### Luồng 1: Antigravity (Slash Command) — Tự động (Đề xuất ⭐)
+### Workflow 1: Antigravity (Slash Command) — Automated (Recommended ⭐)
 
-> Dùng khi bạn đang sử dụng **Antigravity** (Google Gemini plugin).
+> Use when you're using **Antigravity** (Google Gemini plugin).
 
 ```
 /generate_cross_module_test_plan
 
-Tính năng: [Tên tính năng, VD: "Biên bản thanh toán cho đối tác"]
+Feature: [Feature name, e.g., "Payment reconciliation statement for partners"]
 URL: [https://your-app.com]
-Tài khoản: [admin@test.com / Test@123]
+Account: [admin@test.com / Test@123]
 
-Các modules liên quan:
-1. [Module 1: Quản lý đối tác — chọn loại đối tác]
-2. [Module 2: Tạo thanh toán — chọn VND/USD]
-3. [Module 3: Cấu hình thuế — chọn loại thuế]
-4. [Module 4: Quản lý công nợ — chọn loại công nợ]
-5. [Module cuối: Sinh biên bản — output]
+Related modules:
+1. [Module 1: Partner Management — select partner type]
+2. [Module 2: Create Payment — select VND/USD]
+3. [Module 3: Tax Configuration — select tax type]
+4. [Module 4: Debt Management — select debt type]
+5. [Final Module: Generate Statement — output]
 
-Chiến lược ma trận: pairwise (hoặc: business-critical / full-cartesian)
+Matrix strategy: pairwise (or: business-critical / full-cartesian)
 ```
 
-→ AI tự mở browser → khám phá từng module → vẽ Data Flow → sinh ma trận kết hợp.
+→ AI opens browser → explores each module → draws Data Flow → generates combination matrix.
 
 ---
 
-### Luồng 2: Copy-Paste vào ChatGPT / Claude — Thủ công
+### Workflow 2: Copy-Paste into ChatGPT / Claude — Manual
 
-> Dùng khi bạn muốn dùng AI khác (không phải Antigravity).
+> Use when you want to use a different AI (not Antigravity).
 
-**Prompt mẫu — Copy paste vào chat AI:**
+**Sample prompt — Copy and paste into AI chat:**
 
 ```
-Bạn là Senior QA Engineer chuyên Combinatorial Testing.
+You are a Senior QA Engineer specializing in Combinatorial Testing.
 
-Tôi có tính năng "[TÊN TÍNH NĂNG]" đi qua nhiều modules nối tiếp nhau.
-Mỗi module có nhiều lựa chọn, và bộ kết hợp các lựa chọn quyết định output cuối.
+I have a feature "[FEATURE NAME]" that goes through multiple sequential modules.
+Each module has multiple options, and the combination of these options determines the final output.
 
-Các modules và dimensions:
-- Module 1 [TÊN]: dimension [TÊN CHIỀU] = [giá trị 1, giá trị 2, ...]
-- Module 2 [TÊN]: dimension [TÊN CHIỀU] = [giá trị 1, giá trị 2, ...]
-- Module 3 [TÊN]: dimension [TÊN CHIỀU] = [giá trị 1, giá trị 2, ...]
+Modules and dimensions:
+- Module 1 [NAME]: dimension [DIMENSION NAME] = [value 1, value 2, ...]
+- Module 2 [NAME]: dimension [DIMENSION NAME] = [value 1, value 2, ...]
+- Module 3 [NAME]: dimension [DIMENSION NAME] = [value 1, value 2, ...]
 - ...
 
-Hãy thực hiện:
-1. Vẽ Data Flow Diagram giữa các modules (module nào output gì → input module nào)
-2. Liệt kê tất cả constraints (bộ kết hợp không hợp lệ)
-3. Sinh bảng ma trận kết hợp theo chiến lược Pairwise Testing
-4. Với mỗi bộ kết hợp, ghi rõ Expected Output (template, công thức nếu có)
+Please perform the following:
+1. Draw a Data Flow Diagram between modules (which module outputs what → inputs to which module)
+2. List all constraints (invalid combinations)
+3. Generate a combination matrix using Pairwise Testing strategy
+4. For each combination, specify the Expected Output (template, formula if applicable)
 
-Output dạng bảng Markdown, sẵn sàng copy sang Excel.
+Output as a Markdown table, ready to copy to Excel.
 ```
 
 ---
 
-## 🎯 Luồng End-to-End — Từng bước
+## 🎯 End-to-End Workflow — Step by Step
 
-### Bước 1: Phân tích Cross-Module & Sinh Ma Trận
+### Step 1: Cross-Module Analysis & Matrix Generation
 
 ```
 /generate_cross_module_test_plan
 
-Tính năng: Biên bản thanh toán cho đối tác
+Feature: Payment reconciliation statement for partners
 URL: https://example.com/partners
 ```
 
-**Kết quả:** AI sinh ra:
-- 📊 Data Flow Diagram (module nào → module nào)
-- 📋 Bảng Dimensions (tất cả chiều + values)
-- 📈 **Ma trận kết hợp** (Pairwise ~20 bộ thay vì 216 bộ Full)
+**Result:** AI generates:
+- 📊 Data Flow Diagram (module → module)
+- 📋 Dimensions Table (all dimensions + values)
+- 📈 **Combination Matrix** (Pairwise ~20 sets instead of 216 Full sets)
 
-**⏸️ User review:** Kiểm tra ma trận → bổ sung/sửa → xác nhận OK.
+**⏸️ User review:** Review matrix → add/edit → confirm OK.
 
 ---
 
-### Bước 2: Sinh Test Data cho Ma Trận
+### Step 2: Generate Test Data for the Matrix
 
 ```
 /generate_combinatorial_test_data
 
-Ma trận: [paste bảng ma trận từ Bước 1]
-Mode: GENERATE (hoặc PIPELINE nếu muốn tạo data thật trên hệ thống)
-Format: json (hoặc: csv, markdown, typescript)
+Matrix: [paste matrix table from Step 1]
+Mode: GENERATE (or PIPELINE if you want to create real data on the system)
+Format: json (or: csv, markdown, typescript)
 ```
 
-**Kết quả:**
-- Mode GENERATE: File JSON/CSV chứa N bộ data, mỗi bộ = 1 combo
-- Mode PIPELINE: AI chạy browser thật → tạo data trên hệ thống → report pass/fail
+**Result:**
+- GENERATE Mode: JSON/CSV file containing N data sets, each set = 1 combo
+- PIPELINE Mode: AI runs a real browser → creates data on the system → pass/fail report
 
 ---
 
-### Bước 3: Sinh Test Cases (Tùy chọn)
+### Step 3: Generate Test Cases (Optional)
 
 ```
 /generate_manual_testcases_rbt
 
-Requirements: [paste requirements + ma trận kết hợp từ Bước 1]
+Requirements: [paste requirements + combination matrix from Step 1]
 ```
 
-→ AI sinh test cases chi tiết cho từng bộ kết hợp quan trọng.
+→ AI generates detailed test cases for each important combination set.
 
 ---
 
-### Bước 4: Sinh Automation Scripts (Tùy chọn)
+### Step 4: Generate Automation Scripts (Optional)
 
 ```
 /generate_automation_from_testcases
 
 URL: https://example.com
-Test cases: [paste test cases từ Bước 3]
+Test cases: [paste test cases from Step 3]
 Framework: Playwright TypeScript
 ```
 
-→ AI sinh scripts + tự chạy + tự fix → PASS stable.
+→ AI generates scripts + runs them + self-fixes → PASS stable.
 
 ---
 
-## 📊 Ví Dụ Thực Tế: Biên Bản Thanh Toán Đối Tác
+## 📊 Real-World Example: Partner Payment Reconciliation Statement
 
-### Input (bạn cung cấp):
+### Input (you provide):
 
 ```
-Tính năng: Biên bản thanh toán cho đối tác
+Feature: Payment reconciliation statement for partners
 Modules:
-1. Quản lý Đối tác: Loại = [Tổ chức, Cá nhân, Hộ KD]
-2. Thanh toán: Loại = [VND, USD]
-3. Thuế: Loại = [PIT, VAT, Nhà thầu, Miễn thuế]
-4. Công nợ: Loại = [Thường, Tạm ứng, Điều chỉnh]
-5. Nguồn tài sản: Loại = [Quỹ A, Quỹ B, Quỹ C]
+1. Partner Management: Type = [Organization, Individual, Business Household]
+2. Payment: Type = [VND, USD]
+3. Tax: Type = [PIT, VAT, Contractor, Tax Exempt]
+4. Debt: Type = [Regular, Advance, Adjustment]
+5. Asset Source: Type = [Fund A, Fund B, Fund C]
 ```
 
-### Output (AI sinh ra):
+### Output (AI generates):
 
 **Data Flow:**
 ```
-Đối tác → Thanh toán → Thuế → Công nợ → Biên bản
-(type)     (currency)   (Phụ thuộc     (Phụ thuộc
-                         type+currency)  tất cả)
+Partner → Payment → Tax → Debt → Statement
+(type)     (currency)   (Depends on    (Depends on
+                         type+currency)  all)
 ```
 
-**Ma trận Pairwise (20 bộ thay vì 3×2×4×3×3 = 216 bộ):**
+**Pairwise Matrix (20 sets instead of 3×2×4×3×3 = 216 sets):**
 
-| # | Đối tác | TT | Thuế | Công nợ | Nguồn | Expected |
-|---|---------|------|------|---------|-------|----------|
-| 1 | Tổ chức | VND | VAT | Thường | Quỹ A | BB_TC_VND_VAT |
-| 2 | Tổ chức | USD | PIT | Tạm ứng | Quỹ B | BB_TC_USD_PIT |
-| 3 | Cá nhân | VND | PIT | Thường | Quỹ A | BB_CN_VND_PIT |
-| 4 | Cá nhân | USD | VAT | Điều chỉnh | Quỹ C | BB_CN_USD_VAT |
-| 5 | Hộ KD | VND | Nhà thầu | Thường | Quỹ B | BB_HKD_VND_NT |
+| # | Partner | Payment | Tax | Debt | Source | Expected |
+|---|---------|---------|-----|------|--------|----------|
+| 1 | Organization | VND | VAT | Regular | Fund A | ST_ORG_VND_VAT |
+| 2 | Organization | USD | PIT | Advance | Fund B | ST_ORG_USD_PIT |
+| 3 | Individual | VND | PIT | Regular | Fund A | ST_IND_VND_PIT |
+| 4 | Individual | USD | VAT | Adjustment | Fund C | ST_IND_USD_VAT |
+| 5 | Business HH | VND | Contractor | Regular | Fund B | ST_BH_VND_CTR |
 | ... | ... | ... | ... | ... | ... | ... |
 
-→ Cover 100% cặp giữa 2 dimensions bất kỳ, chỉ cần ~20 bộ!
+→ Covers 100% of pairs between any 2 dimensions, needing only ~20 sets!
 
 ---
 
-## 💡 Mẹo Tối Ưu
+## 💡 Optimization Tips
 
-1. **Bắt đầu với Pairwise** — đủ tốt cho 90% trường hợp, giảm 80-90% công sức
-2. **Cung cấp business rules** nếu có — AI sẽ map vào cột "Expected Output" chính xác hơn
-3. **Review Data Flow ở Bước 2** — đây là checkpoint quan trọng nhất, sai ở đây → ma trận sẽ sai
-4. **Dùng Mode PIPELINE** khi test data phải tạo thật qua UI (không thể seed database)
-5. **Chạy trong cùng 1 conversation** với Antigravity để AI giữ context xuyên suốt
-6. **Chia batch** nếu ma trận > 30 bộ — tránh timeout và giữ chất lượng
+1. **Start with Pairwise** — good enough for 90% of cases, reduces 80-90% of effort
+2. **Provide business rules** if available — AI will map them to the "Expected Output" column more accurately
+3. **Review Data Flow in Step 2** — this is the most important checkpoint; if wrong here → the matrix will be wrong
+4. **Use PIPELINE Mode** when test data must be created through the real UI (cannot seed the database)
+5. **Run within the same conversation** with Antigravity so AI maintains context throughout
+6. **Split into batches** if the matrix exceeds 30 sets — avoid timeout and maintain quality
 
 ---
 
-## ⚠️ Phân Biệt: Khi Nào KHÔNG Cần Workflow Này?
+## ⚠️ When NOT to Use This Workflow?
 
-| Tình huống | Dùng workflow nào? |
-|------------|-------------------|
-| Test 1 module đơn lẻ, form đơn giản | `/generate_manual_testcases_rbt` hoặc `/generate_testcases_from_requirements` |
-| Nhiều modules nhưng **độc lập** (không ảnh hưởng lẫn nhau) | `/generate_application_test_plan` |
-| Nhiều modules **nối tiếp**, output phụ thuộc **bộ kết hợp** | ✅ `/generate_cross_module_test_plan` ← **Dùng workflow này** |
-| Chỉ cần test data cho 1 form | `/generate_test_data` |
+| Scenario | Which workflow to use? |
+|----------|----------------------|
+| Testing a single module, simple form | `/generate_manual_testcases_rbt` or `/generate_testcases_from_requirements` |
+| Multiple modules but **independent** (no cross-influence) | `/generate_application_test_plan` |
+| Multiple **sequential** modules, output depends on **combination** | ✅ `/generate_cross_module_test_plan` ← **Use this workflow** |
+| Only need test data for 1 form | `/generate_test_data` |

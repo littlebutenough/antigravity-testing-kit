@@ -1,58 +1,58 @@
 # AI-DRIVEN AUTOMATION TESTING FRAMEWORK
 
-**Mục tiêu:** 
-Sử dụng AI để tự động hóa quá trình xây dựng Automation Framework, thiết kế POM và sinh code chất lượng cao — dễ bảo trì, CI/CD friendly.
+**Objective:**
+Use AI to automate the process of building Automation Framework, designing POM, and generating high-quality code — maintainable, CI/CD friendly.
 
-## 📌 Nguyên Tắc Cốt Lõi
+## 📌 Core Principles
 
-1. **AI DOM Recon First:** AI phải sử dụng browser MCP (Playwright/Selenium) để tự mở trình duyệt, inspect DOM thật. TUYỆT ĐỐI không đoán locator.
-2. **POM Architecture:** Mọi script tuân thủ Page Object Model — phân tách rõ Pages và Tests.
-3. **Smart Waits & Stability:** Không hard sleep (`Thread.sleep`, `waitForTimeout`). Chỉ dùng auto-waiting.
-4. **Deterministic Data:** Test data unique + traceable, không hardcode.
-5. **Self-fix Loop:** AI tự chạy test → nếu fail → tự đọc log, sửa code, chạy lại → đến khi PASS.
+1. **AI DOM Recon First:** AI must use browser MCP (Playwright/Selenium) to automatically open browser, inspect real DOM. ABSOLUTELY no guessing locators.
+2. **POM Architecture:** All scripts follow Page Object Model — clearly separate Pages and Tests.
+3. **Smart Waits & Stability:** No hard sleep (`Thread.sleep`, `waitForTimeout`). Use auto-waiting only.
+4. **Deterministic Data:** Test data unique + traceable, no hardcoding.
+5. **Self-fix Loop:** AI runs test → if fails → reads logs, fixes code, reruns → until PASS.
 
 ---
 
-## 🚀 Quy Trình 6 Bước + Bước 0 (Setup)
+## 🚀 6-Step Process + Step 0 (Setup)
 
-| Bước | Tên | Mục đích | Skill |
-|------|-----|----------|-------|
-| **0** | Project Architecture | Setup kiến trúc thư mục chuẩn | `qa_automation_engineer` |
-| **1** | Context & Role-play | Thiết lập vai trò + tech stack | `qa_automation_engineer` |
-| **2** | Analysis & UI Recon | AI tự mở browser, thu thập locators | `qa_automation_engineer` + `ui_debug_agent` |
-| **3** | POM Design | Thiết kế class Page Objects | `qa_automation_engineer` |
-| **4** | Test Data Strategy | Sinh class Data Generator | `qa_automation_engineer` + `test_data_generator` |
-| **5** | Script Generation | Sinh test script + tự chạy + tự fix | `qa_automation_engineer` |
+| Step | Name | Purpose | Skill |
+|------|------|---------|-------|
+| **0** | Project Architecture | Setup standard directory structure | `qa_automation_engineer` |
+| **1** | Context & Role-play | Establish role + tech stack | `qa_automation_engineer` |
+| **2** | Analysis & UI Recon | AI opens browser, collects locators | `qa_automation_engineer` + `ui_debug_agent` |
+| **3** | POM Design | Design Page Object classes | `qa_automation_engineer` |
+| **4** | Test Data Strategy | Generate Data Generator class | `qa_automation_engineer` + `test_data_generator` |
+| **5** | Script Generation | Generate test script + auto-run + auto-fix | `qa_automation_engineer` |
 | **6** | Review & Refactoring | Clean code + CI/CD readiness | `qa_automation_engineer` |
 
-*(Mỗi bước tương ứng 1 thư mục con, gồm `README.md` + `prompt.txt`)*
+*(Each step corresponds to a subdirectory, containing `README.md` + `prompt.txt`)*
 
 ---
 
-## 🎯 Chiến Lược Thực Thi
+## 🎯 Execution Strategy
 
-### Cách 1: Tuần Tự (Manual Control)
+### Method 1: Sequential (Manual Control)
 
-Sử dụng thủ công từng file `prompt.txt` (01 → 06):
-- **Phù hợp khi:** Chỉ cần AI làm 1 bước cụ thể (VD: "Chỉ sinh POM, không cần test script")
-- **Hoặc khi:** Project lớn, muốn kiểm soát tỉ mỉ từng module
+Manually use each `prompt.txt` file (01 → 06):
+- **Suitable when:** Only need AI for a specific step (e.g., "Only generate POM, no test script needed")
+- **Or when:** Large project, need detailed control over each module
 
-### Cách 2: One-Click Auto Workflow (Đề xuất)
+### Method 2: One-Click Auto Workflow (Recommended)
 
-Gọi workflow `/generate_automation_from_testcases` + đính kèm Test Cases:
-- Agent tự: Đọc TC → Mở Browser → Lấy Locator → Sinh POM → Sinh Script → Chạy Test → Sửa Bug → Đến khi PASS
-- **Ưu điểm:** Toàn bộ tự động sau 1 lệnh duy nhất
+Call workflow `/generate_automation_from_testcases` + attach Test Cases:
+- Agent automatically: Reads TCs → Opens Browser → Gets Locators → Generates POM → Generates Script → Runs Test → Fixes Bugs → Until PASS
+- **Advantage:** Fully automated with a single command
 
 ---
 
-## 📋 Rules tham chiếu
+## 📋 Reference Rules
 
 - `.agent/rules/automation_rules.md` — POM, Data, Naming conventions
-- `.agent/rules/locator_strategy.md` — Thứ tự ưu tiên locator
+- `.agent/rules/locator_strategy.md` — Locator priority order
 - `.agent/rules/playwright_rules.md` — Playwright-specific rules
 - `.agent/rules/selenium_rules.md` — Selenium-specific rules
 - `.agent/rules/appium_rules.md` — Appium-specific rules
 
-## 📁 Hướng dẫn nhanh
+## 📁 Quick Start Guide
 
-Xem file `QUICK_START.md` trong thư mục này để bắt đầu nhanh.
+See the `QUICK_START.md` file in this directory to get started quickly.

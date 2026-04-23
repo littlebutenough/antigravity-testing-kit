@@ -1,62 +1,62 @@
 # ============================================================
-# BƯỚC 2: PHÂN TÍCH & ĐIỀU TRA UI (Analysis & UI Recon)
+# STEP 2: ANALYSIS & UI INVESTIGATION (Analysis & UI Recon)
 # ============================================================
-# Workflow: /generate_automation_from_testcases (tiếp tục)
+# Workflow: /generate_automation_from_testcases (continued)
 # Skill:    qa_automation_engineer + ui_debug_agent
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI AI đã xác nhận ở Bước 1
-# 2. Điền URL, tài khoản test, và Manual Test Cases
-# 3. AI sẽ TỰ ĐỘNG mở browser, inspect DOM, thu thập locators
-# 4. Review bảng locators AI trả về → sang Bước 3
+# USAGE:
+# 1. Send this prompt AFTER AI has confirmed in Step 1
+# 2. Fill in URL, test account, and Manual Test Cases
+# 3. AI will AUTOMATICALLY open browser, inspect DOM, collect locators
+# 4. Review locator table returned by AI → proceed to Step 3
 # ============================================================
 
 ---START---
 
-Dưới đây là **Manual Test Cases** cần tự động hóa. Trước khi viết code, bạn **BẮT BUỘC** phải khảo sát lấy locators thật trên UI (UI Recon).
+Below are the **Manual Test Cases** to be automated. Before writing code, you **MUST** investigate and obtain real locators from the UI (UI Recon).
 
-## Thông tin môi trường
+## Environment Information
 
-- **URL:** [Nhập URL. Ví dụ: https://dev.crm.system.local/login]
-- **Tài khoản Test:** [Ví dụ: user_admin@domain.com / password123]
-- **Trình duyệt:** [Chrome / Firefox / Edge — mặc định Chromium]
+- **URL:** [Enter URL. Example: https://dev.crm.system.local/login]
+- **Test Account:** [Example: user_admin@domain.com / password123]
+- **Browser:** [Chrome / Firefox / Edge — default Chromium]
 
 ## Manual Test Cases
 
-[Copy/Paste các Manual Test Cases vào đây. Ví dụ:
+[Copy/Paste Manual Test Cases here. Example:
 
-**TC_01: Đăng nhập thành công**
-1. Mở trang Login
-2. Nhập email hợp lệ: admin@crm.com
-3. Nhập password hợp lệ: Admin@123
-4. Click nút "Đăng nhập"
-5. Verify: Chuyển hướng sang Dashboard, hiển thị tên user
+**TC_01: Successful Login**
+1. Open Login page
+2. Enter valid email: admin@crm.com
+3. Enter valid password: Admin@123
+4. Click "Login" button
+5. Verify: Redirect to Dashboard, display user name
 
-**TC_02: Đăng nhập thất bại — sai password**
-1. Mở trang Login
-2. Nhập email: admin@crm.com
-3. Nhập password sai: WrongPass
-4. Click nút "Đăng nhập"
-5. Verify: Hiển thị thông báo lỗi "Sai mật khẩu"]
+**TC_02: Login Failed — Wrong Password**
+1. Open Login page
+2. Enter email: admin@crm.com
+3. Enter wrong password: WrongPass
+4. Click "Login" button
+5. Verify: Display error message "Wrong password"]
 
 ---
 
-## Nhiệm vụ
+## Task
 
-Sử dụng **công cụ trình duyệt** (Playwright MCP / Selenium MCP) để:
+Use **browser tool** (Playwright MCP / Selenium MCP) to:
 
-1. **Mở browser** với URL đã cung cấp (viewport 1920x1080)
-2. **Điều hướng** theo từng bước trong Test Cases
-3. **Thu thập** tất cả locators cần thiết bằng cách:
-   - Đọc Accessibility Tree
-   - Inspect DOM attributes: `id`, `data-testid`, `name`, `aria-label`, `role`, `placeholder`
-   - TUYỆT ĐỐI **không đoán** selector — chỉ lấy từ DOM thật
-4. **Ưu tiên** locator theo thứ tự (tham khảo `.agent/rules/locator_strategy.md`):
+1. **Open browser** with provided URL (viewport 1920x1080)
+2. **Navigate** according to each step in Test Cases
+3. **Collect** all necessary locators by:
+   - Reading Accessibility Tree
+   - Inspecting DOM attributes: `id`, `data-testid`, `name`, `aria-label`, `role`, `placeholder`
+   - ABSOLUTELY **do not guess** selectors — only take from real DOM
+4. **Prioritize** locator according to order (refer to `.agent/rules/locator_strategy.md`):
    - Playwright: `getByRole` > `getByLabel` > `getByPlaceholder` > `getByTestId` > CSS > XPath
    - Selenium: `id` > `data-testid` > `name` > `cssSelector` > `xpath`
-5. **Trả kết quả** dưới dạng bảng:
+5. **Return result** as a table:
 
 | Page | Element | Locator Type | Locator Value | Fallback Locator |
 |------|---------|-------------|---------------|------------------|
 
-⏸️ **Dừng lại** sau khi hoàn thành bảng locators để tôi review trước khi sang Bước 3.
+⏸️ **Pause** after completing the locator table for me to review before proceeding to Step 3.

@@ -1,35 +1,35 @@
 # AI-DRIVEN RISK-BASED TESTING FRAMEWORK (AI-RBT)
 
-**Mục tiêu:** 
-Tận dụng tốc độ của AI để thực thi chi tiết, kết hợp với tư duy chiến lược RBT (Risk-Based Testing) của con người để tối ưu hóa nguồn lực kiểm thử.
+**Objective:**
+Leverage AI speed for detailed execution, combined with human strategic RBT (Risk-Based Testing) thinking to optimize testing resources.
 
-## 📌 Nguyên Tắc Cốt Lõi
+## 📌 Core Principles
 
-1. **Human Strategy:** Con người xác định chiến lược, mức độ rủi ro và tiêu chuẩn.
-2. **AI Execution:** AI thực hiện phân tích, viết TCs và rà soát lỗ hổng.
-3. **Human Verification:** Con người kiểm tra lại kết quả của AI trước khi chốt.
-
----
-
-## 🚀 Quy Trình Tổng Quan (6 Bước)
-
-1. **Context & Role-play (Khởi tạo ngữ cảnh):** Khởi tạo tư duy chuyên gia QA/Tester cho AI bằng cách định hình vai trò và cung cấp bối cảnh dự án.
-2. **Analysis & QnA (Phân tích yêu cầu):** AI đọc tài liệu và phân tích yêu cầu để làm rõ các điểm mờ (Ambiguity) trước khi viết kịch bản.
-3. **Decomposition (Phân rã module):** Phân rã hệ thống thành các Module (Feature Mapping - FM) nhỏ hơn để dễ dàng đánh giá.
-4. **Traceability (Đảm bảo độ bao phủ):** Thiết lập ma trận truy vết để đảm bảo độ bao phủ yêu cầu (Coverage).
-   - *(Lưu ý: Sau bước 4 có thể có một bước Checkpoint Đánh giá rủi ro do con người thực hiện - Human Only).*
-5. **RBT & TC Generation (Sinh Test Case chi tiết):** Áp dụng chiến lược Risk-Based Testing để AI sinh nội dung kịch bản kiểm thử (Logic & Scenario).
-6. **Template Mapping (Chuẩn hóa Format):** Chuẩn hóa toàn bộ định dạng Test Case và điền vào file/bảng mẫu để dùng cho quản lý (ví dụ: Jira, Excel).
-
-*(Mỗi bước trên tương ứng với 1 thư mục con trong thư mục này, bao gồm `README.md` hướng dẫn chi tiết và `prompt.txt` chứa câu lệnh mẫu cho AI).*
+1. **Human Strategy:** Humans define strategy, risk levels, and standards.
+2. **AI Execution:** AI performs analysis, writes TCs, and reviews gaps.
+3. **Human Verification:** Humans review AI results before finalizing.
 
 ---
 
-## ⚠️ Lưu ý Quan Trọng: Chiến Lược Thực Thi (Execution Strategy)
+## 🚀 Overall Process (6 Steps)
 
-Đối với phần **Manual Testing** (Đi từ Yêu cầu chức năng / Figma), bạn **BẮT BUỘC phải chạy tuần tự thủ công từng prompt một** thay vì gộp chung thành một lệnh Workflow chạy tự động 100%.
+1. **Context & Role-play:** Initialize the QA/Tester expert mindset for AI by defining the role and providing project context.
+2. **Analysis & QnA:** AI reads documents and analyzes requirements to clarify ambiguities before writing scenarios.
+3. **Decomposition:** Break down the system into smaller Modules (Feature Mapping - FM) for easier assessment.
+4. **Traceability:** Establish a traceability matrix to ensure full requirement coverage.
+   - *(Note: After Step 4, there may be a Human-only Risk Assessment Checkpoint.)*
+5. **RBT & TC Generation:** Apply Risk-Based Testing strategy for AI to generate detailed test scenarios (Logic & Scenario).
+6. **Template Mapping:** Standardize all Test Case formats and populate template files/tables for management tools (e.g., Jira, Excel).
 
-**Lý do:**
-1. **Điểm nghẽn ở Bước 2 (Analysis & QnA):** AI cần thời gian phân tích và đưa ra các câu hỏi (Ambiguities) về logic của Requirement để bạn giải đáp. Nếu chạy 1 lèo, AI sẽ tự đoán mò logic dẫn đến viết Test Case sai trầm trọng.
-2. **Điểm chốt chặn Nhân sự (Human in the loop):** Ở Bước 4 và 5, chính con người (Tester) phải tự review đánh giá rủi ro (RBT) trước khi cho AI sinh kịch bản chi tiết.
-3. **Chống Ảo giác (Hallucination):** Việc nạp 1 tài liệu dài và bắt AI nhả ra hàng trăm kịch bản cùng lúc sẽ khiến AI mất tập trung, bỏ sót luồng (Miss coverage). Việc xé nhỏ ra từng prompt sẽ mang lại chất lượng Test Case tuyệt đối nhất.
+*(Each step above corresponds to a sub-directory in this folder, including a `README.md` with detailed instructions and a `prompt.txt` with sample AI prompts.)*
+
+---
+
+## ⚠️ Important Note: Execution Strategy
+
+For **Manual Testing** (starting from Functional Requirements / Figma), you **MUST** run each prompt sequentially rather than bundling them into a single 100% automated workflow command.
+
+**Reasons:**
+1. **Bottleneck at Step 2 (Analysis & QnA):** AI needs time to analyze and raise questions (Ambiguities) about the Requirement's logic for you to answer. If run all at once, AI will guess the logic, leading to severely incorrect Test Cases.
+2. **Human in the Loop:** At Steps 4 and 5, the human Tester must review and assess risks (RBT) before AI generates detailed scenarios.
+3. **Prevent Hallucination:** Loading a long document and asking AI to output hundreds of scenarios at once causes the AI to lose focus and miss coverage. Breaking it down into individual prompts delivers the highest quality Test Cases.

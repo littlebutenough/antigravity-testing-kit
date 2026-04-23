@@ -1,45 +1,45 @@
-# Bước 5: Sinh mã Automation (Script Generation)
+# Step 5: Automation Script Generation (Script Generation)
 
-**Workflow:** `/generate_automation_from_testcases` (tiếp tục)
+**Workflow:** `/generate_automation_from_testcases` (continued)
 **Skill:** `qa_automation_engineer`
 
 ---
 
-## Mục đích
+## Purpose
 
-Bước cốt lõi — AI kết hợp POM (Bước 3) và Data Strategy (Bước 4) để sinh file Test script hoàn chỉnh, chạy test, và tự sửa nếu fail.
+The core step — AI combines POM (Step 3) and Data Strategy (Step 4) to generate complete Test script files, run tests, and auto-fix if they fail.
 
-## Cách sử dụng
+## Usage
 
-1. Gửi file `prompt.txt` cho AI.
-2. AI sẽ:
-   - Sinh file Test script hoàn chỉnh
-   - **Tự chạy test** bằng terminal
-   - Nếu fail → **tự đọc log, tự sửa, tự chạy lại**
-   - Lặp đến khi PASS ổn định
-3. Khi test PASS → sang Bước 6.
+1. Send the `prompt.txt` file to AI.
+2. AI will:
+   - Generate complete Test script files
+   - **Automatically run tests** using terminal
+   - If fail → **automatically read logs, auto-fix, auto-rerun**
+   - Loop until stable PASS
+3. When test PASS → proceed to Step 6.
 
 ## Code Pattern: Arrange → Act → Assert
 
 ```
-Arrange: Setup data, khởi tạo pages
-Act:     Thực hiện hành động
-Assert:  Kiểm tra kết quả
+Arrange: Setup data, initialize pages
+Act:     Perform actions
+Assert:  Verify results
 ```
 
-## Self-fix Loop (Tự sửa)
+## Self-fix Loop (Auto-fix)
 
-AI thực hiện vòng lặp:
+AI executes the loop:
 ```
-Sinh code → Chạy test → FAIL?
-    ├── Đọc error log
-    ├── Phân tích root cause
-    ├── Sửa code
-    └── Chạy lại → PASS? → DONE ✅
+Generate code → Run test → FAIL?
+    ├── Read error log
+    ├── Analyze root cause
+    ├── Fix code
+    └── Rerun → PASS? → DONE ✅
 ```
 
-## Lưu ý
+## Notes
 
-- AI sẽ **không hỏi user** trong quá trình self-fix (trừ khi gặp business rule mâu thuẫn).
-- Smart Waits bắt buộc — xem `.agent/rules/playwright_rules.md` hoặc `.agent/rules/selenium_rules.md`.
-- Mỗi test case phải có **assertion rõ ràng** ở cuối.
+- AI will **not ask user** during self-fix process (unless encountering conflicting business rules).
+- Smart Waits mandatory — see `.agent/rules/playwright_rules.md` or `.agent/rules/selenium_rules.md`.
+- Each test case must have **clear assertion** at the end.

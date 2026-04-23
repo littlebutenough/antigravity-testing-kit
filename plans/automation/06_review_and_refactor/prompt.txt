@@ -1,48 +1,50 @@
 # ============================================================
-# BƯỚC 6: KIỂM DUYỆT & TỐI ƯU (Review & Refactoring)
+# STEP 6: REVIEW & OPTIMIZATION (Review & Refactoring)
 # ============================================================
-# Workflow: /generate_automation_from_testcases (tiếp tục)
+# Workflow: /generate_automation_from_testcases (continued)
 # Skill:    qa_automation_engineer
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI test đã chạy PASS ở Bước 5
-# 2. AI sẽ review và cleanup code
-# 3. Nhận code final → merge vào repository
+# USAGE:
+# 1. Send this prompt AFTER test has PASSED in Step 5
+# 2. AI will review and cleanup code
+# 3. Receive final code → merge into repository
 # ============================================================
 
 ---START---
 
-Test đã chạy **PASS** trên máy cá nhân. Trước khi merge vào repository, hãy review và tối ưu code.
+/generate_automation_from_testcases
 
-## Nhiệm vụ Refactoring:
+Test has **PASSED** on local machine. Before merging into repository, please review and optimize code.
 
-### 1. Xóa debug artifacts
+## Refactoring Tasks:
 
-- Xóa toàn bộ `console.log`, `System.out.println`, `print()` sinh ra khi debug
-- Xóa code bị comment (`//`, `/* */`) không còn dùng
-- Xóa biến/locator khai báo mà không sử dụng (unused code)
+### 1. Delete debug artifacts
 
-### 2. Kiểm tra code quality
+- Delete all `console.log`, `System.out.println`, `print()` generated during debugging
+- Delete commented code (`//`, `/* */`) no longer used
+- Delete variables/locators declared but not used (unused code)
 
-- [ ] Tên biến, method có rõ nghĩa không?
-- [ ] Có method nào quá dài cần tách không? (>20 dòng)
-- [ ] Có logic trùng lặp cần extract thành helper không?
-- [ ] Import statements có sạch không?
+### 2. Check code quality
 
-### 3. Kiểm tra test stability
+- [ ] Do variable and method names have clear meaning?
+- [ ] Are there any methods too long that need splitting? (>20 lines)
+- [ ] Is there duplicate logic that needs extraction into helper?
+- [ ] Are import statements clean?
 
-- [ ] Có hard sleep nào lọt qua không?
-- [ ] Assertions có đủ và chính xác không?
-- [ ] Test data có unique mỗi lần chạy không?
-- [ ] Mỗi test case có độc lập không? (không phụ thuộc test khác)
+### 3. Check test stability
+
+- [ ] Did any hard sleep slip through?
+- [ ] Are assertions sufficient and accurate?
+- [ ] Is test data unique each run?
+- [ ] Is each test case independent? (does not depend on other tests)
 
 ### 4. CI/CD Readiness
 
-[Tùy chỉnh theo framework của bạn:]
+[Customize according to your framework:]
 
 Playwright:
 ```typescript
-// Gắn tag để chạy selective
+// Attach tags for selective execution
 test.describe('Login Module', () => {
   test.describe.configure({ mode: 'parallel' });
   // ...
@@ -61,11 +63,11 @@ Appium:
 public void testLoginMobile() { ... }
 ```
 
-### 5. Documentation (tùy chọn)
+### 5. Documentation (optional)
 
-- Thêm comment mô tả cho method phức tạp
-- Cập nhật README nếu có thay đổi cấu trúc project
+- Add descriptive comments for complex methods
+- Update README if there are project structure changes
 
 ---
 
-Hãy trả lại phiên bản code **cuối cùng hoàn thiện nhất** (Clean Code), sẵn sàng commit.
+Please return the **final most complete version** of code (Clean Code), ready to commit.

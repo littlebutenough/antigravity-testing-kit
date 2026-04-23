@@ -1,63 +1,63 @@
 # ============================================================
-# BƯỚC 3: THIẾT KẾ KIẾN TRÚC POM (POM Design)
+# STEP 3: POM ARCHITECTURE DESIGN (POM Design)
 # ============================================================
-# Workflow: /generate_automation_from_testcases (tiếp tục)
+# Workflow: /generate_automation_from_testcases (continued)
 # Skill:    qa_automation_engineer
 # ============================================================
-# CÁCH DÙNG:
-# 1. Gửi prompt này SAU KHI đã review locators ở Bước 2
-# 2. AI sẽ thiết kế class Page Objects — CHƯA sinh test script
-# 3. Review kiến trúc POM → sang Bước 4
+# USAGE:
+# 1. Send this prompt AFTER reviewing locators in Step 2
+# 2. AI will design Page Object classes — NOT generating test script yet
+# 3. Review POM architecture → proceed to Step 4
 # ============================================================
 
 ---START---
 
-Dựa trên danh sách locators **đã thu thập từ DOM thật** ở Bước 2, hãy thiết kế kiến trúc **Page Object Model (POM)**.
+Based on the list of locators **collected from real DOM** in Step 2, design the **Page Object Model (POM)** architecture.
 
-## Yêu cầu:
+## Requirements:
 
-### 1. Định nghĩa Class Page
+### 1. Define Page Class
 
-- Mỗi trang/section là 1 class riêng
-- Tên class mang ngữ nghĩa rõ ràng
-- Ví dụ: `LoginPage`, `DashboardPage`, `CustomerFormPage`, `CustomerListPage`
+- Each page/section is a separate class
+- Class name should have clear semantic meaning
+- Example: `LoginPage`, `DashboardPage`, `CustomerFormPage`, `CustomerListPage`
 
-### 2. Khai báo Locators
+### 2. Declare Locators
 
-- Sử dụng chính xác locators đã thu thập ở Bước 2
-- Ưu tiên bộ chọn vững chãi: `data-testid`, `id`, `name`, `role`
-- **Không tự thay đổi** locator so với Bước 2 trừ khi có lý do
+- Use exactly the locators collected in Step 2
+- Prioritize robust selectors: `data-testid`, `id`, `name`, `role`
+- **Do not change** locator compared to Step 2 unless there is a reason
 
-Ví dụ Playwright:
+Playwright example:
 ```typescript
 readonly emailInput = this.page.getByLabel('Email');
 readonly submitButton = this.page.getByRole('button', { name: 'Submit' });
 ```
 
-Ví dụ Selenium:
+Selenium example:
 ```java
 private final By emailInput = By.id("email");
 private final By submitButton = By.cssSelector("button[data-testid='submit-btn']");
 ```
 
-### 3. Đóng gói Methods
+### 3. Encapsulate Methods
 
-- Đặt tên method theo hành động nghiệp vụ (không theo kỹ thuật)
-- Mỗi method thực hiện **1 hành động** rõ ràng
-- Return `this` hoặc Page tiếp theo (fluent pattern)
+- Name methods based on business actions (not technical actions)
+- Each method performs **one clear action**
+- Return `this` or next Page (fluent pattern)
 
 ```
-✅ ĐÚNG: fillCustomerForm(), submitAndVerifySuccess()
-❌ SAI:  clickButton(), inputText()
+✅ CORRECT: fillCustomerForm(), submitAndVerifySuccess()
+❌ WRONG:  clickButton(), inputText()
 ```
 
-### 4. Quy tắc quan trọng
+### 4. Important Rules
 
-- ⛔ **CHƯA sinh file Test script** — chỉ thiết kế Page classes
-- ✅ Phác thảo cấu trúc file, tên class, locator declarations, method signatures
-- ✅ Có thể viết body method nếu logic rõ ràng
-- ✅ Tuân thủ `.agent/rules/automation_rules.md` (naming conventions, POM structure)
+- ⛔ **DO NOT generate Test script file** — only design Page classes
+- ✅ Outline file structure, class names, locator declarations, method signatures
+- ✅ Can write method body if logic is clear
+- ✅ Adhere to `.agent/rules/automation_rules.md` (naming conventions, POM structure)
 
 ---
 
-Trình bày cấu trúc POM để tôi review kiến trúc trước khi sinh test script ở Bước 5.
+Present the POM structure for me to review architecture before generating test script in Step 5.
